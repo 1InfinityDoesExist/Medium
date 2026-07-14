@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Custom Annotations, Interceptors and Filters</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#15803d22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #15803d40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#15803d0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #15803d33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#15803d;--a2:#22c55e">
+<header class="hero"><div class="in">
+  <span class="badge">🍃 SPRING BOOT</span>
+  <h1>Custom Annotations, Interceptors and Filters</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>@Target</em></p>
+<p class="chips">☕ 11 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> What an interceptor is and where it sits in the request pipeline  ·  Writing a HandlerInterceptor (preHandle / postHandle / afterCompletion) and registering it  ·  Creating custom annotations — @Target, @Retention and annotation methods (elements)  ·  Building an annotation-driven interceptor with AOP (@Around)</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Custom_Annotations_Interceptors_Filters_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>What is an Interceptor?</h2>
+<p><strong>Interceptor:</strong> it is a mediator, which gets invoked <strong>before or after your actual code</strong>.</p>
+<figure><img alt="Custom Annotations, Interceptors and Filters — diagram" src="13-custom-annotations-interceptors-filters.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p>To understand <em>where</em> it can step in, recall what happens when a request arrives. Our application is deployed inside Tomcat (the servlet container), and the <code>DispatcherServlet</code> drives everything:</p>
+<p>So an interceptor can hook in <strong>before</strong> the controller method (step 3) runs, and <strong>after</strong> it returns — without touching the controller code itself.</p>
+<h2>Custom Interceptor with HandlerInterceptor</h2>
+<p>Step 1 — implement <code>HandlerInterceptor</code>. It gives us three hook methods:</p>
+<ul>
+<li><code>preHandle</code> — before the controller method</li>
+<li><code>postHandle</code> — after the controller method</li>
+<li><code>afterCompletion</code> — after the complete request is finished</li>
+</ul>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">MyCustomInterceptor</span> <span class="k">implements</span> <span class="ty">HandlerInterceptor</span> {
+
+    <span class="c">// runs BEFORE the controller method; return false = stop the request here</span>
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">boolean</span> preHandle(<span class="ty">HttpServletRequest</span> request, <span class="ty">HttpServletResponse</span> response,
+                             <span class="ty">Object</span> handler) <span class="k">throws</span> <span class="ty">Exception</span> {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;preHandle: &quot;</span> + request.getRequestURI());
+        <span class="k">return</span> <span class="k">true</span>;                      <span class="c">// true = continue to the controller</span>
+    }
+
+    <span class="c">// runs AFTER the controller method, before the view/response is written</span>
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">void</span> postHandle(<span class="ty">HttpServletRequest</span> request, <span class="ty">HttpServletResponse</span> response,
+                           <span class="ty">Object</span> handler, <span class="ty">ModelAndView</span> modelAndView) <span class="k">throws</span> <span class="ty">Exception</span> {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;postHandle: controller finished&quot;</span>);
+    }
+
+    <span class="c">// runs after the COMPLETE request finished (also when an exception was thrown)</span>
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">void</span> afterCompletion(<span class="ty">HttpServletRequest</span> request, <span class="ty">HttpServletResponse</span> response,
+                                <span class="ty">Object</span> handler, <span class="ty">Exception</span> ex) <span class="k">throws</span> <span class="ty">Exception</span> {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;afterCompletion: response sent, ex = &quot;</span> + ex);
+    }
+}
+</code></pre>
+<p>Step 2 — register it in a <code>@Configuration</code> class that implements <code>WebMvcConfigurer</code>:</p>
+<pre><code><span class="a">@Configuration</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">WebConfig</span> <span class="k">implements</span> <span class="ty">WebMvcConfigurer</span> {
+
+    <span class="a">@Autowired</span>
+    <span class="k">private</span> <span class="ty">MyCustomInterceptor</span> myCustomInterceptor;
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">void</span> addInterceptors(<span class="ty">InterceptorRegistry</span> registry) {
+        registry.addInterceptor(myCustomInterceptor)
+                .addPathPatterns(<span class="s">&quot;/api/*&quot;</span>)
+                .excludePathPatterns(<span class="s">&quot;/api/health&quot;</span>, <span class="s">&quot;/api/login&quot;</span>);
+    }
+}
+</code></pre>
+<blockquote>
+<p>Added: in the notes the registration line was cut off at the page edge after <code>.excludePathPatterns("/a…</code>. Reconstructed above with the standard API — <code>addPathPatterns</code> says where the interceptor applies, <code>excludePathPatterns</code> lists paths to skip (health checks, login, static resources are typical exclusions).</p>
+</blockquote>
+<h2>Creation of Annotation</h2>
+<p>The second way to intercept (section 5) is driven by a <strong>custom annotation</strong>. Creating one is tiny:</p>
+<pre><code><span class="k">public</span> <span class="a">@interface</span> <span class="ty">MyCustomAnnotation</span> {
+}
+</code></pre>
+<p>Two <strong>meta-annotations</strong> control how it behaves:</p>
+<p>This meta-annotation tells <strong>where</strong> we can apply the particular annotation: on a method, or class, or constructor etc.</p>
+<pre><code><span class="a">@Target</span>(<span class="ty">ElementType</span>.<span class="ty">METHOD</span>)                       <span class="c">// only on methods</span>
+</code></pre>
+<pre><code><span class="a">@Target</span>({<span class="ty">ElementType</span>.<span class="ty">METHOD</span>,
+         <span class="ty">ElementType</span>.<span class="ty">CONSTRUCTOR</span>,
+         <span class="ty">ElementType</span>.<span class="ty">PARAMETER</span>,
+         <span class="ty">ElementType</span>.<span class="ty">FIELD</span>})                      <span class="c">// several places at once</span>
+</code></pre>
+<h3>@Retention</h3>
+<p>This meta-annotation tells <strong>how the particular annotation will be stored</strong> in Java:</p>
+<ol>
+<li><code>RetentionPolicy.SOURCE</code> — annotation will be discarded by the compiler itself; it is not even recorded in the <code>.class</code> file. Example: <code>@Override</code>.</li>
+<li><code>RetentionPolicy.CLASS</code> — annotation will be recorded in the <code>.class</code> file but <strong>ignored by the JVM</strong> during run time.</li>
+<li><code>RetentionPolicy.RUNTIME</code> — annotation will be recorded in the <code>.class</code> file and is <strong>also available during runtime</strong> (via reflection).</li>
+</ol>
+<pre><code><span class="a">@Retention</span>(<span class="ty">RetentionPolicy</span>.<span class="ty">SOURCE</span>)
+</code></pre>
+<blockquote>
+<p>Good to know: for an annotation that an interceptor/aspect must read while the app is running, <code>RetentionPolicy.RUNTIME</code> is the only choice — with SOURCE or CLASS the annotation is invisible to reflection.</p>
+<p>Added: two more meta-annotations often asked as a follow-up: <strong><code>@Inherited</code></strong> — if a
+class-level annotation is marked <code>@Inherited</code>, subclasses of the annotated class also
+"have" it (works for class annotations only, not methods/interfaces). <strong><code>@Documented</code></strong> —
+the annotation shows up in the generated Javadoc of whatever uses it. Spring's own
+stereotype annotations also show <strong>composition</strong>: <code>@Service</code> is itself annotated with
+<code>@Component</code> — that is why Spring treats every <code>@Service</code> as a component.</p>
+</blockquote>
+<h2>Custom Annotation with methods (more like a field)</h2>
+<p>Annotation methods (also called <em>elements</em>) look like methods but behave like fields:</p>
+<ul>
+<li>No parameter, no body</li>
+<li>Return type is <strong>restricted</strong> to:</li>
+<li>Primitive type (<code>int</code>, <code>boolean</code>, <code>double</code> etc.)</li>
+<li><code>String</code></li>
+<li>Enum</li>
+<li><code>Class&lt;?&gt;</code></li>
+<li>Annotations</li>
+<li>Array of the above types</li>
+</ul>
+<pre><code><span class="a">@Target</span>(<span class="ty">ElementType</span>.<span class="ty">METHOD</span>)
+<span class="a">@Retention</span>(<span class="ty">RetentionPolicy</span>.<span class="ty">RUNTIME</span>)
+<span class="k">public</span> <span class="a">@interface</span> <span class="ty">MyCustomAnnotation</span> {
+    <span class="ty">String</span> key() <span class="k">default</span> <span class="s">&quot;defaultKeyName&quot;</span>;
+}
+</code></pre>
+<pre><code><span class="a">@MyCustomAnnotation</span>(key = <span class="s">&quot;userkey&quot;</span>)
+<span class="k">public</span> <span class="k">void</span> updateUser() {
+}
+</code></pre>
+<p><strong>More examples</strong> — every allowed element type, with defaults:</p>
+<pre><code><span class="k">public</span> <span class="a">@interface</span> <span class="ty">MyCustomAnnotation</span> {
+    <span class="k">int</span> intKey() <span class="k">default</span> <span class="n">0</span>;
+    <span class="ty">String</span> stringKey() <span class="k">default</span> <span class="s">&quot;defaultString&quot;</span>;
+    <span class="ty">Class</span>&lt;?&gt; classTypeKey() <span class="k">default</span> <span class="ty">String</span>.<span class="k">class</span>;
+    <span class="ty">MyCustomEnum</span> enumKey() <span class="k">default</span> <span class="ty">MyCustomEnum</span>.<span class="ty">ENUM_VAL</span>;
+    <span class="ty">String</span>[] stringArrayKey() <span class="k">default</span> {<span class="s">&quot;default1&quot;</span>, <span class="s">&quot;default2&quot;</span>};
+    <span class="k">int</span>[] intArrayKey() <span class="k">default</span> {<span class="n">1</span>, <span class="n">2</span>};
+}
+</code></pre>
+<p><strong>How to use it?</strong></p>
+<pre><code><span class="a">@MyCustomAnnotation</span>(intKey = <span class="n">10</span>, stringKey = <span class="s">&quot;user&quot;</span>,
+        classTypeKey = <span class="ty">User</span>.<span class="k">class</span>, enumKey = <span class="ty">MyCustomEnum</span>.<span class="ty">ENUM_VAL</span>,
+        stringArrayKey = {<span class="s">&quot;a&quot;</span>, <span class="s">&quot;b&quot;</span>}, intArrayKey = {<span class="n">5</span>, <span class="n">10</span>})
+<span class="k">public</span> <span class="k">void</span> updateUser() {
+}
+</code></pre>
+<blockquote>
+<p>Added: in the notes the last argument of this usage example ran off the page edge; the array arguments above are reconstructed in the standard syntax. Elements without a <code>default</code> are mandatory at the usage site.</p>
+</blockquote>
+<h2>Creation of Custom Interceptor (annotation + AOP)</h2>
+<p>Now combine both ideas: an aspect that intercepts <strong>any method carrying our custom annotation</strong>. The <code>@Around</code> advice runs before <em>and</em> after the actual method:</p>
+<pre><code><span class="a">@Component</span>
+<span class="a">@Aspect</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">MyCustomInterceptor</span> {
+
+    <span class="a">@Around</span>(<span class="s">&quot;@annotation(com.abc.CustomInterceptor.MyCustomAnnotation)&quot;</span>)
+    <span class="k">public</span> <span class="ty">Object</span> invoke(<span class="ty">ProceedingJoinPoint</span> joinPoint) <span class="k">throws</span> <span class="ty">Throwable</span> {
+
+        <span class="ty">Method</span> method = ((<span class="ty">MethodSignature</span>) joinPoint.getSignature()).getMethod();
+
+        <span class="k">if</span> (method.isAnnotationPresent(<span class="ty">MyCustomAnnotation</span>.<span class="k">class</span>)) {
+            <span class="ty">MyCustomAnnotation</span> annotation =
+                    method.getAnnotation(<span class="ty">MyCustomAnnotation</span>.<span class="k">class</span>);
+            <span class="ty">System</span>.out.println(<span class="s">&quot;before actual method, key = &quot;</span> + annotation.key());
+        }
+        <span class="k">return</span> joinPoint.proceed();       <span class="c">// invoke the actual annotated method</span>
+    }
+}
+</code></pre>
+<p>How it works:</p>
+<ol>
+<li><code>@annotation(...)</code> pointcut matches every method annotated with <code>MyCustomAnnotation</code>.</li>
+<li><code>joinPoint.getSignature()</code> is cast to <code>MethodSignature</code> to get the actual <code>Method</code> object.</li>
+<li><code>method.isAnnotationPresent(...)</code> / <code>method.getAnnotation(...)</code> read the annotation and its element values (this is why <code>RetentionPolicy.RUNTIME</code> is required).</li>
+<li><code>joinPoint.proceed()</code> finally runs the real method — code before it is "pre" logic, code after it is "post" logic.</li>
+</ol>
+<blockquote>
+<p>Added: the notes declare the advice as <code>void</code> and call <code>joinPoint.proceed()</code> without returning it. In real code an <code>@Around</code> advice should return <code>Object</code> and return the result of <code>proceed()</code> — otherwise every intercepted method returns <code>null</code> to its caller. Also remember the <code>spring-boot-starter-aop</code> dependency, and that AOP interception has the usual proxy limits: public methods, called from another class.</p>
+</blockquote>
+<h3>Way 3 — read the annotation from a HandlerInterceptor (no AOP)</h3>
+<blockquote>
+<p>Added: there is a third pattern that combines both halves of this topic without AOP.
+Inside a <code>HandlerInterceptor</code>, the <code>Object handler</code> parameter is a <strong><code>HandlerMethod</code></strong>
+for controller endpoints — so you can read your custom annotation straight off the
+controller method. This is exactly how rate-limit / audit annotations are often wired:</p>
+</blockquote>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">AnnotationAwareInterceptor</span> <span class="k">implements</span> <span class="ty">HandlerInterceptor</span> {
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">boolean</span> preHandle(<span class="ty">HttpServletRequest</span> request, <span class="ty">HttpServletResponse</span> response,
+                             <span class="ty">Object</span> handler) <span class="k">throws</span> <span class="ty">Exception</span> {
+        <span class="k">if</span> (handler <span class="k">instanceof</span> <span class="ty">HandlerMethod</span> handlerMethod) {   <span class="c">// not static resources etc.</span>
+            <span class="ty">MyCustomAnnotation</span> annotation =
+                    handlerMethod.getMethodAnnotation(<span class="ty">MyCustomAnnotation</span>.<span class="k">class</span>);
+            <span class="k">if</span> (annotation != <span class="k">null</span>) {
+                <span class="ty">System</span>.out.println(<span class="s">&quot;endpoint marked with key = &quot;</span> + annotation.key());
+                <span class="c">// e.g. rate-limit check; return false + response.sendError(429) to block</span>
+            }
+        }
+        <span class="k">return</span> <span class="k">true</span>;
+    }
+}
+</code></pre>
+<p>When to prefer which: <strong>AOP</strong> (<code>@Around</code>) intercepts <em>any bean method</em> (services,
+repositories); the <strong>HandlerInterceptor + HandlerMethod</strong> approach only sees controller
+endpoints, but it also gives you the <code>HttpServletRequest</code>/<code>HttpServletResponse</code> — ideal
+for HTTP concerns like rate limiting or auth checks per endpoint.</p>
+<h2>Filters vs Interceptors</h2>
+<p><strong>Filter:</strong> it intercepts the HTTP Request and Response <strong>before they reach the servlet</strong>.</p>
+<p><strong>Interceptor:</strong> it is specific to the Spring Framework, and intercepts the HTTP Request and Response <strong>before they reach the controller and after the servlet</strong>.</p>
+<p>This is the full pipeline from the notes — the centerpiece picture of this topic:</p>
+<p>The response travels back the very same path in reverse: Controller → Interceptors → DispatcherServlet → FN → … → F1 → Tomcat → client.</p>
+<p>Some definitions from the notes:</p>
+<ul>
+<li><strong>Servlet</strong> — it is nothing but a Java class, which accepts the incoming request, processes it and returns the response.</li>
+<li><strong>DispatcherServlet</strong> — a kind of servlet provided by Spring, and by default it is configured to handle all APIs: <code>"/*"</code>.</li>
+<li><strong>Filters</strong> — used when we want to intercept HTTP Request and Response and add logic <strong>agnostic of the underlying servlets</strong>. We can have many filters and have ordering between them too.</li>
+<li><strong>Interceptors</strong> — used when we want to intercept HTTP Request and Response and add logic <strong>specific to a particular servlet</strong>. We can have many interceptors and have ordering between them too.</li>
+</ul>
+<ul class="cards"><li><b>Comes from</b> — Servlet specification (<code>jakarta.servlet</code>) — Spring Framework</li><li><b>Runs</b> — Before the request reaches any servlet — After DispatcherServlet, before Controller</li><li><b>Scope</b> — Agnostic of the underlying servlets — Specific to a particular servlet</li><li><b>Ordering</b> — <code>FilterRegistrationBean.setOrder(n)</code> — Registration order in <code>WebMvcConfigurer</code></li><li><b>Access to</b> — Raw <code>ServletRequest</code> / <code>ServletResponse</code> — Handler (controller method) + <code>ModelAndView</code></li></ul>
+<blockquote>
+<p>Added: typical use-cases — <strong>filters</strong>: authentication, CORS, request/response logging, compression, setting the MDC/correlation id; <strong>interceptors</strong>: Spring-specific concerns such as audit logging per controller, adding common response headers, or checking annotations on the handler method.</p>
+</blockquote>
+<h2>Writing a Filter</h2>
+<p>A filter implements the <code>Filter</code> interface with three lifecycle methods:</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">MyFilter1</span> <span class="k">implements</span> <span class="ty">Filter</span> {
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">void</span> init(<span class="ty">FilterConfig</span> filterConfig) <span class="k">throws</span> <span class="ty">ServletException</span> {
+        <span class="c">// invoked only once — when the filter is created</span>
+    }
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">void</span> doFilter(<span class="ty">ServletRequest</span> request, <span class="ty">ServletResponse</span> response,
+                         <span class="ty">FilterChain</span> filterChain) <span class="k">throws</span> <span class="ty">IOException</span>, <span class="ty">ServletException</span> {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;MyFilter1 — request side&quot;</span>);     <span class="c">// before the servlet</span>
+        filterChain.doFilter(request, response);            <span class="c">// pass to the next filter</span>
+        <span class="ty">System</span>.out.println(<span class="s">&quot;MyFilter1 — response side&quot;</span>);    <span class="c">// after the servlet</span>
+    }
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">void</span> destroy() {
+        <span class="c">// invoked only once — when the filter is destroyed</span>
+    }
+}
+</code></pre>
+<p><code>filterChain.doFilter(req, resp)</code> is the key line: it forwards the request <strong>down</strong> the chain; everything written after it runs while the response bubbles back <strong>up</strong>:</p>
+<p>Similarly we can write <code>MyFilter2</code>.</p>
+<p><strong>Now</strong> — register both filters with <code>FilterRegistrationBean</code>, giving each a URL pattern and an order:</p>
+<pre><code><span class="a">@Configuration</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">AppConfig</span> {
+
+    <span class="a">@Bean</span>
+    <span class="k">public</span> <span class="ty">FilterRegistrationBean</span>&lt;<span class="ty">MyFilter1</span>&gt; myFilter1() {
+        <span class="ty">FilterRegistrationBean</span>&lt;<span class="ty">MyFilter1</span>&gt; filterRegistrationBean =
+                <span class="k">new</span> <span class="ty">FilterRegistrationBean</span>&lt;&gt;();
+        filterRegistrationBean.setFilter(<span class="k">new</span> <span class="ty">MyFilter1</span>());
+        filterRegistrationBean.addUrlPatterns(<span class="s">&quot;/*&quot;</span>);
+        filterRegistrationBean.setOrder(<span class="n">2</span>);          <span class="c">// lower order runs first</span>
+        <span class="k">return</span> filterRegistrationBean;
+    }
+
+    <span class="a">@Bean</span>
+    <span class="k">public</span> <span class="ty">FilterRegistrationBean</span>&lt;<span class="ty">MyFilter2</span>&gt; myFilter2() {
+        <span class="ty">FilterRegistrationBean</span>&lt;<span class="ty">MyFilter2</span>&gt; filterRegistrationBean =
+                <span class="k">new</span> <span class="ty">FilterRegistrationBean</span>&lt;&gt;();
+        filterRegistrationBean.setFilter(<span class="k">new</span> <span class="ty">MyFilter2</span>());
+        filterRegistrationBean.addUrlPatterns(<span class="s">&quot;/*&quot;</span>);
+        filterRegistrationBean.setOrder(<span class="n">1</span>);          <span class="c">// runs BEFORE MyFilter1</span>
+        <span class="k">return</span> filterRegistrationBean;
+    }
+}
+</code></pre>
+<h3>OncePerRequestFilter — the base class you should actually extend</h3>
+<blockquote>
+<p>Added: a raw <code>Filter</code> can run <strong>more than once</strong> for the same request (forwards,
+includes, error dispatches). Spring's <strong><code>OncePerRequestFilter</code></strong> guarantees exactly one
+execution per request and gives typed <code>HttpServletRequest</code>/<code>HttpServletResponse</code> — this
+is what Spring Security's own filters extend, and what you should extend too:</p>
+</blockquote>
+<pre><code><span class="a">@Component</span>                       <span class="c">// @Component alone auto-registers it for ALL URLs (&quot;/*&quot;)</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">CorrelationIdFilter</span> <span class="k">extends</span> <span class="ty">OncePerRequestFilter</span> {
+
+    <span class="a">@Override</span>
+    <span class="k">protected</span> <span class="k">void</span> doFilterInternal(<span class="ty">HttpServletRequest</span> request,
+                                    <span class="ty">HttpServletResponse</span> response,
+                                    <span class="ty">FilterChain</span> filterChain)
+            <span class="k">throws</span> <span class="ty">ServletException</span>, <span class="ty">IOException</span> {
+        <span class="ty">String</span> correlationId = request.getHeader(<span class="s">&quot;X-Correlation-Id&quot;</span>);
+        <span class="k">if</span> (correlationId == <span class="k">null</span>) correlationId = <span class="ty">UUID</span>.randomUUID().toString();
+        <span class="ty">MDC</span>.put(<span class="s">&quot;correlationId&quot;</span>, correlationId);            <span class="c">// every log line gets it</span>
+        response.setHeader(<span class="s">&quot;X-Correlation-Id&quot;</span>, correlationId);
+        <span class="k">try</span> {
+            filterChain.doFilter(request, response);
+        } <span class="k">finally</span> {
+            <span class="ty">MDC</span>.clear();
+        }
+    }
+}
+</code></pre>
+<p><strong>Ways to register a filter — and a pitfall:</strong></p>
+<ol>
+<li><code>FilterRegistrationBean</code> (section above) — full control: URL patterns + order.</li>
+<li>Plain <code>@Component</code> on the filter — auto-registered, but <strong>always for <code>/*</code></strong> and ordered
+   only via <code>@Order</code> on the class; you cannot set URL patterns this way.</li>
+<li><code>@WebFilter("/api/*")</code> + <code>@ServletComponentScan</code> on the main class — the servlet-spec way.</li>
+</ol>
+<blockquote>
+<p>Good to know: if a filter is BOTH a <code>@Component</code> and wrapped in a
+<code>FilterRegistrationBean</code>, it registers <strong>twice</strong> and runs twice. Either drop
+<code>@Component</code>, or set <code>registration.setEnabled(false)</code> on the extra registration.</p>
+</blockquote>
+<p><strong>Exceptions — the boundary interviewers probe:</strong> an exception thrown inside a <strong>filter</strong>
+happens <em>before</em> the <code>DispatcherServlet</code>, so <strong><code>@ControllerAdvice</code> /
+<code>@ExceptionHandler</code> can NOT catch it</strong> — the client gets the container's default error
+page (or whatever the filter writes). Exceptions from <strong>interceptors and controllers</strong>
+flow through <code>DispatcherServlet</code> and are handled normally. That's why security filters
+write their own 401/403 JSON to the response instead of throwing.</p>
+<h2>Ordering — filters and interceptors together</h2>
+<p>The complete request/response pipeline with two filters and two interceptors:</p>
+<p>For interceptors, the <strong>registration order is the execution order</strong> (a sequence):</p>
+<pre><code><span class="a">@Override</span>
+<span class="k">public</span> <span class="k">void</span> addInterceptors(<span class="ty">InterceptorRegistry</span> registry) {
+    registry.addInterceptor(interceptorX);    <span class="c">// registered first  → runs first</span>
+    registry.addInterceptor(interceptorY);    <span class="c">// registered second → runs second</span>
+}
+</code></pre>
+<p>On the request the order is X → Y; on the response it reverses to Y → X:</p>
+<blockquote>
+<p>Good to know: <code>preHandle</code> runs in registration order, while <code>postHandle</code> and <code>afterCompletion</code> run in <strong>reverse</strong> order — exactly like the response side of a filter chain.</p>
+</blockquote>
+<h2>Architect's Corner</h2>
+<ul>
+<li><strong>Order of the pipeline is architectural</strong>: Filters (servlet-level: auth, CORS, rate limiting, correlation-ID) → Interceptors (MVC-level: tenant resolution, timing) → Aspects (method-level). Put each concern at the outermost layer that can handle it.</li>
+<li><strong>Spring Security IS a filter chain</strong> — <code>SecurityFilterChain</code> slots into exactly the Tomcat→Filter diagram from the notes.</li>
+<li>Extend <strong><code>OncePerRequestFilter</code></strong> for your own filters — guarantees single execution even with forwards/includes.</li>
+<li><strong>Correlation-ID filter + MDC</strong> is the first filter every distributed system needs; every log line then carries the request ID.</li>
+<li>Custom annotations + <code>@Around</code> (the notes' pattern) is exactly how <code>@Timed</code>, <code>@RateLimiter</code>, <code>@Retry</code> (Resilience4j) work — read their source as reference implementations.</li>
+</ul>
+<h2>Quick Revision</h2>
+<ul>
+<li><strong>Interceptor</strong> = a mediator invoked before/after your actual code; <strong>DispatcherServlet</strong> picks the controller via HandlerMapping, gets its instance from IoC and invokes the API method.</li>
+<li>Way 1: implement <code>HandlerInterceptor</code> (<code>preHandle</code> / <code>postHandle</code> / <code>afterCompletion</code>) and register it via <code>WebMvcConfigurer</code> → <code>registry.addInterceptor(...).addPathPatterns("/api/*").excludePathPatterns(...)</code>.</li>
+<li>Custom annotation = <code>public @interface</code>; <code>@Target</code> says <strong>where</strong> it can be applied, <code>@Retention</code> says <strong>how it is stored</strong> — SOURCE (compiler discards), CLASS (in <code>.class</code>, ignored by JVM), RUNTIME (visible via reflection).</li>
+<li>Annotation methods have no parameters/body; return types limited to primitives, <code>String</code>, enum, <code>Class&lt;?&gt;</code>, annotations and arrays of these — with optional <code>default</code> values.</li>
+<li>Way 2: <code>@Component @Aspect</code> + <code>@Around("@annotation(...)")</code> + <code>MethodSignature</code> → read the annotation, then <code>joinPoint.proceed()</code>.</li>
+<li><strong>Filter</strong> interceptors HTTP req/resp <strong>before the servlet</strong> (servlet-agnostic); <strong>Interceptor</strong> is Spring-specific, running <strong>after the servlet, before the controller</strong>.</li>
+<li>Filter = <code>init</code> (once) / <code>doFilter</code> (+ <code>filterChain.doFilter</code>) / <code>destroy</code>; registered via <code>FilterRegistrationBean</code> with <code>addUrlPatterns</code> and <code>setOrder</code> (lower runs first).</li>
+<li>Order on request: F1 → F2 → Interceptor 1 → Interceptor 2 → Controller; response goes back in exactly reverse order.</li>
+<li>Way 3: in <code>preHandle</code>, cast <code>handler</code> to <strong><code>HandlerMethod</code></strong> and read the custom annotation off the endpoint — HTTP-aware interception without AOP.</li>
+<li>Extend <strong><code>OncePerRequestFilter</code></strong> (single execution per request, typed HTTP objects); plain <code>@Component</code> auto-registers a filter for <code>/*</code> — combine with <code>FilterRegistrationBean</code> and it runs twice.</li>
+<li>Filter exceptions never reach <code>@ControllerAdvice</code> (they occur before <code>DispatcherServlet</code>); interceptor/controller exceptions do.</li>
+<li>Meta-annotations beyond <code>@Target</code>/<code>@Retention</code>: <code>@Inherited</code> (class annotation flows to subclasses), <code>@Documented</code> (shows in Javadoc); <code>@Service</code> is itself meta-annotated with <code>@Component</code>.</li>
+</ul>
+<hr />
+<p>Next topic: <strong>ResponseEntity and HTTP Status Codes</strong> — building responses with the builder pattern, and every status code from 100 to 502.</p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Custom_Annotations_Interceptors_Filters_Explained_Part1.mp4; Part 2 = Custom_Annotations_Interceptors_Filters_Explained_Part2.mp4; Part 3 = Custom_Annotations_Interceptors_Filters_Explained_Part3.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_3">YOUTUBE_FULL_LINK_PART_3</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

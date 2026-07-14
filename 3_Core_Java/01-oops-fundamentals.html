@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OOPs Fundamentals in Java</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#e8590c22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #e8590c40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#e8590c0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #e8590c33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#e8590c;--a2:#fd7e14">
+<header class="hero"><div class="in">
+  <span class="badge">☕ CORE JAVA</span>
+  <h1>OOPs Fundamentals in Java</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>Procedural Programming (the old style)</em></p>
+<p class="chips">☕ 4 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> What procedural programming is, and where it falls short  ·  What Object-Oriented Programming (OOP) is, and why Java uses it  ·  A side-by-side comparison of procedural programming vs OOP  ·  What an object is (properties + behavior), with a real-life example</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload OOPs_Fundamentals_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>Two Ways of Writing Programs</h2>
+<p>Before Java, most programs were written in a style called <strong>procedural programming</strong>. Java uses a newer style called <strong>Object-Oriented Programming (OOPs)</strong>. Let's understand both.</p>
+<figure><img alt="OOPs Fundamentals in Java — diagram" src="01-oops-fundamentals.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p>In procedural programming, a program is divided into small parts called <strong>functions</strong>. Think of it like a long recipe: step 1, step 2, step 3... where every step can touch every ingredient.</p>
+<p>The problems with this style:</p>
+<ul>
+<li>The program is divided into parts called <strong>functions</strong>.</li>
+<li>It does <strong>not</strong> provide a proper way to <strong>hide data</strong>. It gives importance to functions, and data moves around <strong>freely</strong> — any function can read or change any data. That makes big programs risky and hard to maintain.</li>
+<li><strong>Overloading is not possible</strong> (you cannot have two functions with the same name doing slightly different jobs).</li>
+<li><strong>Inheritance is not possible</strong> (you cannot build a new piece of code on top of an old one).</li>
+<li><strong>Code reusability is not present</strong> — you often end up copying and pasting code.</li>
+<li>Examples of procedural languages: <strong>Pascal, C, Fortran</strong>.</li>
+</ul>
+<h3>Object-Oriented Programming (OOPs — the Java style)</h3>
+<p>In OOP, a program is divided into <strong>objects</strong>. An object keeps its data and the functions that work on that data <strong>together in one box</strong>. Think of a team of workers: each worker (object) has their own tools (data) and their own skills (functions), and nobody else touches their tools directly.</p>
+<ul>
+<li>The program is divided into <strong>objects</strong>.</li>
+<li>Objects provide <strong>data hiding</strong> — OOP gives importance to <strong>data</strong> and protects it.</li>
+<li><strong>Overloading is possible</strong> (same method name, different versions).</li>
+<li><strong>Inheritance is possible</strong> (a new class can reuse an existing class).</li>
+<li><strong>Code reusability is present</strong> — write once, reuse many times.</li>
+<li>Examples of OOP languages: <strong>Java, C#, Python, C++</strong> etc.</li>
+</ul>
+<h3>Procedural vs OOPs — Quick Comparison</h3>
+<ul class="cards"><li><b>Program is divided into</b> — Functions — Objects</li><li><b>Data hiding</b> — No proper way to hide data; data moves freely — Objects provide data hiding</li><li><b>Importance is given to</b> — Functions — Data</li><li><b>Overloading</b> — Not possible — Possible</li><li><b>Inheritance</b> — Not possible — Possible</li><li><b>Code reusability</b> — Not present — Present</li><li><b>Example languages</b> — Pascal, C, Fortran — Java, C#, Python, C++</li></ul>
+<blockquote>
+<p><strong>Remember:</strong> Procedural programming thinks in <em>steps (functions)</em>. OOP thinks in <em>things (objects)</em>. Java is an object-oriented language.</p>
+</blockquote>
+<hr />
+<h2>What is an Object?</h2>
+<p>An object is any "thing" in your program. Every object has exactly <strong>2 things</strong>:</p>
+<ol>
+<li><strong>Properties / State</strong> — what the object <em>has</em> (its data).</li>
+<li><strong>Behavior / Function</strong> — what the object <em>does</em> (its actions).</li>
+</ol>
+<h3>Real-life example: a Dog</h3>
+<p>A <strong>Dog is an object</strong> because it has:</p>
+<ul>
+<li><strong>Properties</strong> like: <strong>Age, Breed, Color</strong> etc. (these describe the dog)</li>
+<li><strong>Behaviors</strong> like: <strong>Bark, Sleep, Eat</strong> etc. (these are things the dog can do)</li>
+</ul>
+<p>You can apply this test to anything: a car (properties: color, speed; behaviors: start, brake), a phone (properties: brand, battery; behaviors: call, ring). If it has properties and behaviors, it can be modeled as an object.</p>
+<hr />
+<h2>What is a Class?</h2>
+<blockquote>
+<p><strong>A class is the blueprint of the object.</strong></p>
+</blockquote>
+<p>A class is like a <strong>house blueprint</strong>; objects are the <strong>actual houses built from it</strong>. The blueprint itself is not a house — it only describes what every house of that design will look like. In the same way, a class describes the properties and behaviors, and objects are the real things created from that description.</p>
+<p>Key points:</p>
+<ul>
+<li><strong>To create an object, a class is required.</strong></li>
+<li>The class provides the <strong>template or blueprint</strong> from which objects can be created.</li>
+<li><strong>From one class, we can create multiple objects</strong> (one blueprint → many houses).</li>
+<li>To create a class, use the keyword <strong><code>class</code></strong>.</li>
+</ul>
+<h3>Creating a class in Java</h3>
+<pre><code><span class="k">class</span> <span class="ty">Student</span> {
+    <span class="c">// Properties / state  -&gt; called &quot;data variables&quot;</span>
+    <span class="k">int</span> age;
+    <span class="ty">String</span> name;
+
+    <span class="c">// Behavior / function -&gt; called a &quot;data method&quot;</span>
+    <span class="k">public</span> <span class="k">void</span> updateName() {
+        name = <span class="s">&quot;Updated Name&quot;</span>;
+    }
+}
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong> A <em>data method</em> works on the <em>data variables</em> (the properties). Here <code>updateName()</code> changes the <code>name</code> variable.</p>
+</blockquote>
+<h3>Creating an object in Java</h3>
+<p>We create an object using the <strong><code>new</code></strong> keyword:</p>
+<pre><code><span class="ty">Student</span> engStudent = <span class="k">new</span> <span class="ty">Student</span>();
+</code></pre>
+<p>Read it like this: "Make a <strong>new Student</strong> from the Student blueprint, and call it <code>engStudent</code>."</p>
+<h3>Complete runnable example</h3>
+<pre><code><span class="k">class</span> <span class="ty">Student</span> {
+    <span class="k">int</span> age;          <span class="c">// property</span>
+    <span class="ty">String</span> name;      <span class="c">// property</span>
+
+    <span class="k">public</span> <span class="k">void</span> introduce() {          <span class="c">// behavior</span>
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Hi, I am &quot;</span> + name + <span class="s">&quot; and I am &quot;</span> + age + <span class="s">&quot; years old.&quot;</span>);
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="c">// One class, multiple objects:</span>
+        <span class="ty">Student</span> engStudent = <span class="k">new</span> <span class="ty">Student</span>();   <span class="c">// object 1</span>
+        engStudent.age = <span class="n">20</span>;
+        engStudent.name = <span class="s">&quot;Ravi&quot;</span>;
+
+        <span class="ty">Student</span> medStudent = <span class="k">new</span> <span class="ty">Student</span>();   <span class="c">// object 2</span>
+        medStudent.age = <span class="n">22</span>;
+        medStudent.name = <span class="s">&quot;Priya&quot;</span>;
+
+        engStudent.introduce();
+        medStudent.introduce();
+    }
+}
+</code></pre>
+<p><strong>Output:</strong></p>
+<pre><code><span class="ty">Hi</span>, <span class="ty">I</span> am <span class="ty">Ravi</span> and <span class="ty">I</span> am <span class="n">20</span> years old.
+<span class="ty">Hi</span>, <span class="ty">I</span> am <span class="ty">Priya</span> and <span class="ty">I</span> am <span class="n">22</span> years old.
+</code></pre>
+<p>Notice: both objects came from the <strong>same class</strong>, but each object keeps its <strong>own copy</strong> of the properties (<code>age</code>, <code>name</code>).</p>
+<hr />
+<h2>Quick Revision</h2>
+<ul>
+<li><strong>Procedural programming</strong> divides a program into <strong>functions</strong>; data moves freely, no data hiding, no overloading, no inheritance, no reusability (e.g. Pascal, C, Fortran).</li>
+<li><strong>OOP</strong> divides a program into <strong>objects</strong>; it gives importance to data, supports data hiding, overloading, inheritance, and code reuse (e.g. Java, C#, Python, C++).</li>
+<li>An <strong>object</strong> has 2 things: <strong>properties/state</strong> (age, breed, color) and <strong>behavior/functions</strong> (bark, sleep, eat).</li>
+<li>A <strong>class</strong> is the <strong>blueprint</strong> of an object — like a house blueprint vs the actual houses.</li>
+<li>Create a class with the <code>class</code> keyword; create an object with the <code>new</code> keyword: <code>Student s = new Student();</code></li>
+<li><strong>One class → many objects</strong>, each with its own copy of the properties.</li>
+<li>Next step: the four pillars of OOP (abstraction, encapsulation, inheritance, polymorphism) — covered in the next PDF.</li>
+</ul>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload OOPs_Fundamentals_Explained.mp4 to YouTube, then replace YOUTUBE_FULL_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK">YOUTUBE_FULL_LINK</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

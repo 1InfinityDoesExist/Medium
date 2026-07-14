@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Singleton Design Pattern</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#6366f122;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #6366f140}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#6366f10d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #6366f133}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#6366f114,#818cf822);border:1px solid #6366f133;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#6366f114,#818cf822);border:1px solid #6366f133;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#6366f1;--a2:#818cf8">
+<header class="hero"><div class="in">
+  <span class="badge">🏛️ GANG-OF-FOUR PATTERN</span>
+  <h1>Singleton Design Pattern</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>LicenseKeyRegistry.java</em></p>
+<p class="chips">☕ 4 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> Guarantee that a class has exactly one instance and provide a global, thread-safe access point to it.</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Singleton_Short_Overview_EN.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<hr />
+<h2>Intent</h2>
+<p>Guarantee that a class has <strong>exactly one instance</strong> and provide a <strong>global, thread-safe access point</strong> to it. The class itself controls its own instantiation: no outside code can ever construct a second copy.</p>
+<hr />
+<h2>The example domain</h2>
+<p>An application's <strong>license key</strong> is activated once and must be identical everywhere it's checked — two different "active keys" in one process would be a correctness bug, and re-reading the license store on every check would be wasteful. <code>LicenseKeyRegistry</code> models this: one instance, created lazily, holding the single activated key that every caller shares.</p>
+<hr />
+<h2>How the pattern works</h2>
+<p>This implementation uses the <strong>Initialization-on-Demand Holder idiom</strong> (the <em>Bill Pugh Singleton</em>):</p>
+<ul>
+<li>The constructor is <code>private</code> — only the class can construct itself.</li>
+<li>A <code>private static final</code> nested class, <code>InstanceHolder</code>, holds the single instance.</li>
+<li>The JVM initializes a class <strong>exactly once</strong>, on <strong>first use</strong>. Since <code>InstanceHolder</code> is touched only inside <code>getInstance()</code>, the instance is created lazily — and the JVM's class-initialization lock makes it thread-safe with <strong>zero synchronization code</strong>.</li>
+<li><code>final</code> on the class blocks subclassing, closing the only other route to a second instance.</li>
+</ul>
+<hr />
+<h2>UML Class Diagram</h2>
+<figure><img alt="Singleton Design Pattern — diagram" src="singleton.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p><strong>Reading the diagram:</strong> the client calls only <code>getInstance()</code> and <code>getActiveLicenseKey()</code>. The private constructor and the nested holder are invisible, unreachable implementation details.</p>
+<hr />
+<h2>The players</h2>
+<ul class="cards"><li><b><code>LicenseKeyRegistry</code></b> — The Singleton — <code>final</code> class, private constructor, holder idiom, one shared key.</li><li><b><code>InstanceHolder</code></b> — Private static nested class whose only job is holding the one <code>static final</code> instance.</li><li><b><code>SingletonDesignPattern</code></b> — Client — retrieves the instance twice and proves both references are identical.</li></ul>
+<hr />
+<h2>Code walkthrough — every line explained</h2>
+<pre><code><span class="k">public</span> <span class="k">final</span> <span class="k">class</span> <span class="ty">LicenseKeyRegistry</span> {
+
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">String</span> activeLicenseKey;
+
+    <span class="k">private</span> <span class="ty">LicenseKeyRegistry</span>() {
+        <span class="k">this</span>.activeLicenseKey = <span class="s">&quot;ENT-7734-9A2F-PROD&quot;</span>;
+    }
+
+    <span class="k">private</span> <span class="k">static</span> <span class="k">final</span> <span class="k">class</span> <span class="ty">InstanceHolder</span> {
+        <span class="k">private</span> <span class="k">static</span> <span class="k">final</span> <span class="ty">LicenseKeyRegistry</span> <span class="ty">INSTANCE</span> = <span class="k">new</span> <span class="ty">LicenseKeyRegistry</span>();
+    }
+
+    <span class="k">public</span> <span class="k">static</span> <span class="ty">LicenseKeyRegistry</span> getInstance() {
+        <span class="k">return</span> <span class="ty">InstanceHolder</span>.<span class="ty">INSTANCE</span>;
+    }
+
+    <span class="k">public</span> <span class="ty">String</span> getActiveLicenseKey() {
+        <span class="k">return</span> activeLicenseKey;
+    }
+}
+</code></pre>
+<ul>
+<li><strong><code>public final class</code></strong> — <code>final</code> blocks subclassing: a subclass could add a public constructor and mint additional instances, silently breaking the guarantee. Sealing the class closes that loophole.</li>
+<li><strong><code>private final String activeLicenseKey</code></strong> — the singleton's payload: set once in the constructor, immutable forever. In production this would be loaded from a license store; here it's a fixed key so the demo is deterministic.</li>
+<li><strong><code>private LicenseKeyRegistry()</code></strong> — the cornerstone. With the constructor hidden, <code>new LicenseKeyRegistry()</code> is illegal everywhere outside this class. The class alone decides when — and how many times — it is built.</li>
+<li><strong><code>private static final class InstanceHolder</code></strong> — exists purely to exploit JVM class-loading semantics: a class initializes exactly once, only when first referenced. Nothing references <code>InstanceHolder</code> until <code>getInstance()</code> runs — so the singleton is <strong>lazy</strong> for free.</li>
+<li><strong><code>private static final LicenseKeyRegistry INSTANCE = new LicenseKeyRegistry();</code></strong> — the one and only construction in the entire program. The JVM's class-initialization lock guarantees this line runs exactly once even under heavy concurrency — no <code>synchronized</code>, no <code>volatile</code>, no double-checked locking.</li>
+<li><strong><code>getInstance()</code></strong> — the global access point. Reading <code>InstanceHolder.INSTANCE</code> triggers the holder's initialization on first call; every later call returns the same reference straight from the initialized class.</li>
+<li><strong><code>getActiveLicenseKey()</code></strong> — the useful work: every caller reads the <em>same</em> activated key from the <em>same</em> instance.</li>
+</ul>
+<h3><code>SingletonDesignPattern.java</code> — the client</h3>
+<pre><code><span class="ty">LicenseKeyRegistry</span> first = <span class="ty">LicenseKeyRegistry</span>.getInstance();
+<span class="ty">LicenseKeyRegistry</span> second = <span class="ty">LicenseKeyRegistry</span>.getInstance();
+
+<span class="ty">System</span>.out.println(<span class="s">&quot;Both references point to the same instance: &quot;</span> + (first == second));
+<span class="ty">System</span>.out.println(<span class="s">&quot;Active license key: &quot;</span> + first.getActiveLicenseKey());
+</code></pre>
+<ul>
+<li>Two retrievals; the first constructs (via the holder), the second just returns the cached reference. <code>==</code> compares object identity — printing <code>true</code> is runtime <em>proof</em> of the single-instance guarantee. The second line shows the shared payload.</li>
+</ul>
+<hr />
+<h2>Why the holder idiom (vs the alternatives)</h2>
+<ul class="cards"><li><b>Eager <code>static final</code> field on the class</b> — No — Yes — Yes</li><li><b><code>synchronized getInstance()</code></b> — Yes — Yes — Slow — locks every call</li><li><b>Double-checked locking + <code>volatile</code></b> — Yes — Yes (Java 5+) — Noisy, easy to get wrong</li><li><b><strong>Initialization-on-Demand Holder</strong></b> — <strong>Yes</strong> — <strong>Yes</strong> — <strong>Yes — zero lock code</strong></li></ul>
+<hr />
+<h2>Expected output</h2>
+<pre><code>$ java -cp target/classes com.design.patterns.<span class="ty">SingletonDesignPattern</span>
+
+<span class="ty">Both</span> references point to the same instance: <span class="k">true</span>
+<span class="ty">Active</span> license key: <span class="ty">ENT</span>-<span class="n">7734</span>-9<span class="ty">A2F</span>-<span class="ty">PROD</span>
+</code></pre>
+<hr />
+<h2>Where this pattern shows up in real systems</h2>
+<ul>
+<li>License/activation registries (this example); application configuration holders.</li>
+<li><code>Runtime.getRuntime()</code> in the JDK; logger factories; connection pools; metrics registries.</li>
+</ul>
+<hr />
+<p><em>One class. One instance. One access point for everyone.</em></p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload Singleton_Design_Pattern_Explained_EN.mp4 to YouTube, then replace YOUTUBE_FULL_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK">YOUTUBE_FULL_LINK</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

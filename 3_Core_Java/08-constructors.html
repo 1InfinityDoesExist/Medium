@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Constructors</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#e8590c22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #e8590c40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#e8590c0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #e8590c33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#e8590c;--a2:#fd7e14">
+<header class="hero"><div class="in">
+  <span class="badge">☕ CORE JAVA</span>
+  <h1>Constructors</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>How do we recognise a constructor? (Name + Return Type)</em></p>
+<p class="chips">☕ 8 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> What a constructor is and how it differs from a method  ·  Why a constructor cannot be static, final, abstract (or synchronized)  ·  Constructors and inheritance — why they are not inherited  ·  Why abstract classes have constructors but interfaces do not</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Constructors_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>What is a Constructor?</h2>
+<ul>
+<li>A constructor is used to <strong>create an instance</strong> (an object) of a class. When you write <code>new Employee()</code>, you are calling the constructor.</li>
+<li>It looks very <strong>similar to a method</strong>, <em>except</em> for a few key differences:</li>
+</ul>
+<ul class="cards"><li><b>Name</b> — <strong>Must be the same as the class name</strong> — Any verb-like name you choose</li><li><b>Return type</b> — <strong>Has NO return type</strong> (not even void) — Must declare one (<code>void</code>, <code>int</code>, <code>Employee</code>, ...)</li><li><b>Purpose</b> — Creates and initialises an object — Performs a task</li><li><b>Called</b> — Automatically, via <code>new</code> — Explicitly, by name, on demand</li><li><b>Can be <code>static</code> / <code>final</code> / <code>abstract</code> / <code>synchronized</code>?</b> — <strong>No — none of these</strong> — Yes (all allowed on methods)</li><li><b>Inherited by child classes?</b> — <strong>No</strong> — Yes (if visible)</li></ul>
+<pre><code><span class="k">class</span> <span class="ty">Employee</span> {
+    <span class="k">int</span> empId;
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">CreateDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Employee</span> obj = <span class="k">new</span> <span class="ty">Employee</span>();   <span class="c">// &lt;-- this calls the constructor Employee()</span>
+        <span class="ty">System</span>.out.println(obj.empId);
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 0</span>
+</code></pre>
+<p>The <code>Employee()</code> after <code>new</code> <strong>is the constructor call</strong> — we always have to call a constructor to get an object.</p>
+<figure><img alt="Constructors — diagram" src="08-constructors.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p>These <strong>two things — the name and the missing return type — distinguish a constructor from a method</strong>:</p>
+<pre><code><span class="k">class</span> <span class="ty">Employee</span> {
+    <span class="ty">Employee</span>() {          <span class="c">// NAME = class name, NO return type  -&gt; CONSTRUCTOR</span>
+    }
+
+    <span class="k">void</span> <span class="ty">Employee2</span>() {    <span class="c">// has a return type (void)           -&gt; just a method</span>
+    }
+}
+</code></pre>
+<p>The notes make a subtle point: for a constructor, you write no return type because <strong>implicitly Java treats the class itself as the "return type"</strong> — <code>new Employee()</code> hands you back an Employee. But the moment <em>you</em> write a return type <strong>explicitly</strong>, it stops being a constructor:</p>
+<pre><code><span class="k">class</span> <span class="ty">Employee</span> {
+    <span class="ty">Employee</span>() { }            <span class="c">// constructor</span>
+
+    <span class="k">void</span> <span class="ty">Employee</span>() { }       <span class="c">// WRITING void EXPLICITLY -&gt; this is a METHOD</span>
+    <span class="c">// int Employee() { }     // same story: a method named like the class</span>
+}
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> Same name as the class + no return type = constructor. Add any return type and Java quietly treats it as an ordinary (badly named) method.</p>
+</blockquote>
+<hr />
+<h2>Why can't a constructor be static / final / abstract?</h2>
+<p>The notes reason through each keyword. Here is the logic in simple words:</p>
+<h3>Not <code>static</code></h3>
+<p>A constructor's whole job is to initialise <strong>instance variables</strong> — the per-object data:</p>
+<pre><code><span class="k">class</span> <span class="ty">Employee</span> {
+    <span class="k">int</span> id;                 <span class="c">// instance variable (one per object)</span>
+
+    <span class="ty">Employee</span>(<span class="k">int</span> p) {
+        id = p;             <span class="c">// &#x27;id&#x27; is an INSTANCE variable, not a static one</span>
+    }
+}
+</code></pre>
+<p>Imagine it were allowed:</p>
+<pre><code><span class="k">static</span> <span class="ty">Employee</span>(<span class="k">int</span> p) {   <span class="c">// (1) if static... IMPOSSIBLE</span>
+    id = p;                <span class="c">// whose &#x27;id&#x27;? static code has NO object to work on!</span>
+}
+</code></pre>
+<p><code>static</code> means "belongs to the class, no object needed" — but a constructor exists precisely <em>to build an object</em>. The two ideas contradict each other. (2) Also, a constructor implicitly calls <strong><code>super()</code></strong> — the parent's constructor — which is again object-creation work that makes no sense in a static world.</p>
+<h3>Not <code>final</code></h3>
+<p><code>final</code> on a <strong>method</strong> means: <strong>it cannot be overridden</strong>. But constructors are <strong>never inherited</strong> by child classes (see next section) — and you can only override something you inherit. So there is nothing <code>final</code> could possibly prevent. The keyword would be meaningless — Java rejects it.</p>
+<h3>Not <code>abstract</code></h3>
+<p><code>abstract</code> means: "declaration only — no body — some child will implement it later." But a constructor must <strong>run right now</strong> when <code>new</code> is called, and it is <strong>not inherited</strong>, so no child could ever supply the missing body. An abstract constructor could never be implemented — contradiction again.</p>
+<h3>Not <code>synchronized</code></h3>
+<p>Only one thread can be constructing a brand-new object anyway — no other thread can see the object before the constructor finishes — so <code>synchronized</code> is unnecessary and forbidden.</p>
+<hr />
+<h2>Constructors and Inheritance</h2>
+<p><strong>Constructors are NOT inherited by the child class.</strong></p>
+<pre><code><span class="k">class</span> <span class="ty">Employee</span> {
+    <span class="ty">Employee</span>() { }
+}
+
+<span class="k">class</span> <span class="ty">Manager</span> <span class="k">extends</span> <span class="ty">Employee</span> {
+    <span class="c">// The Employee() constructor does NOT arrive here.</span>
+    <span class="c">// If you write &quot;Employee() { }&quot; inside Manager, Java says:</span>
+    <span class="c">//   &quot;method must have a return type&quot;</span>
+    <span class="c">// — it is treated as a METHOD, so you&#x27;d have to give it a return type.</span>
+}
+</code></pre>
+<p>A child class gets its <em>own</em> constructors, and each of them (implicitly or explicitly) calls the parent's constructor with <code>super()</code> — but the parent constructor itself never becomes a member of the child.</p>
+<hr />
+<h2>Abstract Classes and Interfaces — who has constructors?</h2>
+<h3>Abstract class — declaration vs definition</h3>
+<pre><code><span class="k">abstract</span> <span class="k">class</span> <span class="ty">Employee</span> {
+    <span class="k">abstract</span> <span class="k">void</span> print();   <span class="c">// -&gt; DECLARATION only, not definition (no body)</span>
+}
+
+<span class="k">class</span> <span class="ty">Manager</span> <span class="k">extends</span> <span class="ty">Employee</span> {
+    <span class="k">void</span> print() { <span class="ty">System</span>.out.println(<span class="s">&quot;I am a Manager&quot;</span>); }
+    <span class="c">// constructors of Employee are still NOT inherited here</span>
+}
+</code></pre>
+<p>An abstract class <strong>cannot be instantiated directly</strong>, but it <strong>does have a constructor</strong> — because when a child object is built, the parent portion must be initialised too (via <code>super()</code>).</p>
+<h3>Interface — no constructor at all</h3>
+<pre><code><span class="k">interface</span> <span class="ty">Employee</span> {
+    <span class="k">public</span> <span class="k">void</span> print();     <span class="c">// — declaration only</span>
+}
+
+<span class="k">class</span> <span class="ty">Manager</span> <span class="k">implements</span> <span class="ty">Employee</span> {
+    <span class="k">public</span> <span class="k">void</span> print() { <span class="ty">System</span>.out.println(<span class="s">&quot;Working&quot;</span>); }
+}
+</code></pre>
+<p><strong>Why no constructor?</strong> Because an <strong>interface cannot be used to create an object</strong> — <code>new Employee()</code> is impossible for an interface, and there are no instance fields to initialise. <strong>Objects are only created of the implementing classes</strong>, so only those classes need constructors.</p>
+<blockquote>
+<p><strong>Remember:</strong> Abstract class → no direct objects, but <em>has</em> a constructor (children call it through <code>super()</code>). Interface → no objects, no state, therefore <strong>no constructor at all</strong>.</p>
+</blockquote>
+<hr />
+<h2>Types of Constructor</h2>
+<p>The notes list 6 kinds. One by one:</p>
+<h3>1) Default constructor</h3>
+<p>If you write <strong>no constructor at all</strong>, Java secretly adds an empty one for you — the <em>default</em> constructor. That is why <code>new Employee()</code> worked earlier even though we never wrote <code>Employee()</code>.</p>
+<pre><code><span class="k">class</span> <span class="ty">Employee</span> {
+    <span class="k">int</span> empId;
+    <span class="c">// no constructor written -&gt; Java adds:  Employee() { }  automatically</span>
+}
+</code></pre>
+<h3>2) No-arg constructor</h3>
+<p><strong>Same as default, but you define it manually.</strong> It takes no arguments; you get to put your own code inside.</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">Calculator</span> {
+    <span class="ty">Calculator</span>() {                       <span class="c">// written BY US -&gt; &quot;no-arg&quot;, not &quot;default&quot;</span>
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Calculator ready!&quot;</span>);
+    }
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Calculator</span> c = <span class="k">new</span> <span class="ty">Calculator</span>();
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// Calculator ready!</span>
+</code></pre>
+<h3>3) Parameterized constructor</h3>
+<p>A constructor <strong>with parameters</strong>, used to fill the object's fields at birth.</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">Calculator</span> {
+    <span class="ty">String</span> name;
+
+    <span class="ty">Calculator</span>(<span class="ty">String</span> x) {       <span class="c">// parameterized constructor</span>
+        name = x;
+    }
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Calculator</span> c = <span class="k">new</span> <span class="ty">Calculator</span>(<span class="s">&quot;Casio&quot;</span>);
+        <span class="ty">System</span>.out.println(c.name);
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// Casio</span>
+</code></pre>
+<blockquote>
+<p><strong>Remember (important trap):</strong> if we manually add <em>any</em> constructor, <strong>Java does NOT add the default constructor anymore</strong>. In the class above, <code>new Calculator()</code> would be a compile error — the only way in is <code>new Calculator("...")</code>. Add a no-arg constructor yourself if you still need one.</p>
+</blockquote>
+<h3>4) Constructor overloading</h3>
+<p>Just like method overloading: <strong>several constructors, same name (the class name), different parameter lists</strong>.</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">Calculator</span> {
+    <span class="ty">String</span> name;
+    <span class="k">int</span> model;
+
+    <span class="ty">Calculator</span>() { }
+    <span class="ty">Calculator</span>(<span class="ty">String</span> x) { name = x; }
+    <span class="ty">Calculator</span>(<span class="ty">String</span> x, <span class="k">int</span> m) { name = x; model = m; }
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Calculator</span> a = <span class="k">new</span> <span class="ty">Calculator</span>();
+        <span class="ty">Calculator</span> b = <span class="k">new</span> <span class="ty">Calculator</span>(<span class="s">&quot;Casio&quot;</span>);
+        <span class="ty">Calculator</span> c = <span class="k">new</span> <span class="ty">Calculator</span>(<span class="s">&quot;Casio&quot;</span>, <span class="n">991</span>);
+        <span class="ty">System</span>.out.println(b.name + <span class="s">&quot; &quot;</span> + c.model);
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// Casio 991</span>
+</code></pre>
+<h3>5) Private constructor — restrict object creation (Singleton)</h3>
+<p>Making the constructor <code>private</code> means <strong>nobody outside the class can call <code>new</code></strong> — object creation is restricted. The class then usually exposes a <strong>static method</strong> (callable with just the ClassName) that hands out the one-and-only instance. This is the <strong>Singleton Pattern</strong>.</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">Database</span> {
+    <span class="k">private</span> <span class="k">static</span> <span class="ty">Database</span> instance;      <span class="c">// the single, shared instance</span>
+
+    <span class="k">private</span> <span class="ty">Database</span>() {                   <span class="c">// PRIVATE: no outside &#x27;new&#x27; allowed</span>
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Connecting once...&quot;</span>);
+    }
+
+    <span class="k">public</span> <span class="k">static</span> <span class="ty">Database</span> getInstance() { <span class="c">// static -&gt; called via ClassName</span>
+        <span class="k">if</span> (instance == <span class="k">null</span>) {
+            instance = <span class="k">new</span> <span class="ty">Database</span>();     <span class="c">// created only the first time</span>
+        }
+        <span class="k">return</span> instance;
+    }
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Database</span> d1 = <span class="ty">Database</span>.getInstance();
+        <span class="ty">Database</span> d2 = <span class="ty">Database</span>.getInstance();
+        <span class="ty">System</span>.out.println(d1 == d2);      <span class="c">// same object?</span>
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// Connecting once...</span>
+<span class="c">// true          &lt;- both variables hold the SAME single instance</span>
+</code></pre>
+<h3>6) Constructor chaining — <code>this()</code> and <code>super()</code></h3>
+<p>One constructor can call another. Two directions:</p>
+<ul>
+<li><strong><code>this(...)</code></strong> — call another constructor <strong>of the same class</strong> (must be the first statement).</li>
+<li><strong><code>super(...)</code></strong> — call the <strong>parent class</strong> constructor (also first statement; Java inserts <code>super()</code> implicitly if you write nothing).</li>
+</ul>
+<p><strong>Chaining with <code>this()</code> — the Calculation example from the notes</strong> (field names tidied up so it compiles):</p>
+<pre><code><span class="k">class</span> <span class="ty">Calculation</span> {
+    <span class="ty">String</span> name;
+    <span class="k">int</span> numId;
+
+    <span class="ty">Calculation</span>() {
+        <span class="k">this</span>(<span class="n">10</span>);                    <span class="c">// jump to Calculation(int)</span>
+        <span class="ty">System</span>.out.println(<span class="s">&quot;3. no-arg finishes last&quot;</span>);
+    }
+
+    <span class="ty">Calculation</span>(<span class="k">int</span> empId) {
+        <span class="k">this</span>(<span class="s">&quot;hi&quot;</span>, empId);           <span class="c">// jump to Calculation(String, int)</span>
+        <span class="ty">System</span>.out.println(<span class="s">&quot;2. int constructor&quot;</span>);
+    }
+
+    <span class="ty">Calculation</span>(<span class="ty">String</span> x, <span class="k">int</span> p) {
+        <span class="k">this</span>.name = x;               <span class="c">// &#x27;this.&#x27; = the current object&#x27;s field</span>
+        <span class="k">this</span>.numId = p;
+        <span class="ty">System</span>.out.println(<span class="s">&quot;1. two-arg constructor runs first&quot;</span>);
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">ChainingDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Calculation</span> c = <span class="k">new</span> <span class="ty">Calculation</span>();
+        <span class="ty">System</span>.out.println(c.name + <span class="s">&quot; &quot;</span> + c.numId);
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 1. two-arg constructor runs first</span>
+<span class="c">// 2. int constructor</span>
+<span class="c">// 3. no-arg finishes last</span>
+<span class="c">// hi 10</span>
+</code></pre>
+<p>The call hops along the chain first (no-arg → int → two-arg), the deepest one finishes first, then control returns back up the chain.</p>
+<p><strong>Chaining with <code>super()</code> — the Manager / Person example:</strong></p>
+<pre><code><span class="k">class</span> <span class="ty">Person</span> {
+    <span class="ty">Person</span>() {                        <span class="c">// 1st invoked</span>
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Person constructor — 1st invoked&quot;</span>);
+    }
+}
+
+<span class="k">class</span> <span class="ty">Manager</span> <span class="k">extends</span> <span class="ty">Person</span> {
+    <span class="ty">Manager</span>() {
+        <span class="k">super</span>();                      <span class="c">// calls the Person constructor</span>
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Manager constructor — 2nd invoked&quot;</span>);
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">SuperDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Manager</span> m = <span class="k">new</span> <span class="ty">Manager</span>();
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// Person constructor — 1st invoked</span>
+<span class="c">// Manager constructor — 2nd invoked</span>
+</code></pre>
+<p>Even though we asked for a <code>Manager</code>, the <strong>Person constructor runs first</strong> — the parent part of the object must exist before the child part is finished. If you don't write <code>super();</code> yourself, Java writes it for you as the first line.</p>
+<pre><code>   new Manager()
+        |
+        v
+   Manager()  --- super() ---&gt; Person()   (runs FIRST)
+        ^                          |
+        &#x27;------- returns ---------&#x27;
+   then the rest of Manager() runs (SECOND)
+</code></pre>
+<hr />
+<h2>Quick Revision</h2>
+<ul>
+<li>A <strong>constructor creates an instance</strong>; same name as the class, <strong>no return type</strong> — those two facts distinguish it from a method. Write a return type and it becomes a plain method.</li>
+<li>Constructors <strong>cannot be <code>static</code></strong> (they initialise instance data and need an object), <strong><code>final</code></strong> (never inherited, so nothing to stop overriding), <strong><code>abstract</code></strong> (must have a body that runs at <code>new</code>), or <strong><code>synchronized</code></strong>.</li>
+<li><strong>Constructors are not inherited</strong> — a child defines its own and reaches the parent's via <code>super()</code>.</li>
+<li><strong>Abstract classes have constructors</strong> (run through <code>super()</code> when a child is built); <strong>interfaces have none</strong> (no objects, no state).</li>
+<li>6 types: <strong>default</strong> (added by Java), <strong>no-arg</strong> (you write it), <strong>parameterized</strong>, <strong>overloaded</strong>, <strong>private</strong> (restricts creation → <strong>Singleton</strong> via a static <code>getInstance()</code>), and <strong>chaining</strong> with <code>this()</code> / <code>super()</code>.</li>
+<li>Trap: once you add any constructor manually, <strong>Java stops adding the default one</strong>.</li>
+<li>In chaining, <code>this()</code>/<code>super()</code> must be the <strong>first statement</strong>; the parent constructor always finishes before the child's body.</li>
+</ul>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Constructors_Explained_Part1.mp4; Part 2 = Constructors_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

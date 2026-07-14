@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maven</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#15803d22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #15803d40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#15803d0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #15803d33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#15803d;--a2:#22c55e">
+<header class="hero"><div class="in">
+  <span class="badge">🍃 SPRING BOOT</span>
+  <h1>Maven</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>&lt;dependencyManagement&gt; vs &lt;dependencies&gt;</em></p>
+<p class="chips">☕ 8 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> What Maven is and what it does for developers  ·  The anatomy of pom.xml: parent, properties, dependencies, repositories, build  ·  The 7 phases of the Maven build lifecycle — and the mvn command for each  ·  How local and remote repositories work, and the dependency resolution order</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Maven_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>What is Maven?</h2>
+<ul>
+<li>It's a <strong>project management tool</strong>.</li>
+<li>It helps developers with:</li>
+<li><strong>Build generation</strong></li>
+<li><strong>Dependency resolution</strong></li>
+<li><strong>Documentation</strong></li>
+<li>Maven uses <strong>POM (Project Object Model)</strong> to achieve this.</li>
+<li>When a Maven command is given, it looks for <strong><code>pom.xml</code></strong> in the current directory and reads the needed configuration from it.</li>
+</ul>
+<h2>Before Maven we had ANT</h2>
+<p>With ANT you had to tell the tool both <em>what</em> to do and <em>how</em> to do it. With Maven we just say <strong>what to do</strong> — <em>how</em> to do it, Maven will take care of.</p>
+<figure><img alt="Maven — diagram" src="03-maven.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<h2>Inside pom.xml</h2>
+<pre><code>&lt;?xml version=<span class="s">&quot;1.0&quot;</span> encoding=<span class="s">&quot;UTF-8&quot;</span>?<span class="k">&gt;</span>
+<span class="k">&lt;project</span> xmlns=<span class="s">&quot;http://maven.apache.org/POM/4.0.0&quot;</span>
+         xmlns:xsi=<span class="s">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>
+         xsi:schemaLocation=<span class="s">&quot;http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd&quot;</span><span class="k">&gt;</span>
+
+    <span class="k">&lt;parent</span><span class="k">&gt;</span>
+        <span class="k">&lt;groupId</span><span class="k">&gt;</span>org.springframework.boot<span class="k">&lt;/groupId</span><span class="k">&gt;</span>
+        <span class="k">&lt;artifactId</span><span class="k">&gt;</span>spring-boot-starter-parent<span class="k">&lt;/artifactId</span><span class="k">&gt;</span>
+        <span class="k">&lt;version</span><span class="k">&gt;</span>3.2.5<span class="k">&lt;/version</span><span class="k">&gt;</span>
+    <span class="k">&lt;/parent</span><span class="k">&gt;</span>
+
+    <span class="k">&lt;groupId</span><span class="k">&gt;</span>com.example<span class="k">&lt;/groupId</span><span class="k">&gt;</span>
+    <span class="k">&lt;artifactId</span><span class="k">&gt;</span>my-app<span class="k">&lt;/artifactId</span><span class="k">&gt;</span>
+    <span class="k">&lt;version</span><span class="k">&gt;</span>1.0.0<span class="k">&lt;/version</span><span class="k">&gt;</span>
+
+    <span class="k">&lt;properties</span><span class="k">&gt;</span>
+        <span class="k">&lt;java.version</span><span class="k">&gt;</span>17<span class="k">&lt;/java.version</span><span class="k">&gt;</span>
+    <span class="k">&lt;/properties</span><span class="k">&gt;</span>
+
+    <span class="k">&lt;dependencies</span><span class="k">&gt;</span>
+        <span class="k">&lt;dependency</span><span class="k">&gt;</span>
+            <span class="k">&lt;groupId</span><span class="k">&gt;</span>org.springframework.boot<span class="k">&lt;/groupId</span><span class="k">&gt;</span>
+            <span class="k">&lt;artifactId</span><span class="k">&gt;</span>spring-boot-starter-web<span class="k">&lt;/artifactId</span><span class="k">&gt;</span>
+        <span class="k">&lt;/dependency</span><span class="k">&gt;</span>
+    <span class="k">&lt;/dependencies</span><span class="k">&gt;</span>
+
+    <span class="k">&lt;repositories</span><span class="k">&gt;</span>
+        <span class="k">&lt;repository</span><span class="k">&gt;</span>
+            <span class="k">&lt;id</span><span class="k">&gt;</span>company-repo<span class="k">&lt;/id</span><span class="k">&gt;</span>
+            <span class="k">&lt;url</span><span class="k">&gt;</span>https://repo.mycompany.com/maven2<span class="k">&lt;/url</span><span class="k">&gt;</span>
+        <span class="k">&lt;/repository</span><span class="k">&gt;</span>
+    <span class="k">&lt;/repositories</span><span class="k">&gt;</span>
+<span class="k">&lt;/project</span><span class="k">&gt;</span>
+</code></pre>
+<ul>
+<li><strong>The XML part (top of the file)</strong> — it specifies the XML schema, and also makes sure that our XML adheres to the correct structure and version defined by Maven.</li>
+<li><strong><code>&lt;parent&gt;</code></strong> — used to define the parent project. The current project <strong>inherits the configuration</strong> from the specified parent project — which in turn might be the super POM.</li>
+<li><strong><code>&lt;groupId&gt;</code> / <code>&lt;artifactId&gt;</code></strong> — together the <strong>unique identifier of your project</strong>.</li>
+<li><strong><code>&lt;properties&gt;</code></strong> — defines key-value pairs for configuration. They can be referenced throughout the XML file, e.g. <code>${java.version}</code>.</li>
+<li><strong><code>&lt;dependencies&gt;</code></strong> — this is where we declare the dependencies that our project relies on.</li>
+<li><strong><code>&lt;repositories&gt;</code></strong> — this is from where Maven looks for project dependencies and downloads the artifact (jar).</li>
+</ul>
+<blockquote>
+<p>Note: if <code>&lt;parent&gt;</code> is not specified, Maven by default inherits the configuration from the <strong>super POM</strong>.</p>
+<p>Added: <strong>transitive dependencies</strong> — you declare only <code>spring-boot-starter-web</code>; Maven automatically pulls in everything <em>it</em> depends on (Tomcat, Jackson, spring-web, …). Run <code>mvn dependency:tree</code> to see the full tree and find where a jar came from.</p>
+<p>Added: <strong>dependency scopes</strong> control where a dependency is available — <code>compile</code> (default, everywhere), <code>provided</code> (compile only; the server provides it at runtime, e.g. servlet-api), <code>runtime</code> (not needed to compile, needed to run, e.g. a JDBC driver), <code>test</code> (only for tests, e.g. JUnit), <code>import</code> (for importing a BOM in <code>&lt;dependencyManagement&gt;</code>).</p>
+<p>Added: a top interview question. <code>&lt;dependencies&gt;</code> <strong>adds</strong> a jar to your project. <code>&lt;dependencyManagement&gt;</code> adds <strong>nothing</strong> — it only <em>declares the version to use IF someone adds that dependency</em>. This is how the Spring Boot parent lets you omit <code>&lt;version&gt;</code> tags: it manages hundreds of versions centrally, and your <code>&lt;dependency&gt;</code> entry picks them up.</p>
+</blockquote>
+<pre><code><span class="c">&lt;!-- Parent POM: pins versions ONCE for all modules — downloads nothing by itself --&gt;</span>
+<span class="k">&lt;dependencyManagement</span><span class="k">&gt;</span>
+    <span class="k">&lt;dependencies</span><span class="k">&gt;</span>
+        <span class="k">&lt;dependency</span><span class="k">&gt;</span>
+            <span class="k">&lt;groupId</span><span class="k">&gt;</span>com.fasterxml.jackson.core<span class="k">&lt;/groupId</span><span class="k">&gt;</span>
+            <span class="k">&lt;artifactId</span><span class="k">&gt;</span>jackson-databind<span class="k">&lt;/artifactId</span><span class="k">&gt;</span>
+            <span class="k">&lt;version</span><span class="k">&gt;</span>2.17.1<span class="k">&lt;/version</span><span class="k">&gt;</span>
+        <span class="k">&lt;/dependency</span><span class="k">&gt;</span>
+    <span class="k">&lt;/dependencies</span><span class="k">&gt;</span>
+<span class="k">&lt;/dependencyManagement</span><span class="k">&gt;</span>
+
+<span class="c">&lt;!-- Child module: actually USES it — no version needed, the managed one applies --&gt;</span>
+<span class="k">&lt;dependencies</span><span class="k">&gt;</span>
+    <span class="k">&lt;dependency</span><span class="k">&gt;</span>
+        <span class="k">&lt;groupId</span><span class="k">&gt;</span>com.fasterxml.jackson.core<span class="k">&lt;/groupId</span><span class="k">&gt;</span>
+        <span class="k">&lt;artifactId</span><span class="k">&gt;</span>jackson-databind<span class="k">&lt;/artifactId</span><span class="k">&gt;</span>
+    <span class="k">&lt;/dependency</span><span class="k">&gt;</span>
+<span class="k">&lt;/dependencies</span><span class="k">&gt;</span>
+</code></pre>
+<h3>Version conflicts — how Maven decides</h3>
+<blockquote>
+<p>Added: when two dependencies pull in <strong>different versions of the same jar</strong>, Maven uses <strong>"nearest wins" mediation</strong>: the version closest to your project in the dependency tree is chosen; on a tie (same depth), the one <strong>declared first</strong> in <code>pom.xml</code> wins. It does <strong>not</strong> automatically pick the newest. Diagnose with <code>mvn dependency:tree</code>, then either declare the version you want directly (making it "nearest") or exclude the unwanted transitive:</p>
+</blockquote>
+<pre><code><span class="k">&lt;dependency</span><span class="k">&gt;</span>
+    <span class="k">&lt;groupId</span><span class="k">&gt;</span>org.example<span class="k">&lt;/groupId</span><span class="k">&gt;</span>
+    <span class="k">&lt;artifactId</span><span class="k">&gt;</span>some-library<span class="k">&lt;/artifactId</span><span class="k">&gt;</span>
+    <span class="k">&lt;version</span><span class="k">&gt;</span>2.0<span class="k">&lt;/version</span><span class="k">&gt;</span>
+    <span class="k">&lt;exclusions</span><span class="k">&gt;</span>
+        <span class="k">&lt;exclusion</span><span class="k">&gt;</span>                      <span class="c">&lt;!-- drop the transitive jar it drags in --&gt;</span>
+            <span class="k">&lt;groupId</span><span class="k">&gt;</span>commons-logging<span class="k">&lt;/groupId</span><span class="k">&gt;</span>
+            <span class="k">&lt;artifactId</span><span class="k">&gt;</span>commons-logging<span class="k">&lt;/artifactId</span><span class="k">&gt;</span>
+        <span class="k">&lt;/exclusion</span><span class="k">&gt;</span>
+    <span class="k">&lt;/exclusions</span><span class="k">&gt;</span>
+<span class="k">&lt;/dependency</span><span class="k">&gt;</span>
+</code></pre>
+<h3>SNAPSHOT vs release versions</h3>
+<blockquote>
+<p>Added: <code>1.0.0-SNAPSHOT</code> means "still in development" — Maven re-checks the remote repository for a newer build of the <em>same</em> snapshot version (by default daily). A plain <code>1.0.0</code> release is <strong>immutable</strong>: once downloaded, Maven never re-fetches it, and a repository never lets you re-deploy the same release version. Rule: depend on SNAPSHOTs only between your own in-development modules — never ship a release that depends on a SNAPSHOT.</p>
+</blockquote>
+<h2>Maven Build Lifecycle</h2>
+<p>The default lifecycle is a fixed chain of <strong>7 phases</strong>:</p>
+<p>Two rules to remember:</p>
+<ul>
+<li>If you want to run <strong>package</strong>, all its <strong>previous phases will get executed first</strong> (validate → compile → test → package).</li>
+<li>Each phase is made of <strong>goals</strong> (tasks). If you want to run a specific goal of a particular phase, then <strong>all the goals of the previous phases + the goals of the current phase that come before the one you defined</strong> will get run.</li>
+</ul>
+<h3>Goals inside a phase</h3>
+<h3>V.V.I — the <code>&lt;build&gt;</code> element</h3>
+<p>If you want a <strong>task 5</strong> in the install phase, how could you do it? Through the <strong><code>&lt;build&gt;</code></strong> element.</p>
+<ul>
+<li>The <code>&lt;build&gt;</code> element helps you <strong>add a new task (goal) inside any of the 7 phases</strong>.</li>
+<li>Maven already has, e.g., the Validate phase defined along with its goals — but if you want to add more goals/tasks, we use the <code>&lt;build&gt;</code> element: <strong>add the goal to the specified phase</strong> (see the PMD plugin example in section 5).</li>
+</ul>
+<h2>The mvn command for each phase</h2>
+<ol>
+<li><strong><code>mvn validate</code></strong> — validates the project structure.</li>
+<li><strong><code>mvn compile</code></strong> — it will validate and compile your code and put the result under <code>${project.basedir}/target/classes</code>. You only give the command — Maven looks for <code>pom.xml</code> and does the <em>how</em> by itself.</li>
+<li><strong><code>mvn test</code></strong> — it will validate, compile and then run the test cases in our project.</li>
+<li><strong><code>mvn package</code></strong> — first completes the validate, compile and test phases, and then runs the package phase, in which it <strong>generates the jar or war file</strong>.</li>
+<li><strong><code>mvn verify</code></strong> — it can perform some additional checks apart from unit test cases, like:
+   - static code analysis
+   - checksum verification etc.</li>
+<li><strong><code>mvn install</code></strong> — it will install the jar package in the <strong>local Maven repository</strong>, which is typically located in your user home directory: <code>~/.m2/repository</code>.</li>
+<li><strong><code>mvn deploy</code></strong> — it will deploy the .jar to the <strong>remote repository</strong>.</li>
+</ol>
+<blockquote>
+<p>Added: <strong><code>mvn clean</code></strong> — deletes the whole <code>target/</code> folder so the next build starts fresh. It belongs to a separate lifecycle (clean), which is why the most common everyday command combines both: <code>mvn clean package</code> (or <code>mvn clean install</code>).</p>
+</blockquote>
+<h3>PMD — a source code analyzer (runs in verify)</h3>
+<ul>
+<li>Finds unused variables</li>
+<li>Finds unused imports</li>
+<li>Empty catch blocks</li>
+<li>No usage of an object</li>
+<li>Finds duplicate code etc.</li>
+</ul>
+<p>The plugin is attached to the <strong>verify</strong> phase through the <code>&lt;build&gt;</code> element — this is exactly the "add a goal to a phase" mechanism from section 4:</p>
+<pre><code><span class="k">&lt;build</span><span class="k">&gt;</span>
+    <span class="k">&lt;plugins</span><span class="k">&gt;</span>
+        <span class="k">&lt;plugin</span><span class="k">&gt;</span>
+            <span class="k">&lt;groupId</span><span class="k">&gt;</span>org.apache.maven.plugins<span class="k">&lt;/groupId</span><span class="k">&gt;</span>
+            <span class="k">&lt;artifactId</span><span class="k">&gt;</span>maven-pmd-plugin<span class="k">&lt;/artifactId</span><span class="k">&gt;</span>
+            <span class="k">&lt;version</span><span class="k">&gt;</span>3.2.1<span class="k">&lt;/version</span><span class="k">&gt;</span>
+            <span class="k">&lt;executions</span><span class="k">&gt;</span>
+                <span class="k">&lt;execution</span><span class="k">&gt;</span>
+                    <span class="k">&lt;id</span><span class="k">&gt;</span>pmd-analysis<span class="k">&lt;/id</span><span class="k">&gt;</span>
+                    <span class="k">&lt;phase</span><span class="k">&gt;</span>verify<span class="k">&lt;/phase</span><span class="k">&gt;</span>
+                    <span class="k">&lt;goals</span><span class="k">&gt;</span>
+                        <span class="k">&lt;goal</span><span class="k">&gt;</span>pmd<span class="k">&lt;/goal</span><span class="k">&gt;</span>
+                    <span class="k">&lt;/goals</span><span class="k">&gt;</span>
+                <span class="k">&lt;/execution</span><span class="k">&gt;</span>
+            <span class="k">&lt;/executions</span><span class="k">&gt;</span>
+        <span class="k">&lt;/plugin</span><span class="k">&gt;</span>
+    <span class="k">&lt;/plugins</span><span class="k">&gt;</span>
+<span class="k">&lt;/build</span><span class="k">&gt;</span>
+</code></pre>
+<h2>Local and remote repositories</h2>
+<ul>
+<li><strong>Local repository</strong> — on your own machine (<code>~/.m2/repository</code>); <code>mvn install</code> puts your jar here.</li>
+<li><strong>Remote repository</strong> — outside your machine: your <strong>company repository</strong> (private) or public ones like <strong>Maven Central</strong>. Many repositories are available.</li>
+</ul>
+<h3>settings.xml (in the .m2 folder)</h3>
+<p>In the <code>settings.xml</code> file you can <strong>change the path</strong> of the local repository (and configure servers, mirrors, proxies).</p>
+<h3>How Maven resolves a dependency</h3>
+<ol>
+<li><strong>1st</strong> — Maven looks in the <strong>local repository</strong>.</li>
+<li><strong>2nd</strong> — if not found, it goes to the <strong>remote repository</strong>.</li>
+<li><strong>3rd</strong> — the downloaded artifact is <strong>added to the local repository</strong>, so next time it is found locally.</li>
+</ol>
+<h2>Configuring mvn deploy</h2>
+<p><code>mvn deploy</code> needs to know <strong>where</strong> to upload. That goes in <code>pom.xml</code> under <code>&lt;distributionManagement&gt;</code>:</p>
+<pre><code><span class="k">&lt;project</span><span class="k">&gt;</span>
+    <span class="k">&lt;distributionManagement</span><span class="k">&gt;</span>
+        <span class="k">&lt;repository</span><span class="k">&gt;</span>
+            <span class="k">&lt;id</span><span class="k">&gt;</span>x<span class="k">&lt;/id</span><span class="k">&gt;</span>
+            <span class="k">&lt;url</span><span class="k">&gt;</span>y<span class="k">&lt;/url</span><span class="k">&gt;</span>
+        <span class="k">&lt;/repository</span><span class="k">&gt;</span>
+    <span class="k">&lt;/distributionManagement</span><span class="k">&gt;</span>
+<span class="k">&lt;/project</span><span class="k">&gt;</span>
+</code></pre>
+<p>The <strong>credentials</strong> for that repository (matched by the same <code>id</code>) go in <code>settings.xml</code>:</p>
+<pre><code><span class="k">&lt;settings</span><span class="k">&gt;</span>
+    <span class="k">&lt;servers</span><span class="k">&gt;</span>
+        <span class="k">&lt;server</span><span class="k">&gt;</span>
+            <span class="k">&lt;id</span><span class="k">&gt;</span>x<span class="k">&lt;/id</span><span class="k">&gt;</span>
+            <span class="k">&lt;username</span><span class="k">&gt;</span>deploy-user<span class="k">&lt;/username</span><span class="k">&gt;</span>
+            <span class="k">&lt;password</span><span class="k">&gt;</span>deploy-password<span class="k">&lt;/password</span><span class="k">&gt;</span>
+        <span class="k">&lt;/server</span><span class="k">&gt;</span>
+    <span class="k">&lt;/servers</span><span class="k">&gt;</span>
+<span class="k">&lt;/settings</span><span class="k">&gt;</span>
+</code></pre>
+<blockquote>
+<p>Good to know: keep credentials in <code>settings.xml</code> (per machine, not committed to git) and only the repository URL in <code>pom.xml</code> — that is exactly why Maven splits the configuration across the two files.</p>
+</blockquote>
+<h2>Architect's Corner</h2>
+<ul>
+<li><strong>Always commit the Maven Wrapper</strong> (<code>mvnw</code>, <code>.mvn/</code>) — every machine and CI builds with the same Maven version.</li>
+<li><strong>Multi-module + BOM</strong>: a parent POM with <code>&lt;dependencyManagement&gt;</code> (importing BOMs like <code>spring-boot-dependencies</code>) pins versions once for all modules — the cure for version drift.</li>
+<li><strong>CI invocation</strong>: <code>mvn -B -ntp verify</code> (batch mode, no transfer progress); fail the build on PMD/SpotBugs/Checkstyle in the <code>verify</code> phase, exactly like the notes' PMD binding.</li>
+<li><strong>Reproducible builds</strong>: pin plugin versions explicitly; never rely on LATEST/RELEASE.</li>
+<li><strong><code>dependency:tree</code></strong> is your first tool for version conflicts; <code>&lt;exclusions&gt;</code> your second.</li>
+<li>Gradle is the main alternative (faster incremental builds); the lifecycle concepts transfer 1:1.</li>
+</ul>
+<h2>Quick Revision</h2>
+<ul>
+<li>Maven = <strong>project management tool</strong>: build generation, dependency resolution, documentation — driven by the <strong>POM</strong> (<code>pom.xml</code>).</li>
+<li>ANT needed <em>what + how</em>; with Maven you say only <strong>what to do</strong>.</li>
+<li>Key pom elements: <code>&lt;parent&gt;</code> (inherit config; default = super POM), <code>&lt;groupId&gt;</code>/<code>&lt;artifactId&gt;</code> (unique id), <code>&lt;properties&gt;</code> (key-value pairs), <code>&lt;dependencies&gt;</code>, <code>&lt;repositories&gt;</code>.</li>
+<li>Build lifecycle, 7 phases: <strong>validate → compile → test → package → verify → install → deploy</strong> — running a phase runs all previous phases first.</li>
+<li>A phase = ordered <strong>goals</strong>; add your own goal to a phase with the <strong><code>&lt;build&gt;</code></strong> element (e.g. the PMD plugin on verify).</li>
+<li><code>mvn install</code> → jar into <code>~/.m2/repository</code> (local); <code>mvn deploy</code> → jar into the remote repo (<code>&lt;distributionManagement&gt;</code> + <code>&lt;servers&gt;</code> in settings.xml).</li>
+<li>Resolution order: <strong>local repo → remote repo → downloaded copy is cached in local</strong>.</li>
+<li><code>&lt;dependencyManagement&gt;</code> pins versions without adding jars; <code>&lt;dependencies&gt;</code> actually adds them.</li>
+<li>Version conflicts: <strong>nearest wins</strong> (tie → first declared); fix with a direct declaration or <code>&lt;exclusions&gt;</code>.</li>
+<li><code>-SNAPSHOT</code> = mutable, re-fetched dev build; a release version is immutable and cached forever.</li>
+</ul>
+<hr />
+<p>Next topic: <strong>Spring MVC and REST Annotations</strong> — @Controller, @RestController, and how request data is bound.</p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Maven_Explained_Part1.mp4; Part 2 = Maven_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AOP — Aspect Oriented Programming</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#15803d22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #15803d40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#15803d0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #15803d33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#15803d;--a2:#22c55e">
+<header class="hero"><div class="in">
+  <span class="badge">🍃 SPRING BOOT</span>
+  <h1>AOP — Aspect Oriented Programming</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>What AOP is, and why logging / transactions / security belong in an Aspect  ·  Pointcut vs Advice vs JoinPoint — the…</em></p>
+<p class="chips">☕ 9 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> What AOP is, and why logging / transactions / security belong in an Aspect  ·  Pointcut vs Advice vs JoinPoint — the three words behind every AOP example  ·  Every pointcut designator: execution (with wildcards), within, @within, @annotation, args, @args, target — plus combining and naming pointcuts  ·  @Before, @After and @Around advice with ProceedingJoinPoint</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload AOP_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>What is AOP?</h2>
+<ul>
+<li>It helps to <strong>intercept the method invocation</strong>, and we can perform some task <strong>before and after</strong> the method.</li>
+<li>AOP allows us to <strong>focus on business logic</strong> by handling boilerplate and repetitive code like logging, transaction management.</li>
+<li>So, an <strong>Aspect</strong> is a module which handles this repetitive or boilerplate code.</li>
+<li>Helps in achieving <strong>reusability</strong> and <strong>maintainability</strong> of the code.</li>
+</ul>
+<p><strong>Used during:</strong></p>
+<figure><img alt="AOP — Aspect Oriented Programming — diagram" src="09-aop.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<ul>
+<li>Logging</li>
+<li>Transaction Management</li>
+<li>Security etc.</li>
+</ul>
+<blockquote>
+<p>Added: this repetitive code that cuts across many classes (every service wants logging, every repository wants a transaction) is called a <strong>cross-cutting concern</strong>. AOP moves each cross-cutting concern out of the business classes into one Aspect module.</p>
+</blockquote>
+<p>Dependency you need in <code>pom.xml</code>:</p>
+<pre><code><span class="k">&lt;dependency</span><span class="k">&gt;</span>
+    <span class="k">&lt;groupId</span><span class="k">&gt;</span>org.springframework.boot<span class="k">&lt;/groupId</span><span class="k">&gt;</span>
+    <span class="k">&lt;artifactId</span><span class="k">&gt;</span>spring-boot-starter-aop<span class="k">&lt;/artifactId</span><span class="k">&gt;</span>
+<span class="k">&lt;/dependency</span><span class="k">&gt;</span>
+</code></pre>
+<h2>First Aspect — Advice and Pointcut</h2>
+<pre><code><span class="a">@Component</span>
+<span class="a">@Aspect</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">LoggingAspect</span> {
+
+    <span class="a">@Before</span>(<span class="s">&quot;execution(public String com.x.Employee.fetch())&quot;</span>)
+    <span class="k">public</span> <span class="k">void</span> beforeMethod() {        <span class="c">// &lt;-- the method body is the ADVICE</span>
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Hi&quot;</span>);
+    }
+}
+</code></pre>
+<p>The string inside <code>@Before(...)</code> is a <strong>pointcut</strong> — let's break it apart:</p>
+<blockquote>
+<p>Good to know: the access modifier is truly optional — just leave it out. The return type position must always be present, but you can put the <code>*</code> wildcard there instead of a concrete type, which effectively "omits" it.</p>
+</blockquote>
+<h2>Pointcut — where should the Advice be applied?</h2>
+<p><strong>Pointcut:</strong> it is an expression which tells <strong>where</strong> an Advice should be applied.</p>
+<p><strong>(a) The <code>*</code> wildcard — matches any single item.</strong></p>
+<pre><code><span class="c">// Matches fetch() with ANY return type</span>
+<span class="a">@Before</span>(<span class="s">&quot;execution(* com.x.Employee.fetch())&quot;</span>)
+
+<span class="c">// Matches ANY method of Employee with a single String parameter</span>
+<span class="a">@Before</span>(<span class="s">&quot;execution(* com.x.Employee.*(String))&quot;</span>)
+
+<span class="c">// Matches the fetch method that takes ANY single parameter</span>
+<span class="a">@Before</span>(<span class="s">&quot;execution(String com.x.Employee.fetch(*))&quot;</span>)
+</code></pre>
+<p><strong>(b) The <code>(..)</code> wildcard — matches 0 or more.</strong></p>
+<pre><code><span class="c">// Matches the fetch method that takes any 0 or MORE parameters</span>
+<span class="a">@Before</span>(<span class="s">&quot;execution(String com.x.Employee.fetch(..))&quot;</span>)
+
+<span class="c">// Matches the fetch method in &quot;com.x&quot; package AND subpackage classes</span>
+<span class="a">@Before</span>(<span class="s">&quot;execution(String com.x..fetch())&quot;</span>)
+
+<span class="c">// Matches ANY method in the &quot;com.x&quot; package and subpackage classes</span>
+<span class="a">@Before</span>(<span class="s">&quot;execution(String com.x..*())&quot;</span>)
+</code></pre>
+<h3>2) within — matches all methods within a class or package</h3>
+<pre><code><span class="c">// This pointcut will run for EACH method in the class Employee</span>
+<span class="a">@Before</span>(<span class="s">&quot;within(com.x.Employee)&quot;</span>)
+
+<span class="c">// This pointcut will run for EACH method in this package and subpackages</span>
+<span class="a">@Before</span>(<span class="s">&quot;within(com.x..*)&quot;</span>)
+</code></pre>
+<h3>3) @within — class-level annotation</h3>
+<p>Matches any method in a class which has this annotation (it works on <strong>class level</strong>; <code>org.x.Service</code> here is an annotation):</p>
+<pre><code><span class="a">@Before</span>(<span class="s">&quot;@within(org.x.Service)&quot;</span>)
+</code></pre>
+<h3>4) @annotation — method-level annotation</h3>
+<p>Matches any method that is annotated with the given annotation:</p>
+<pre><code><span class="a">@Before</span>(<span class="s">&quot;@annotation(org.x.Annotation)&quot;</span>)
+</code></pre>
+<h3>5) args — matches by arguments</h3>
+<p>Matches any method with a particular argument:</p>
+<pre><code><span class="a">@Before</span>(<span class="s">&quot;args(String, int)&quot;</span>)
+
+<span class="c">// In case of an object rather than a primitive type:</span>
+<span class="a">@Before</span>(<span class="s">&quot;args(com.x.Employee)&quot;</span>)
+</code></pre>
+<h3>6) @args — annotation on the argument's class</h3>
+<p>Matches any method with a particular parameter, where that <strong>parameter's class</strong> is annotated with a particular annotation (<code>org.x.Service</code> is the annotation):</p>
+<pre><code><span class="a">@Before</span>(<span class="s">&quot;@args(org.x.Service)&quot;</span>)
+</code></pre>
+<h3>7) target — matches a particular instance</h3>
+<p>Matches any method on a particular <strong>instance</strong> of a class (also works when you give an interface, like <code>com.x.Employee</code> below):</p>
+<pre><code><span class="a">@Before</span>(<span class="s">&quot;target(com.x.EmployeeUtils)&quot;</span>)
+
+<span class="c">// com.x.Employee is an interface:</span>
+<span class="a">@Before</span>(<span class="s">&quot;target(com.x.Employee)&quot;</span>)
+</code></pre>
+<h3>Summary of pointcut designators</h3>
+<ul class="cards"><li><b><code>execution</code></b> — a particular method in a particular class — <code>execution(* com.x.Employee.fetch())</code></li><li><b><code>within</code></b> — all methods of a class / package — <code>within(com.x..*)</code></li><li><b><code>@within</code></b> — any method of a class carrying the annotation (class level) — <code>@within(org.x.Service)</code></li><li><b><code>@annotation</code></b> — any method annotated with the given annotation — <code>@annotation(org.x.Annotation)</code></li><li><b><code>args</code></b> — any method with the given argument types — <code>args(String, int)</code></li><li><b><code>@args</code></b> — method whose parameter's class carries the annotation — <code>@args(org.x.Service)</code></li><li><b><code>target</code></b> — any method on a particular instance (or interface) — <code>target(com.x.Employee)</code></li></ul>
+<blockquote>
+<p>Added: Spring AOP adds one designator of its own — <strong><code>bean(name-pattern)</code></strong> matches by <em>bean name</em>: <code>@Before("bean(*Repository)")</code> intercepts every method of every bean whose name ends with <code>Repository</code>. (And its cousin <code>this(...)</code> matches the <strong>proxy's</strong> type, whereas <code>target(...)</code> matches the real object behind the proxy — the difference shows up with JDK proxies.)</p>
+</blockquote>
+<h3>Combining and naming pointcuts</h3>
+<p>Two pointcuts can be combined using <code>&amp;&amp;</code> (boolean and) and <code>||</code> (boolean or):</p>
+<pre><code><span class="a">@Before</span>(<span class="s">&quot;execution(* com.x.Employee.*())&quot;</span>
+        + <span class="s">&quot; &amp;&amp; @within(org.x.RestController)&quot;</span>)
+</code></pre>
+<p><strong>Named Pointcut</strong> — define the expression once, reuse it everywhere:</p>
+<pre><code><span class="a">@Pointcut</span>(<span class="s">&quot;execution(* com.x.Employee.*())&quot;</span>)
+<span class="k">public</span> <span class="k">void</span> custompointcut() {}
+
+<span class="a">@Before</span>(<span class="s">&quot;custompointcut()&quot;</span>)          <span class="c">// refers to the @Pointcut method above</span>
+<span class="k">public</span> <span class="k">void</span> beforeNamed() {
+    <span class="ty">System</span>.out.println(<span class="s">&quot;named pointcut matched&quot;</span>);
+}
+</code></pre>
+<h3>All of it together — a runnable LoggingAspect</h3>
+<pre><code><span class="a">@Component</span>
+<span class="a">@Aspect</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">LoggingAspect</span> {
+
+    <span class="c">// 1) execution: any return type, exact method</span>
+    <span class="a">@Before</span>(<span class="s">&quot;execution(* com.x.Employee.fetch())&quot;</span>)
+    <span class="k">public</span> <span class="k">void</span> beforeFetch() { <span class="ty">System</span>.out.println(<span class="s">&quot;before fetch()&quot;</span>); }
+
+    <span class="c">// 2) within: every method in com.x and its subpackages</span>
+    <span class="a">@Before</span>(<span class="s">&quot;within(com.x..*)&quot;</span>)
+    <span class="k">public</span> <span class="k">void</span> beforeWithin() { <span class="ty">System</span>.out.println(<span class="s">&quot;inside com.x..&quot;</span>); }
+
+    <span class="c">// 3) @within: class-level annotation</span>
+    <span class="a">@Before</span>(<span class="s">&quot;@within(org.springframework.stereotype.Service)&quot;</span>)
+    <span class="k">public</span> <span class="k">void</span> beforeServiceClass() { <span class="ty">System</span>.out.println(<span class="s">&quot;@Service class&quot;</span>); }
+
+    <span class="c">// 4) @annotation: method-level annotation</span>
+    <span class="a">@Before</span>(<span class="s">&quot;@annotation(org.x.Annotation)&quot;</span>)
+    <span class="k">public</span> <span class="k">void</span> beforeAnnotated() { <span class="ty">System</span>.out.println(<span class="s">&quot;annotated method&quot;</span>); }
+
+    <span class="c">// 5) args: argument types</span>
+    <span class="a">@Before</span>(<span class="s">&quot;args(String, int)&quot;</span>)
+    <span class="k">public</span> <span class="k">void</span> beforeArgs() { <span class="ty">System</span>.out.println(<span class="s">&quot;(String, int) call&quot;</span>); }
+
+    <span class="c">// 6) @args: the parameter&#x27;s CLASS carries the annotation</span>
+    <span class="a">@Before</span>(<span class="s">&quot;@args(org.x.Service)&quot;</span>)
+    <span class="k">public</span> <span class="k">void</span> beforeAtArgs() { <span class="ty">System</span>.out.println(<span class="s">&quot;param class annotated&quot;</span>); }
+
+    <span class="c">// 7) target: a particular instance</span>
+    <span class="a">@Before</span>(<span class="s">&quot;target(com.x.EmployeeUtils)&quot;</span>)
+    <span class="k">public</span> <span class="k">void</span> beforeTarget() { <span class="ty">System</span>.out.println(<span class="s">&quot;EmployeeUtils object&quot;</span>); }
+
+    <span class="c">// Combined pointcut: &amp;&amp; / ||</span>
+    <span class="a">@Before</span>(<span class="s">&quot;execution(* com.x.Employee.*())&quot;</span>
+            + <span class="s">&quot; &amp;&amp; @within(org.x.RestController)&quot;</span>)
+    <span class="k">public</span> <span class="k">void</span> beforeCombined() { <span class="ty">System</span>.out.println(<span class="s">&quot;both matched&quot;</span>); }
+
+    <span class="c">// Named pointcut: define once, reuse</span>
+    <span class="a">@Pointcut</span>(<span class="s">&quot;execution(* com.x.Employee.*())&quot;</span>)
+    <span class="k">public</span> <span class="k">void</span> custompointcut() {}
+
+    <span class="a">@Before</span>(<span class="s">&quot;custompointcut()&quot;</span>)
+    <span class="k">public</span> <span class="k">void</span> beforeNamed() { <span class="ty">System</span>.out.println(<span class="s">&quot;named pointcut&quot;</span>); }
+}
+</code></pre>
+<h2>Advice — the action itself</h2>
+<p><strong>Advice:</strong> it's an action which is taken <code>@Before</code>, or <code>@After</code>, or <code>@Around</code> the method execution.</p>
+<ul>
+<li><code>@Before</code> or <code>@After</code> — simple, and we have already seen them above.</li>
+<li><code>@Around</code> — it <strong>surrounds</strong> the method execution (before and after both).</li>
+</ul>
+<pre><code><span class="a">@Around</span>(<span class="s">&quot;execution(* com.x.EmployeeUtils.*())&quot;</span>)      <span class="c">// &lt;-- this string: POINTCUT</span>
+<span class="k">public</span> <span class="ty">Object</span> aroundMethod(<span class="ty">ProceedingJoinPoint</span> joinPoint) <span class="k">throws</span> <span class="ty">Throwable</span> {
+    <span class="ty">System</span>.out.println(<span class="s">&quot;before the method&quot;</span>);         <span class="c">// whole body: ADVICE</span>
+    <span class="ty">Object</span> result = joinPoint.proceed();             <span class="c">// actual method invocation</span>
+    <span class="ty">System</span>.out.println(<span class="s">&quot;after the method&quot;</span>);
+    <span class="k">return</span> result;
+}
+</code></pre>
+<p><strong>JoinPoint:</strong> it is generally considered the point where the <strong>actual method invocation</strong> happens — <code>joinPoint.proceed()</code> above is exactly that point.</p>
+<blockquote>
+<p>Added: two more advice types worth knowing — <code>@AfterReturning</code> runs only when the method returns normally (and can read the returned value), <code>@AfterThrowing</code> runs only when it throws (and can read the exception). Plain <code>@After</code> runs in both cases, like a <code>finally</code>.</p>
+</blockquote>
+<pre><code><span class="a">@AfterReturning</span>(pointcut = <span class="s">&quot;execution(* com.x.Employee.*())&quot;</span>, returning = <span class="s">&quot;result&quot;</span>)
+<span class="k">public</span> <span class="k">void</span> logResult(<span class="ty">JoinPoint</span> jp, <span class="ty">Object</span> result) {
+    <span class="ty">System</span>.out.println(jp.getSignature() + <span class="s">&quot; returned &quot;</span> + result);
+}
+
+<span class="a">@AfterThrowing</span>(pointcut = <span class="s">&quot;execution(* com.x.Employee.*())&quot;</span>, throwing = <span class="s">&quot;ex&quot;</span>)
+<span class="k">public</span> <span class="k">void</span> logFailure(<span class="ty">JoinPoint</span> jp, <span class="ty">Exception</span> ex) {
+    <span class="ty">System</span>.out.println(jp.getSignature() + <span class="s">&quot; failed: &quot;</span> + ex.getMessage());
+}
+</code></pre>
+<h3>Reading the call details inside the advice</h3>
+<blockquote>
+<p>Added: every advice can take a <code>JoinPoint</code> as its first parameter to inspect the intercepted call — and pointcut designators can <strong>bind</strong> values straight into advice parameters. This binding trick is the engine behind every "custom annotation" aspect (retry, audit, rate-limit).</p>
+</blockquote>
+<pre><code><span class="a">@Before</span>(<span class="s">&quot;execution(* com.x.Employee.*(..))&quot;</span>)
+<span class="k">public</span> <span class="k">void</span> log(<span class="ty">JoinPoint</span> jp) {
+    <span class="ty">System</span>.out.println(jp.getSignature());              <span class="c">// which method</span>
+    <span class="ty">System</span>.out.println(<span class="ty">Arrays</span>.toString(jp.getArgs()));  <span class="c">// actual arguments</span>
+    <span class="ty">Object</span> realObject = jp.getTarget();                 <span class="c">// object behind the proxy</span>
+}
+</code></pre>
+<pre><code><span class="c">// Parameter binding: @annotation(retry) binds the ANNOTATION ITSELF</span>
+<span class="c">// into the advice, so you can read its attributes:</span>
+<span class="a">@Around</span>(<span class="s">&quot;@annotation(retry)&quot;</span>)
+<span class="k">public</span> <span class="ty">Object</span> withRetry(<span class="ty">ProceedingJoinPoint</span> pjp, <span class="ty">Retry</span> retry) <span class="k">throws</span> <span class="ty">Throwable</span> {
+    <span class="ty">Exception</span> last = <span class="k">null</span>;
+    <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; retry.attempts(); i++) {        <span class="c">// attribute from the annotation</span>
+        <span class="k">try</span> { <span class="k">return</span> pjp.proceed(); }
+        <span class="k">catch</span> (<span class="ty">Exception</span> e) { last = e; }
+    }
+    <span class="k">throw</span> last;
+}
+</code></pre>
+<p>The same binding works for arguments: <code>@Before("args(name,..)")</code> + <code>void advice(String name)</code> hands you the first argument, already typed.</p>
+<h3>Multiple aspects on one method — ordering with @Order</h3>
+<blockquote>
+<p>Added: when several aspects match the same method, control who runs first with <code>@Order</code> on the aspect class — <strong>lower value = outer ring</strong>:</p>
+</blockquote>
+<pre><code><span class="a">@Aspect</span> <span class="a">@Component</span> <span class="a">@Order</span>(<span class="n">1</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">SecurityAspect</span> { }   <span class="c">// outermost</span>
+
+<span class="a">@Aspect</span> <span class="a">@Component</span> <span class="a">@Order</span>(<span class="n">2</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">LoggingAspect</span> { }    <span class="c">// runs inside SecurityAspect</span>
+</code></pre>
+<p>Execution is an onion: <code>security-before → logging-before → method → logging-after → security-after</code>. Without <code>@Order</code>, the sequence between aspects is <strong>undefined</strong> — never rely on it.</p>
+<h2>Internal flow of AOP — how does interception work?</h2>
+<p>Two natural questions:</p>
+<ul>
+<li><strong>How does this interception work?</strong></li>
+<li><strong>What if we have 1000s of pointcuts</strong> — whenever I invoke a method, does matching happen against 1000s of pointcuts?</li>
+</ul>
+<p>The answer: all the expensive matching happens <strong>once, at application startup</strong> — not on every call.</p>
+<ol>
+<li>When application startup happens:
+   - Look for <code>@Aspect</code> annotated classes.
+   - Parse the pointcut expressions — done by the <code>PointcutParser.java</code> class.
+   - Store them in an efficient data structure or <strong>cache</strong> after parsing.
+   - Look for <code>@Component</code>, <code>@Service</code>, <code>@Controller</code> etc. annotated classes.
+   - For each class, check if it is <strong>eligible for interception</strong> based on the pointcut expressions — done by the <code>AbstractAutoProxyCreator.java</code> class.
+   - If yes, it creates a <strong>Proxy</strong> — JDK Dynamic proxy or CGLIB proxy. This proxy class has code which executes the advice before the method, then the method execution happens, and lastly the advice (if any) after.</li>
+</ol>
+<p>Which proxy is chosen?</p>
+<pre><code><span class="c">// 1) The class implements an interface  -&gt;  JDK Dynamic proxy</span>
+<span class="k">interface</span> <span class="ty">X</span> { }
+<span class="k">class</span> <span class="ty">EmployeeUtils</span> <span class="k">implements</span> <span class="ty">X</span> { }
+
+<span class="c">// 2) A plain class without an interface -&gt;  CGLIB proxy</span>
+<span class="k">class</span> <span class="ty">X</span> { }
+</code></pre>
+<p>Now, when we initiate the request after application startup, this <strong>proxy class is actually invoked</strong> — it runs the before-advice, calls your real method, then runs the after-advice.</p>
+<blockquote>
+<p>Good to know: because AOP is proxy-based, a method calling another method of the <strong>same class</strong> (<code>this.otherMethod()</code>) does not go through the proxy — so its advice will NOT run. This "self-invocation" pitfall also applies to <code>@Transactional</code>, which is built on this exact machinery. Also, CGLIB cannot proxy <code>final</code> classes or methods.</p>
+</blockquote>
+<h2>Architect's Corner</h2>
+<ul>
+<li><strong>Know the proxy limits</strong>: self-invocation bypasses aspects; <code>final</code> classes/methods can't be CGLIB-proxied; private methods are invisible. These cause the classic "my aspect doesn't fire" bugs.</li>
+<li><strong>Use AOP for infrastructure only</strong> (logging, metrics, transactions, security) — business rules in aspects make control flow invisible and untestable.</li>
+<li><strong>Micrometer's <code>@Timed</code>/<code>@Observed</code> and Spring's <code>@Transactional</code>, <code>@Cacheable</code>, <code>@Async</code></strong> are all this same machinery — you already run 4-5 aspects in production.</li>
+<li><strong>Performance</strong>: each matched method gains an interceptor chain — negligible per call, but keep pointcuts narrow (package-scoped, annotation-driven) rather than <code>execution(* *(..))</code>.</li>
+<li>Full AspectJ compile-time weaving removes proxy limits when you truly need field access or constructor joinpoints — rare in services.</li>
+</ul>
+<h2>Quick Revision</h2>
+<ul>
+<li>AOP <strong>intercepts method invocations</strong> so we can run tasks before/after them; an <strong>Aspect</strong> is the module holding that repetitive code (logging, transactions, security) — a <em>cross-cutting concern</em>.</li>
+<li><strong>Pointcut</strong> = <em>where</em> (an expression), <strong>Advice</strong> = <em>what/when</em> (<code>@Before</code>, <code>@After</code>, <code>@Around</code>, plus <code>@AfterReturning</code> / <code>@AfterThrowing</code>), <strong>JoinPoint</strong> = the actual method invocation point.</li>
+<li>Designators: <code>execution</code>, <code>within</code>, <code>@within</code> (class annotation), <code>@annotation</code> (method annotation), <code>args</code>, <code>@args</code>, <code>target</code> — combine with <code>&amp;&amp;</code> / <code>||</code>, reuse via named <code>@Pointcut</code>. Spring adds <code>bean(name-pattern)</code>.</li>
+<li>Wildcards: <code>*</code> = any single item; <code>(..)</code> = 0 or more parameters; <code>com.x..</code> = package + subpackages.</li>
+<li><code>@Around</code> advice receives a <code>ProceedingJoinPoint</code>; <code>joinPoint.proceed()</code> invokes the real method.</li>
+<li>Advice can take a <code>JoinPoint</code> — <code>getArgs()</code>, <code>getSignature()</code>, <code>getTarget()</code>; <code>@annotation(param)</code> / <code>args(param,..)</code> <strong>bind</strong> the annotation or argument into the advice (basis of custom-annotation aspects).</li>
+<li>Several aspects on one method → <code>@Order(n)</code> on the aspect class; <strong>lower = outer</strong> (first before, last after); unordered = undefined sequence.</li>
+<li>Startup flow: find <code>@Aspect</code> → parse pointcuts (<code>PointcutParser</code>) → cache → scan beans → eligibility check (<code>AbstractAutoProxyCreator</code>) → build proxy.</li>
+<li>Interface present → <strong>JDK Dynamic proxy</strong>; plain class → <strong>CGLIB proxy</strong>. At runtime the proxy is invoked, not your raw class.</li>
+</ul>
+<hr />
+<p>Next topic: <strong>Transaction Management</strong> — <code>@Transactional</code>, ACID, the TransactionManager hierarchy and propagation, all riding on this AOP machinery.</p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = AOP_Explained_Part1.mp4; Part 2 = AOP_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

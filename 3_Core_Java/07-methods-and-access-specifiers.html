@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Methods and Access Specifiers</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#e8590c22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #e8590c40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#e8590c0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #e8590c33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#e8590c;--a2:#fd7e14">
+<header class="hero"><div class="in">
+  <span class="badge">☕ CORE JAVA</span>
+  <h1>Methods and Access Specifiers</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>Return type</em></p>
+<p class="chips">☕ 8 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> How to make a truly constant variable with static final  ·  What a method is and why we use one  ·  The four access specifiers (public, private, protected, default) and what a package is  ·  The full anatomy of a method declaration — every word explained</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Methods_and_Access_Specifiers_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>Constant Variables</h2>
+<p>Start with a plain static variable:</p>
+<figure><img alt="Methods and Access Specifiers — diagram" src="07-methods-and-access-specifiers.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<pre><code><span class="k">class</span> <span class="ty">Student</span> {
+    <span class="k">static</span> <span class="k">int</span> empId = <span class="n">10</span>;
+}
+</code></pre>
+<pre><code>        +--------------+
+        | empId = 10   |    &lt;- ONE shared copy (static)
+        +--------------+
+          ^          ^
+          |          |
+      +---+--+   +---+--+
+      | emp1 |   | emp2 |    Both of them CAN change the
+      +------+   +------+    value of empId to any value!
+</code></pre>
+<p><code>static</code> gives us one shared copy — but anyone can still overwrite it. <strong>How do we make it constant?</strong> Add <code>final</code>:</p>
+<pre><code><span class="k">static</span> <span class="k">final</span> <span class="k">int</span> <span class="ty">EMP_ID</span> = <span class="n">50</span>;   <span class="c">// (constant variable)</span>
+</code></pre>
+<ul>
+<li><code>static</code> → one copy, belongs to the class.</li>
+<li><code>final</code> → the value can never be changed after it is set.</li>
+<li>By convention, a constant's name is written in <strong>CAPITAL LETTERS</strong>.</li>
+</ul>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">ConstantDemo</span> {
+    <span class="k">static</span> <span class="k">final</span> <span class="k">int</span> <span class="ty">MAX_MARKS</span> = <span class="n">100</span>;
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">System</span>.out.println(<span class="ty">MAX_MARKS</span>);
+        <span class="c">// MAX_MARKS = 200;   // COMPILE ERROR: cannot assign a value to final variable</span>
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 100</span>
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> <code>static</code> = shared, <code>final</code> = locked. Together they make a true constant, named in CAPITALS.</p>
+</blockquote>
+<hr />
+<h2>What is a Method?</h2>
+<ul>
+<li>A method is used to <strong>perform a certain task</strong>.</li>
+<li>It is a <strong>collection of instructions that performs some specific task</strong>.</li>
+<li>It brings <strong>code readability</strong> (the task has a name) and <strong>re-usability</strong> (write once, call many times).</li>
+</ul>
+<p>Analogy: a method is like a recipe card. You write the steps once; whenever you want that dish, you just call the recipe by name instead of rewriting every step.</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">MethodIntro</span> {
+    <span class="k">static</span> <span class="k">int</span> add(<span class="k">int</span> a, <span class="k">int</span> b) {     <span class="c">// written ONCE</span>
+        <span class="k">return</span> a + b;
+    }
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">System</span>.out.println(add(<span class="n">2</span>, <span class="n">3</span>)); <span class="c">// reused...</span>
+        <span class="ty">System</span>.out.println(add(<span class="n">10</span>, <span class="n">40</span>)); <span class="c">// ...again and again</span>
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 5</span>
+<span class="c">// 50</span>
+</code></pre>
+<hr />
+<h2>Access Specifiers (and what a Package is)</h2>
+<p><strong>Package:</strong> a <strong>collection of logical or similar classes</strong> — like a folder that groups related classes together (e.g. <code>java.util</code> holds utility classes).</p>
+<p>Access specifiers decide <strong>who is allowed to see and use</strong> a class member:</p>
+<ul>
+<li><strong>public</strong> — can be accessed by <strong>any class in any package</strong>.</li>
+<li><strong>private</strong> — can be accessed <strong>only by methods in the same class</strong>.</li>
+<li><strong>protected</strong> — can be accessed by <strong>other classes in the same package, or subclasses in a different package</strong>.</li>
+<li><strong>default</strong> — if we do not mention anything, Java uses default. Accessible <strong>only by classes in the same package</strong>.</li>
+</ul>
+<p>Visibility at a glance:</p>
+<ul class="cards"><li><b><code>public</code></b> — Yes — Yes — Yes — Yes</li><li><b><code>protected</code></b> — Yes — Yes — Yes — No</li><li><b><em>default</em> (nothing written)</b> — Yes — Yes — No — No</li><li><b><code>private</code></b> — Yes — No — No — No</li></ul>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">BankAccount</span> {
+    <span class="k">private</span> <span class="k">double</span> balance = <span class="n">100.0</span>;   <span class="c">// hidden: only this class can touch it</span>
+    <span class="k">protected</span> <span class="ty">String</span> branch = <span class="s">&quot;Jaipur&quot;</span>; <span class="c">// this package + subclasses</span>
+    <span class="ty">String</span> bankName = <span class="s">&quot;MyBank&quot;</span>;       <span class="c">// default: this package only</span>
+    <span class="k">public</span> <span class="ty">String</span> owner = <span class="s">&quot;Asha&quot;</span>;     <span class="c">// everyone</span>
+
+    <span class="k">public</span> <span class="k">double</span> getBalance() {      <span class="c">// public &quot;gate&quot; to the private data</span>
+        <span class="k">return</span> balance;
+    }
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">BankAccount</span> acc = <span class="k">new</span> <span class="ty">BankAccount</span>();
+        <span class="ty">System</span>.out.println(acc.owner + <span class="s">&quot; has &quot;</span> + acc.getBalance());
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// Asha has 100.0</span>
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> think of circles of trust — <code>private</code> (only me) → default (my package) → <code>protected</code> (my package + my children) → <code>public</code> (the whole world).</p>
+</blockquote>
+<hr />
+<h2>Method Declaration — Full Anatomy</h2>
+<p>Here is one method with every part labelled:</p>
+<pre><code><span class="k">public</span>   <span class="k">int</span>   sum (<span class="k">int</span> a, <span class="k">int</span> b)   <span class="k">throws</span> <span class="ty">Exception</span> {
+    <span class="k">return</span> <span class="n">10</span>;
+}
+</code></pre>
+<pre><code>public         -&gt; Access specifier   (who may call it)
+int            -&gt; Return type        (what it gives back)
+sum            -&gt; Method name        (a verb — an action)
+(int a, int b) -&gt; Argument / parameter list (inputs)
+throws Exception -&gt; declares problems it may pass to the caller
+{ return 10; } -&gt; Method body        (the actual work)
+</code></pre>
+<ul>
+<li>If the method does <strong>not return anything</strong>, use <strong><code>void</code></strong>.</li>
+<li>Otherwise use a <strong>primitive data type or a class name</strong> as the return type (e.g. <code>int</code>, <code>double</code>, <code>String</code>, <code>Employee</code>).</li>
+</ul>
+<h3>Method name</h3>
+<ul>
+<li>It should be a <strong>verb</strong> — some kind of action (<code>calculateSalary</code>, <code>printReport</code>).</li>
+<li>Should <strong>start with a small letter</strong> and follow <strong>camelCase</strong> for multiple words.</li>
+</ul>
+<h3>Parameters</h3>
+<ul>
+<li>The <strong>list of variables that will be used inside the method</strong> — its inputs.</li>
+<li>The parameter list <strong>can also be blank</strong>: <code>void sayHello()</code>.</li>
+</ul>
+<h3>Method body — how a method ends</h3>
+<ul>
+<li>The body <strong>finishes when you call <code>return</code></strong>.</li>
+<li>Or it finishes <strong>when execution reaches the end</strong> of the body.</li>
+<li>You can <strong>stop a method early with <code>return;</code> even when the return type is <code>void</code></strong>.</li>
+</ul>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">BodyDemo</span> {
+    <span class="k">static</span> <span class="k">void</span> greet(<span class="ty">String</span> name) {     <span class="c">// void method</span>
+        <span class="k">if</span> (name == <span class="k">null</span>) {
+            <span class="ty">System</span>.out.println(<span class="s">&quot;No name given&quot;</span>);
+            <span class="k">return</span>;                      <span class="c">// early exit — allowed even in void!</span>
+        }
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Hello &quot;</span> + name);
+    }                                    <span class="c">// ...or it ends here naturally</span>
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        greet(<span class="k">null</span>);
+        greet(<span class="s">&quot;Ravi&quot;</span>);
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// No name given</span>
+<span class="c">// Hello Ravi</span>
+</code></pre>
+<hr />
+<h2>Types of Methods</h2>
+<h3>1) System-defined methods</h3>
+<p>Methods which are <strong>already defined and ready to use in Java</strong> — you just call them.</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">SystemDefined</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">System</span>.out.println(<span class="ty">Math</span>.sqrt(<span class="n">25</span>));   <span class="c">// sqrt is written by Java, not by us</span>
+        <span class="ty">System</span>.out.println(<span class="ty">Math</span>.max(<span class="n">3</span>, <span class="n">9</span>));
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 5.0</span>
+<span class="c">// 9</span>
+</code></pre>
+<h3>2) User-defined methods</h3>
+<p>Methods <strong>the programmer creates based on the program's necessity</strong> — like <code>add()</code> and <code>greet()</code> above.</p>
+<h3>3) Overloaded methods</h3>
+<p><strong>More than one method with the same name in the same class</strong> — they differ by their parameter lists. Java picks the right one by looking at the arguments you pass.</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">OverloadDemo</span> {
+    <span class="k">static</span> <span class="k">int</span> area(<span class="k">int</span> side) { <span class="k">return</span> side * side; }              <span class="c">// square</span>
+    <span class="k">static</span> <span class="k">int</span> area(<span class="k">int</span> length, <span class="k">int</span> width) { <span class="k">return</span> length * width; } <span class="c">// rectangle</span>
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">System</span>.out.println(area(<span class="n">4</span>));
+        <span class="ty">System</span>.out.println(area(<span class="n">4</span>, <span class="n">5</span>));
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 16</span>
+<span class="c">// 20</span>
+</code></pre>
+<h3>4) Overridden methods</h3>
+<p><strong>A subclass has the same method as the parent class</strong> (same name, same parameters) and provides its own version.</p>
+<pre><code><span class="k">class</span> <span class="ty">Animal</span> {
+    <span class="k">void</span> sound() { <span class="ty">System</span>.out.println(<span class="s">&quot;Some generic sound&quot;</span>); }
+}
+
+<span class="k">class</span> <span class="ty">Dog</span> <span class="k">extends</span> <span class="ty">Animal</span> {
+    <span class="a">@Override</span>
+    <span class="k">void</span> sound() { <span class="ty">System</span>.out.println(<span class="s">&quot;Woof!&quot;</span>); }   <span class="c">// overrides the parent version</span>
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">OverrideDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Animal</span> a = <span class="k">new</span> <span class="ty">Dog</span>();
+        a.sound();               <span class="c">// the Dog version runs</span>
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// Woof!</span>
+</code></pre>
+<h3>5) Static methods</h3>
+<ul>
+<li><strong>Associated with the class</strong>, not with objects.</li>
+<li>Can be <strong>called just with the class name</strong>: <code>Math.sqrt(25)</code> — no object needed.</li>
+<li>A static method <strong>cannot access non-static instance variables and methods</strong> (there is no object, so whose variable would it read?).</li>
+<li>A static method <strong>cannot be overridden</strong>.</li>
+</ul>
+<p><strong>When to declare a method static:</strong></p>
+<ul>
+<li>Methods which <strong>do not modify the state of the object</strong> (they touch no instance fields).</li>
+<li><strong>Utility methods</strong> that use no instance variables and compute purely from their arguments.</li>
+<li>Classic real-world example: the <strong>Factory Design Pattern</strong>, where a static method builds and returns objects: <code>Employee.create("Ravi")</code>.</li>
+</ul>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">MathUtil</span> {
+    <span class="k">static</span> <span class="k">int</span> square(<span class="k">int</span> n) {        <span class="c">// pure utility: uses only its argument</span>
+        <span class="k">return</span> n * n;
+    }
+
+    <span class="k">int</span> instanceValue = <span class="n">10</span>;
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">System</span>.out.println(<span class="ty">MathUtil</span>.square(<span class="n">6</span>));   <span class="c">// called with the CLASS name</span>
+        <span class="c">// System.out.println(instanceValue);     // ERROR: static cannot</span>
+        <span class="c">//                                        // read instance variables</span>
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 36</span>
+</code></pre>
+<h3>6) Final methods</h3>
+<ul>
+<li>A <strong>final method cannot be overridden</strong> in Java.</li>
+<li><strong>Why?</strong> <code>final</code> on a method means <strong>its implementation cannot be changed</strong>. If a child class could not change the implementation anyway, allowing overriding would be pointless — so Java forbids it outright.</li>
+</ul>
+<pre><code><span class="k">class</span> <span class="ty">Payment</span> {
+    <span class="k">final</span> <span class="k">void</span> verify() { <span class="ty">System</span>.out.println(<span class="s">&quot;Verified securely&quot;</span>); }
+}
+
+<span class="k">class</span> <span class="ty">UpiPayment</span> <span class="k">extends</span> <span class="ty">Payment</span> {
+    <span class="c">// void verify() { }   // COMPILE ERROR: cannot override final method</span>
+}
+</code></pre>
+<p>Use <code>final</code> when the logic is critical and must stay identical for every subclass (security checks, core algorithms).</p>
+<h3>7) Abstract methods</h3>
+<ul>
+<li>Defined <strong>only in abstract classes</strong>.</li>
+<li><strong>Only the method declaration is done</strong> — no body, just a signature ending in <code>;</code>.</li>
+<li>Its <strong>implementation is done in the child classes</strong>.</li>
+</ul>
+<pre><code><span class="k">abstract</span> <span class="k">class</span> <span class="ty">Shape</span> {
+    <span class="k">abstract</span> <span class="k">double</span> area();            <span class="c">// declaration only — no body</span>
+}
+
+<span class="k">class</span> <span class="ty">Circle</span> <span class="k">extends</span> <span class="ty">Shape</span> {
+    <span class="k">double</span> r = <span class="n">2.0</span>;
+    <span class="k">double</span> area() { <span class="k">return</span> <span class="n">3.14</span> * r * r; }   <span class="c">// child provides implementation</span>
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">AbstractDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Shape</span> s = <span class="k">new</span> <span class="ty">Circle</span>();
+        <span class="ty">System</span>.out.println(s.area());
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 12.56</span>
+</code></pre>
+<p>Use abstract methods when the parent knows <em>that</em> something must exist ("every shape has an area") but only the children know <em>how</em>.</p>
+<hr />
+<h2>Variable Arguments (VARARGS)</h2>
+<p>VARARGS let a method accept a <strong>variable number of inputs</strong> in one parameter — call it with 0, 1, or 100 values.</p>
+<p>The rules:</p>
+<ol>
+<li>It accepts a <strong>variable number of inputs</strong> (written as <code>type... name</code>).</li>
+<li><strong>Only one</strong> varargs parameter can be present in a method.</li>
+<li>It <strong>must be the last argument</strong> in the parameter list.</li>
+</ol>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">VarargsDemo</span> {
+    <span class="k">static</span> <span class="k">int</span> sum(<span class="ty">String</span> label, <span class="k">int</span>... numbers) {  <span class="c">// varargs LAST — rule 3</span>
+        <span class="k">int</span> total = <span class="n">0</span>;
+        <span class="k">for</span> (<span class="k">int</span> n : numbers) {       <span class="c">// inside, it behaves like an array</span>
+            total += n;
+        }
+        <span class="ty">System</span>.out.println(label + <span class="s">&quot; &quot;</span> + total);
+        <span class="k">return</span> total;
+    }
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        sum(<span class="s">&quot;Two values:&quot;</span>, <span class="n">10</span>, <span class="n">20</span>);
+        sum(<span class="s">&quot;Four values:&quot;</span>, <span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>);
+        sum(<span class="s">&quot;No values:&quot;</span>);            <span class="c">// even zero values is fine</span>
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// Two values: 30</span>
+<span class="c">// Four values: 10</span>
+<span class="c">// No values: 0</span>
+</code></pre>
+<pre><code><span class="c">// ILLEGAL examples — these do NOT compile:</span>
+<span class="c">// void bad1(int... a, int... b) { }     // two varargs — breaks rule 2</span>
+<span class="c">// void bad2(int... a, String s) { }     // varargs not last — breaks rule 3</span>
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> varargs = "...as many as you like" — but only one <code>...</code>, and always at the end.</p>
+</blockquote>
+<hr />
+<h2>Quick Revision</h2>
+<ul>
+<li><strong>Constant variable</strong> = <code>static final</code>, named in CAPITALS; static shares one copy, final locks the value.</li>
+<li>A <strong>method</strong> is a named collection of instructions for one specific task — for readability and re-usability.</li>
+<li><strong>Access specifiers:</strong> <code>public</code> (everywhere) &gt; <code>protected</code> (package + subclasses) &gt; default (package only) &gt; <code>private</code> (same class only). A <strong>package</strong> is a folder of logically similar classes.</li>
+<li>Method anatomy: <code>accessSpecifier returnType name(parameters) throws ... { body }</code>.</li>
+<li>Return <code>void</code> if nothing comes back; method names are <strong>verbs in camelCase</strong>; parameter lists may be empty; <code>return;</code> can end even a void method early.</li>
+<li>Method types: <strong>system-defined</strong> (<code>Math.sqrt</code>), <strong>user-defined</strong>, <strong>overloaded</strong> (same name, different parameters, same class), <strong>overridden</strong> (same signature, subclass), <strong>static</strong> (class-level, no instance access, not overridable — great for utilities and factories), <strong>final</strong> (cannot be overridden), <strong>abstract</strong> (declaration only, children implement).</li>
+<li><strong>VARARGS</strong>: variable number of inputs; only one per method; must be the last parameter.</li>
+</ul>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Methods_and_Access_Specifiers_Explained_Part1.mp4; Part 2 = Methods_and_Access_Specifiers_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

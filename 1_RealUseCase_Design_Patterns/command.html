@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Command Design Pattern</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#0d948822;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #0d948840}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#0d94880d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #0d948833}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#0d948814,#14b8a622);border:1px solid #0d948833;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#0d948814,#14b8a622);border:1px solid #0d948833;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#0d9488;--a2:#14b8a6">
+<header class="hero"><div class="in">
+  <span class="badge">🧩 REAL-WORLD DESIGN PATTERN</span>
+  <h1>Command Design Pattern</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>IDataOperationCommand.java — the Command</em></p>
+<p class="chips">☕ 4 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> Encapsulate a request as an object: a Command binds together a receiver and the action to perform on it.</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Command_Short_Overview_EN.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<hr />
+<h2>Intent</h2>
+<p>Encapsulate a request as an <strong>object</strong>: a Command binds together a receiver and the action to perform on it. Once requests are objects, they can be <strong>queued, logged, delayed, retried, or undone</strong> — and the invoker that runs them needs to know only one method: <code>execute()</code>.</p>
+<hr />
+<h2>How it mirrors production code</h2>
+<p>When a schema changes, follow-up work — updating references, deleting stale references — shouldn't run inline with the user's request. Production systems <strong>queue</strong> these as jobs and drain the queue later (a worker, a scheduler, a Kafka consumer). Each job must carry everything it needs: what to do and what to do it <em>to</em>. This module models that: each command binds a service (the receiver) with a <code>DataOperationModel</code> (the payload); the main loop drains the queue calling only <code>execute()</code> — it has no idea one command updates and another deletes.</p>
+<hr />
+<h2>How the pattern works</h2>
+<ul>
+<li><code>IDataOperationCommand</code> is the <strong>Command</strong> interface — a single <code>execute()</code>.</li>
+<li><code>UpdateDataCommand</code> / <code>DeleteDataCommand</code> are <strong>Concrete Commands</strong>: each holds its <strong>receiver</strong> (an update/delete service interface) and the <strong>payload</strong> (<code>DataOperationModel</code>), binding them at construction.</li>
+<li>The receivers are functional interfaces (<code>IPerformUpdateOperationsService</code>, <code>IPerformDeleteOperationsService</code>) — supplied as lambdas in the demo, real services in production.</li>
+<li>The <strong>invoker</strong> is the queue-draining loop: it stores commands and calls <code>execute()</code>, never a receiver method.</li>
+</ul>
+<hr />
+<h2>UML Class Diagram</h2>
+<figure><img alt="Command Design Pattern — diagram" src="command.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p><strong>Reading the diagram:</strong> the invoker holds a queue typed to the command interface and calls only <code>execute()</code>. Each concrete command privately bundles its receiver and payload — the invoker can't see either.</p>
+<hr />
+<h2>The players</h2>
+<ul class="cards"><li><b><code>IDataOperationCommand</code></b> — Command — the one-method <code>execute()</code> contract.</li><li><b><code>UpdateDataCommand</code> / <code>DeleteDataCommand</code></b> — Concrete commands — receiver + payload bound at construction.</li><li><b><code>IPerformUpdateOperationsService</code> / <code>IPerformDeleteOperationsService</code></b> — Receivers — the services that do the real work.</li><li><b><code>DataOperationModel</code></b> — Payload — the schema id the work applies to.</li><li><b><code>CommandDesignPattern</code></b> — Invoker — queues commands, drains with <code>execute()</code> only.</li></ul>
+<hr />
+<h2>Code walkthrough — every line explained</h2>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">IDataOperationCommand</span> {
+    <span class="k">void</span> execute();
+}
+</code></pre>
+<ul>
+<li>One method, zero arguments. Everything a command needs must be <em>inside</em> it — that self-containment is what makes commands queueable and transportable.</li>
+</ul>
+<h3>The receivers</h3>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">IPerformUpdateOperationsService</span> {
+    <span class="k">void</span> performUpdateOperations(<span class="ty">DataOperationModel</span> dataOperationModel);
+}
+</code></pre>
+<ul>
+<li>The actual workers. Being single-method interfaces, they can be provided as lambdas in tests/demos and as real Spring services in production — same command code either way.</li>
+</ul>
+<h3><code>UpdateDataCommand.java</code> — a Concrete Command</h3>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">UpdateDataCommand</span> <span class="k">implements</span> <span class="ty">IDataOperationCommand</span> {
+
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">IPerformUpdateOperationsService</span> updateService;
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">DataOperationModel</span> dataOperationModel;
+
+    <span class="k">public</span> <span class="ty">UpdateDataCommand</span>(<span class="ty">IPerformUpdateOperationsService</span> updateService,
+            <span class="ty">DataOperationModel</span> dataOperationModel) {
+        <span class="k">this</span>.updateService = updateService;
+        <span class="k">this</span>.dataOperationModel = dataOperationModel;
+    }
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">void</span> execute() {
+        updateService.performUpdateOperations(dataOperationModel);
+    }
+}
+</code></pre>
+<ul>
+<li>The constructor performs the pattern's key act: <strong>binding</strong> — this receiver, this payload, frozen into one object. <code>execute()</code> then needs no arguments; it simply applies the receiver to the payload. <code>DeleteDataCommand</code> is identical in shape with the delete service.</li>
+</ul>
+<h3><code>CommandDesignPattern.java</code> — the Invoker</h3>
+<pre><code><span class="ty">DataOperationModel</span> model = <span class="k">new</span> <span class="ty">DataOperationModel</span>(<span class="s">&quot;schema-1&quot;</span>);
+
+<span class="ty">List</span>&lt;<span class="ty">IDataOperationCommand</span>&gt; queue = <span class="k">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+queue.add(<span class="k">new</span> <span class="ty">UpdateDataCommand</span>(
+        m -&gt; <span class="ty">System</span>.out.println(<span class="s">&quot;updating references for &quot;</span> + m.getSchemaId()), model));
+queue.add(<span class="k">new</span> <span class="ty">DeleteDataCommand</span>(
+        m -&gt; <span class="ty">System</span>.out.println(<span class="s">&quot;deleting references for &quot;</span> + m.getSchemaId()), model));
+
+<span class="ty">System</span>.out.println(<span class="s">&quot;queued &quot;</span> + queue.size() + <span class="s">&quot; commands&quot;</span>);
+<span class="k">for</span> (<span class="ty">IDataOperationCommand</span> command : queue) {
+    command.execute();
+}
+</code></pre>
+<ul>
+<li>Two commands are built (receivers supplied as lambdas) and queued. The drain loop is the invoker's entire knowledge of the world: <code>command.execute()</code>. It cannot tell an update from a delete — which means new command types join the queue with zero changes to this loop.</li>
+</ul>
+<hr />
+<h2>Why the design decisions</h2>
+<ul>
+<li><strong>Why bind the payload at construction instead of passing it to <code>execute()</code>?</strong> A zero-argument <code>execute()</code> makes every command uniform and self-contained — exactly what a queue, scheduler, or retry mechanism requires.</li>
+<li><strong>Why are the receivers interfaces?</strong> The command binds to a <em>capability</em>, not an implementation — lambdas in demos, real services in production, mocks in tests.</li>
+<li><strong>Command vs Strategy:</strong> both wrap behavior behind an interface. Strategy configures <em>how</em> a context does one job; Command reifies <em>a request itself</em> — with its data — so it can travel through time (queues, logs, undo stacks).</li>
+</ul>
+<hr />
+<h2>Expected output</h2>
+<pre><code>$ java -cp target/classes com.realusecase.patterns.<span class="ty">CommandDesignPattern</span>
+
+queued <span class="n">2</span> commands
+updating references <span class="k">for</span> schema-<span class="n">1</span>
+deleting references <span class="k">for</span> schema-<span class="n">1</span>
+</code></pre>
+<hr />
+<h2>Where this pattern shows up in real systems</h2>
+<ul>
+<li>Queued data-maintenance jobs after schema changes (this example).</li>
+<li><code>Runnable</code>/<code>Callable</code> submitted to executors — the JDK's own command objects.</li>
+<li>Undo stacks in editors, transactional outbox entries, message-queue payloads, Spring Batch tasklets.</li>
+</ul>
+<hr />
+<p><em>A request, boxed with everything it needs — run it now, later, or not at all.</em></p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload Command_Design_Pattern_Explained_EN.mp4 to YouTube, then replace YOUTUBE_FULL_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK">YOUTUBE_FULL_LINK</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

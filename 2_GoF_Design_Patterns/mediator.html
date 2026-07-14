@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mediator Design Pattern</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#6366f122;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #6366f140}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#6366f10d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #6366f133}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#6366f114,#818cf822);border:1px solid #6366f133;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#6366f114,#818cf822);border:1px solid #6366f133;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#6366f1;--a2:#818cf8">
+<header class="hero"><div class="in">
+  <span class="badge">🏛️ GANG-OF-FOUR PATTERN</span>
+  <h1>Mediator Design Pattern</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>The contracts</em></p>
+<p class="chips">☕ 4 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> Centralize how a set of objects interact in one mediator. Colleagues never reference each other — they know only the mediator — so coupling collapses from many-to-many to many-to-one, and coordination rules live in exactly one place.</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Mediator_Short_Overview_EN.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<hr />
+<h2>Intent</h2>
+<p>Centralize how a set of objects interact in one <strong>mediator</strong>. Colleagues never reference each other — they know only the mediator — so coupling collapses from many-to-many to many-to-one, and coordination rules live in exactly one place.</p>
+<hr />
+<h2>The example domain</h2>
+<p>A <strong>warehouse dock</strong>: delivery trucks request loading or unloading bays, but only one truck may use the dock at a time — the others must hold position. Trucks must not talk to each other (imagine dozens); they talk only to the <strong>dock coordinator</strong>, who assigns bays and warns the rest.</p>
+<hr />
+<h2>How the pattern works</h2>
+<ul>
+<li><code>IDockCoordinator</code> is the <strong>Mediator</strong> contract: <code>register(truck)</code> + the two bay-request operations.</li>
+<li><code>IDeliveryTruck</code> is the <strong>Colleague</strong> contract: request operations + a callback (<code>notifyDockCoordinator</code>) the mediator uses to answer.</li>
+<li><code>WarehouseDockCoordinator</code> holds the registered trucks and encodes the rule: assign the bay to the requester, tell <strong>everyone else</strong> to hold.</li>
+<li><code>DeliveryTruck</code> self-registers on construction and holds <strong>only</strong> a coordinator reference — never another truck.</li>
+</ul>
+<hr />
+<h2>UML Class Diagram</h2>
+<figure><img alt="Mediator Design Pattern — diagram" src="mediator.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p><strong>Reading the diagram:</strong> all traffic flows through the mediator (dashed arrow). No arrow connects one truck to another — that absence <em>is</em> the pattern.</p>
+<hr />
+<h2>The players</h2>
+<ul class="cards"><li><b><code>IDockCoordinator</code></b> — Mediator contract — register + bay requests.</li><li><b><code>WarehouseDockCoordinator</code></b> — Concrete mediator — assign/hold coordination rule.</li><li><b><code>IDeliveryTruck</code></b> — Colleague contract — requests + notification callback.</li><li><b><code>DeliveryTruck</code></b> — Concrete colleague — knows only the coordinator.</li><li><b><code>WarehouseDockDesignPattern</code></b> — Client — two trucks, two requests.</li></ul>
+<hr />
+<h2>Code walkthrough — every line explained</h2>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">IDockCoordinator</span> {
+    <span class="k">void</span> register(<span class="ty">IDeliveryTruck</span> truck);
+    <span class="k">void</span> requestLoadingBay(<span class="ty">IDeliveryTruck</span> truck);
+    <span class="k">void</span> requestUnloadingBay(<span class="ty">IDeliveryTruck</span> truck);
+}
+
+<span class="k">public</span> <span class="k">interface</span> <span class="ty">IDeliveryTruck</span> {
+    <span class="k">void</span> requestLoadingBay();
+    <span class="k">void</span> requestUnloadingBay();
+    <span class="k">void</span> notifyDockCoordinator(<span class="ty">String</span> msg);
+}
+</code></pre>
+<ul>
+<li>The mediator receives requests <em>with the requester</em>; the colleague exposes a callback so the mediator can answer any truck uniformly.</li>
+</ul>
+<h3><code>DeliveryTruck.java</code> — the colleague</h3>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">DeliveryTruck</span> <span class="k">implements</span> <span class="ty">IDeliveryTruck</span> {
+
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">String</span> truckId;
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">IDockCoordinator</span> coordinator;
+
+    <span class="k">public</span> <span class="ty">DeliveryTruck</span>(<span class="ty">String</span> truckId, <span class="ty">IDockCoordinator</span> coordinator) {
+        <span class="k">this</span>.truckId = truckId;
+        <span class="k">this</span>.coordinator = coordinator;
+        coordinator.register(<span class="k">this</span>);
+    }
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">void</span> requestLoadingBay() {
+        <span class="ty">System</span>.out.println(truckId + <span class="s">&quot; -&gt; Dock: requesting loading bay.&quot;</span>);
+        coordinator.requestLoadingBay(<span class="k">this</span>);
+    }
+    ...
+}
+</code></pre>
+<ul>
+<li><strong>Fields: an id and the coordinator — nothing else.</strong> No truck ever holds a reference to another truck; that's the decoupling the pattern promises.</li>
+<li><strong>Self-registration in the constructor</strong>: a truck can't exist half-wired.</li>
+<li>Every request goes <em>through the coordinator</em>, passing <code>this</code> so the mediator knows who's asking.</li>
+</ul>
+<h3><code>WarehouseDockCoordinator.java</code> — the mediator</h3>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">WarehouseDockCoordinator</span> <span class="k">implements</span> <span class="ty">IDockCoordinator</span> {
+
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">List</span>&lt;<span class="ty">IDeliveryTruck</span>&gt; trucks = <span class="k">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">void</span> requestLoadingBay(<span class="ty">IDeliveryTruck</span> truck) {
+        truck.notifyDockCoordinator(<span class="s">&quot;Loading bay assigned.&quot;</span>);
+        notifyOtherTrucks(truck, <span class="s">&quot;Hold position: another truck is loading.&quot;</span>);
+    }
+
+    <span class="k">private</span> <span class="k">void</span> notifyOtherTrucks(<span class="ty">IDeliveryTruck</span> requester, <span class="ty">String</span> msg) {
+        trucks.stream()
+                .filter(other -&gt; other != requester)
+                .forEach(other -&gt; other.notifyDockCoordinator(msg));
+    }
+}
+</code></pre>
+<ul>
+<li><strong>The coordination rule in one place</strong>: grant the requester its bay, then warn <em>every other</em> truck. The <code>filter(other != requester)</code> is the everyone-but-you broadcast. Unloading mirrors loading with its own messages.</li>
+</ul>
+<h3>The client</h3>
+<pre><code><span class="ty">IDockCoordinator</span> dockCoordinator = <span class="k">new</span> <span class="ty">WarehouseDockCoordinator</span>();
+<span class="ty">IDeliveryTruck</span> truckOne = <span class="k">new</span> <span class="ty">DeliveryTruck</span>(<span class="s">&quot;Truck-14&quot;</span>, dockCoordinator);
+<span class="ty">IDeliveryTruck</span> truckTwo = <span class="k">new</span> <span class="ty">DeliveryTruck</span>(<span class="s">&quot;Truck-29&quot;</span>, dockCoordinator);
+
+truckOne.requestLoadingBay();
+truckTwo.requestUnloadingBay();
+</code></pre>
+<ul>
+<li>Two trucks, wired only to the coordinator. Each request produces a grant for the requester and a hold/stay-clear warning for the other — all routed by the mediator.</li>
+</ul>
+<hr />
+<h2>Why the design decisions</h2>
+<ul>
+<li><strong>Why do trucks hold only the coordinator?</strong> With N trucks talking directly, coupling is N×N. Through the mediator it's N — and the "one truck at a time" rule lives in one class instead of being duplicated in every truck.</li>
+<li><strong>Why does the mediator receive <code>this</code> with each request?</strong> To know who to grant and who to warn — colleague identity matters to coordination.</li>
+<li><strong>Mediator vs Observer:</strong> Observer broadcasts an event to all subscribers uniformly; Mediator <em>coordinates</em> — different colleagues get different messages (grant vs hold) per interaction.</li>
+</ul>
+<hr />
+<h2>Expected output</h2>
+<pre><code><span class="ty">Mediator</span> <span class="ty">Design</span> <span class="ty">Pattern</span>
+<span class="ty">Truck</span>-<span class="n">14</span> -&gt; <span class="ty">Dock</span>: requesting loading bay.
+<span class="ty">Dock</span> -&gt; <span class="ty">Truck</span>-<span class="n">14</span>: <span class="ty">Loading</span> bay assigned.
+<span class="ty">Dock</span> -&gt; <span class="ty">Truck</span>-<span class="n">29</span>: <span class="ty">Hold</span> position: another truck is loading.
+<span class="ty">Truck</span>-<span class="n">29</span> -&gt; <span class="ty">Dock</span>: requesting unloading bay.
+<span class="ty">Dock</span> -&gt; <span class="ty">Truck</span>-<span class="n">29</span>: <span class="ty">Unloading</span> bay assigned.
+<span class="ty">Dock</span> -&gt; <span class="ty">Truck</span>-<span class="n">14</span>: <span class="ty">Stay</span> clear of the dock: another truck is unloading.
+</code></pre>
+<hr />
+<h2>Where this pattern shows up in real systems</h2>
+<ul>
+<li>Dock/gate/runway coordinators (this example).</li>
+<li>Chat-room servers; Spring's <code>DispatcherServlet</code>; message brokers' routing; UI dialog mediators.</li>
+</ul>
+<hr />
+<p><em>Trucks know the dock; the dock knows the rules — no truck ever knows another.</em></p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload Mediator_Design_Pattern_Explained_EN.mp4 to YouTube, then replace YOUTUBE_FULL_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK">YOUTUBE_FULL_LINK</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

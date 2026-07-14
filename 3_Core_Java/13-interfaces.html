@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interfaces — The Contract Between Classes</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#e8590c22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #e8590c40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#e8590c0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #e8590c33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#e8590c;--a2:#fd7e14">
+<header class="hero"><div class="in">
+  <span class="badge">☕ CORE JAVA</span>
+  <h1>Interfaces — The Contract Between Classes</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>(i) Abstraction</em></p>
+<p class="chips">☕ 11 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> What an interface is and how to declare one  ·  The three big things interfaces give us: abstraction, polymorphism, and multiple inheritance  ·  The hidden (implicit) rules for methods and fields inside an interface  ·  The rules a class must follow when it implements an interface</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Interfaces_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>What is an Interface?</h2>
+<p>An <strong>interface</strong> is something that helps two systems talk to each other <strong>without one system needing to know the inner details of the other</strong>.</p>
+<figure><img alt="Interfaces — The Contract Between Classes — diagram" src="13-interfaces.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p><strong>Everyday analogy:</strong> think of a wall power socket. Your phone charger, laptop, and TV all plug into the same socket shape. The socket is the <em>interface</em>. Your laptop does not care how electricity is produced (coal, solar, wind) — it only cares that the socket gives power in an agreed way. In the same way, a Java interface is an agreed <em>contract</em>: "any class that plugs into me promises to provide these methods."</p>
+<p>Because an interface only says <strong>what</strong> must be done (not <strong>how</strong>), it helps us achieve <strong>abstraction</strong>.</p>
+<hr />
+<h2>Interface Declaration</h2>
+<p>An interface declaration is made of five parts:</p>
+<ol>
+<li><strong>Modifier</strong> — for example <code>public</code></li>
+<li>The <strong><code>interface</code> keyword</strong></li>
+<li>The <strong>interface name</strong> — for example <code>Bird</code></li>
+<li>A <strong>comma-separated list of parent interfaces</strong> (optional) — an interface can extend other interfaces</li>
+<li>The <strong>body</strong> — the methods and constants inside <code>{ }</code></li>
+</ol>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">Bird</span> <span class="k">extends</span> <span class="ty">Interface1</span>, <span class="ty">Interface2</span> {
+    <span class="k">void</span> fly();   <span class="c">// the body: what every Bird must be able to do</span>
+}
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> Only <code>public</code> and <em>default</em> (package-private) modifiers are allowed on a top-level interface. If you do not write anything, it is <em>default</em> — visible only inside its own package.</p>
+<p><strong>Remember:</strong> An interface <strong>extends</strong> other interfaces (it can extend many at once): <code>interface A extends B, C { }</code>. A class <strong>implements</strong> an interface.</p>
+</blockquote>
+<hr />
+<h2>Why Use Interfaces? Three Big Benefits</h2>
+<p>With an interface we can define <strong>full (100%) abstraction</strong>. We define <strong>what</strong> a class must do, but <strong>not how</strong> it will do it. The "how" is left to each implementing class.</p>
+<h3>(ii) Polymorphism</h3>
+<p>An interface <strong>can be used as a data type</strong>. You see this every day in Java:</p>
+<pre><code><span class="ty">List</span> list = <span class="k">new</span> <span class="ty">ArrayList</span>&lt;&gt;();   <span class="c">// List is the interface (data type),</span>
+                                 <span class="c">// ArrayList is the real object</span>
+</code></pre>
+<ul>
+<li>We <strong>cannot create an object of an interface</strong> directly (<code>new List()</code> is illegal).</li>
+<li>But an interface variable <strong>can hold a reference to any class that implements it</strong>.</li>
+<li>At <strong>runtime</strong>, Java decides which class's method to actually run. That is polymorphism — "one name, many forms."</li>
+</ul>
+<pre><code><span class="k">interface</span> <span class="ty">Bird</span> { <span class="k">void</span> sound(); }
+
+<span class="k">class</span> <span class="ty">Sparrow</span> <span class="k">implements</span> <span class="ty">Bird</span> {
+    <span class="k">public</span> <span class="k">void</span> sound() { <span class="ty">System</span>.out.println(<span class="s">&quot;Chirp&quot;</span>); }
+}
+
+<span class="k">class</span> <span class="ty">Crow</span> <span class="k">implements</span> <span class="ty">Bird</span> {
+    <span class="k">public</span> <span class="k">void</span> sound() { <span class="ty">System</span>.out.println(<span class="s">&quot;Caw&quot;</span>); }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Bird</span> b = <span class="k">new</span> <span class="ty">Sparrow</span>();  <span class="c">// same variable type...</span>
+        b.sound();               <span class="c">// runs Sparrow&#x27;s version</span>
+        b = <span class="k">new</span> <span class="ty">Crow</span>();          <span class="c">// ...now points to a different class</span>
+        b.sound();               <span class="c">// runs Crow&#x27;s version</span>
+    }
+}
+</code></pre>
+<pre><code>Output:
+Chirp
+Caw
+</code></pre>
+<h3>(iii) Multiple Inheritance</h3>
+<p>A Java class cannot extend two classes, but a class <strong>can implement many interfaces</strong>. So <strong>multiple inheritance is possible in Java only through interfaces</strong>.</p>
+<pre><code><span class="k">interface</span> <span class="ty">CanSwim</span> { <span class="k">void</span> swim(); }
+<span class="k">interface</span> <span class="ty">CanFly</span>  { <span class="k">void</span> fly();  }
+
+<span class="k">class</span> <span class="ty">Duck</span> <span class="k">implements</span> <span class="ty">CanSwim</span>, <span class="ty">CanFly</span> {   <span class="c">// inherits from BOTH contracts</span>
+    <span class="k">public</span> <span class="k">void</span> swim() { <span class="ty">System</span>.out.println(<span class="s">&quot;Duck swims&quot;</span>); }
+    <span class="k">public</span> <span class="k">void</span> fly()  { <span class="ty">System</span>.out.println(<span class="s">&quot;Duck flies&quot;</span>); }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Duck</span> d = <span class="k">new</span> <span class="ty">Duck</span>();
+        d.swim();
+        d.fly();
+    }
+}
+</code></pre>
+<pre><code>Output:
+Duck swims
+Duck flies
+</code></pre>
+<hr />
+<h2>Methods in an Interface (Implicit Rules)</h2>
+<ul>
+<li>All interface methods are <strong>implicitly <code>public</code></strong> — even if you don't write <code>public</code>, Java adds it for you. You cannot make them anything less visible.</li>
+<li>An interface method <strong>cannot be declared <code>final</code></strong>. (A <code>final</code> method can never be overridden — but the whole point of an interface method is that classes <em>will</em> override it. The two ideas contradict each other.)</li>
+</ul>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">Bird</span> {
+    <span class="k">void</span> fly();               <span class="c">// Java secretly reads this as: public abstract void fly();</span>
+    <span class="c">// final void eat();      // COMPILE ERROR — final is not allowed</span>
+}
+</code></pre>
+<hr />
+<h2>Fields in an Interface (Implicit Rules)</h2>
+<ul>
+<li>Every field in an interface is <strong>implicitly <code>public static final</code></strong> — in other words, a <strong>CONSTANT</strong>.</li>
+<li>You <strong>cannot</strong> make a field <code>private</code> or <code>protected</code>.</li>
+<li>Because it is <code>final</code>, you must give it a value immediately, and nobody can change it later.</li>
+</ul>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">Bird</span> {
+    <span class="k">int</span> <span class="ty">MAX_HEIGHT</span> = <span class="n">2000</span>;    <span class="c">// Java reads this as: public static final int MAX_HEIGHT = 2000;</span>
+}
+
+<span class="k">class</span> <span class="ty">Test</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">System</span>.out.println(<span class="ty">Bird</span>.<span class="ty">MAX_HEIGHT</span>);  <span class="c">// accessed via interface name, like any constant</span>
+        <span class="c">// Bird.MAX_HEIGHT = 5000;            // COMPILE ERROR — it is final</span>
+    }
+}
+</code></pre>
+<pre><code>Output:
+2000
+</code></pre>
+<hr />
+<h2>Rules for Implementing an Interface</h2>
+<ol>
+<li><strong>The overriding method cannot have a more restrictive access specifier.</strong> Interface methods are <code>public</code>, so the class's version must also be <code>public</code>. (You cannot "shrink" visibility.)</li>
+<li><strong>A concrete (normal) class must override ALL methods</strong> declared in the interface.</li>
+<li><strong>An abstract class is NOT forced to override all the methods.</strong> It can implement some (or none) and pass the rest down to its own children.</li>
+<li><strong>A class can implement multiple interfaces</strong> at the same time.</li>
+</ol>
+<pre><code><span class="k">interface</span> <span class="ty">Bird</span> {
+    <span class="k">void</span> fly();
+    <span class="k">void</span> eat();
+}
+
+<span class="c">// Abstract class: allowed to implement only SOME methods</span>
+<span class="k">abstract</span> <span class="k">class</span> <span class="ty">BigBird</span> <span class="k">implements</span> <span class="ty">Bird</span> {
+    <span class="k">public</span> <span class="k">void</span> eat() { <span class="ty">System</span>.out.println(<span class="s">&quot;Eats a lot&quot;</span>); }
+    <span class="c">// fly() is not implemented — OK, because the class is abstract</span>
+}
+
+<span class="c">// Concrete class: MUST finish the job</span>
+<span class="k">class</span> <span class="ty">Eagle</span> <span class="k">extends</span> <span class="ty">BigBird</span> {
+    <span class="k">public</span> <span class="k">void</span> fly() { <span class="ty">System</span>.out.println(<span class="s">&quot;Eagle flies high&quot;</span>); }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Eagle</span> e = <span class="k">new</span> <span class="ty">Eagle</span>();
+        e.eat();
+        e.fly();
+    }
+}
+</code></pre>
+<pre><code>Output:
+Eats a lot
+Eagle flies high
+</code></pre>
+<hr />
+<h2>Nested Interfaces</h2>
+<p>A <strong>nested interface</strong> is an interface declared inside something else. There are two kinds:</p>
+<ol>
+<li>An interface declared <strong>inside another interface</strong></li>
+<li>An interface declared <strong>inside a class</strong></li>
+</ol>
+<p>Why do this? Generally it is used to <strong>group logically related interfaces together</strong> — the nested one only makes sense in the context of the outer one.</p>
+<p><strong>Rules:</strong></p>
+<ul>
+<li>A nested interface declared <strong>inside an interface</strong> must be <strong><code>public</code></strong> (it is public implicitly).</li>
+<li>A nested interface declared <strong>inside a class</strong> can have <strong>any access modifier</strong> (<code>private</code>, <code>protected</code>, <code>public</code>, or default).</li>
+<li>When you implement the outer interface, you are <strong>not required</strong> to implement the inner one — and vice versa. They are independent contracts.</li>
+</ul>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">Bird</span> {
+
+    <span class="c">// nested inside a class -&gt; any modifier is allowed (public here so others can use it)</span>
+    <span class="k">public</span> <span class="k">interface</span> <span class="ty">NonFly</span> {
+        <span class="k">void</span> canRun();          <span class="c">// implicitly public abstract</span>
+    }
+}
+
+<span class="c">// We refer to it with the OuterName.InnerName syntax:</span>
+<span class="k">class</span> <span class="ty">Ostrich</span> <span class="k">implements</span> <span class="ty">Bird</span>.<span class="ty">NonFly</span> {
+    <span class="k">public</span> <span class="k">void</span> canRun() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Ostrich runs fast!&quot;</span>);
+    }
+}
+
+<span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Bird</span>.<span class="ty">NonFly</span> ostrich = <span class="k">new</span> <span class="ty">Ostrich</span>();   <span class="c">// nested interface used as a data type</span>
+        ostrich.canRun();
+    }
+}
+</code></pre>
+<pre><code>Output:
+Ostrich runs fast!
+</code></pre>
+<hr />
+<h2>Interface vs Abstract Class — The Full 10-Point Comparison</h2>
+<ul class="cards"><li><b>1</b> — Keyword used is <strong><code>abstract</code></strong> — Keyword used is <strong><code>interface</code></strong></li><li><b>2</b> — Child classes use the keyword <strong><code>extends</code></strong> — Child classes use the keyword <strong><code>implements</code></strong></li><li><b>3</b> — Can have <strong>both abstract and non-abstract (concrete) methods</strong> — Can have <strong>only abstract methods</strong> (but from Java 8 onwards it can also have <code>default</code>, <code>static</code>, and — from Java 9 — <code>private</code> methods with implementation)</li><li><b>4</b> — Can extend <strong>another class</strong> and implement <strong>multiple interfaces</strong> — Can only <strong>extend other interfaces</strong></li><li><b>5</b> — Variables can be <strong>static, non-static, final, non-final</strong> — any mix — Variables are <strong>by default CONSTANTS</strong> (<code>public static final</code>)</li><li><b>6</b> — Variables and methods can be <strong>private, protected, public, or default</strong> — Variables and methods are <strong>by default <code>public</code></strong> (Java 9 added support for <code>private</code> methods)</li><li><b>7</b> — <strong>Multiple inheritance is NOT supported</strong> through it — <strong>Multiple inheritance IS supported</strong> with interfaces in Java</li><li><b>8</b> — It <strong>can provide the implementation of an interface</strong> — It <strong>cannot provide the implementation</strong> of another interface or abstract class (it can only declare/extend)</li><li><b>9</b> — It <strong>can have a constructor</strong> — It <strong>cannot have a constructor</strong> (you never make an object of it directly)</li><li><b>10</b> — To declare a method abstract you must write the <strong><code>abstract</code></strong> keyword, and it can be <code>protected</code>, <code>public</code>, or default — <strong>No keyword is needed</strong> to make a method abstract — it is abstract and <code>public</code> by default</li></ul>
+<blockquote>
+<p><strong>Remember:</strong> Use an <strong>abstract class</strong> when related classes share common code and state. Use an <strong>interface</strong> when unrelated classes just need to promise the same behaviour.</p>
+</blockquote>
+<hr />
+<h2>Default Methods (Java 8)</h2>
+<h3>Why do default methods exist?</h3>
+<p>Before Java 8, an interface could have <strong>only abstract methods</strong>, and <strong>every child class had to implement all of them</strong>.</p>
+<p>Now imagine an interface that is already implemented by 500 classes in old (legacy) code. If you add one new abstract method to it, all 500 classes suddenly break — each must be edited to implement it!</p>
+<p><strong>The fix:</strong> Java 8 added the <code>default</code> method — a method <strong>with a body</strong> inside an interface. Implementing classes get it <strong>for free</strong> and do not have to override it.</p>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">Bird</span> {
+    <span class="k">default</span> <span class="k">int</span> getNumber() {
+        <span class="k">return</span> <span class="n">10</span>;
+    }
+}
+
+<span class="k">class</span> <span class="ty">Eagle</span> <span class="k">implements</span> <span class="ty">Bird</span> {
+    <span class="c">// No need to implement getNumber() — we inherit the default body.</span>
+}
+
+<span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Bird</span> b = <span class="k">new</span> <span class="ty">Eagle</span>();
+        <span class="ty">System</span>.out.println(b.getNumber());
+    }
+}
+</code></pre>
+<pre><code>Output:
+10
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> Real-world example — the <code>stream()</code> method was added to the <code>Collection</code> interface in Java 8 <strong>as a default method</strong>, so that every existing collection class (ArrayList, HashSet, ...) got streams without any of them being rewritten.</p>
+</blockquote>
+<h3>The Diamond Problem</h3>
+<p>What if a class implements <strong>two interfaces that both have the same default method</strong>? Java gets confused — which body should it inherit?</p>
+<pre><code>        LivingThing / (common idea)
+        /          \
+      Bird        Animal          &lt;-- BOTH have: default boolean canBreathe()
+        \          /
+          Eagle                   &lt;-- implements Bird, Animal ... which one wins??
+</code></pre>
+<p>This diamond-shaped picture is why it is called the <strong>diamond problem</strong>.</p>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">Bird</span> {
+    <span class="k">default</span> <span class="k">boolean</span> canBreathe() { <span class="k">return</span> <span class="k">true</span>; }
+}
+
+<span class="k">public</span> <span class="k">interface</span> <span class="ty">Animal</span> {
+    <span class="k">default</span> <span class="k">boolean</span> canBreathe() { <span class="k">return</span> <span class="k">true</span>; }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Eagle</span> <span class="k">implements</span> <span class="ty">Bird</span>, <span class="ty">Animal</span> {
+}
+<span class="c">// COMPILE ERROR: Eagle inherits unrelated defaults for canBreathe()</span>
+</code></pre>
+<p><strong>Fix — the class overrides the method itself, removing the confusion:</strong></p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">Eagle</span> <span class="k">implements</span> <span class="ty">Bird</span>, <span class="ty">Animal</span> {
+    <span class="k">public</span> <span class="k">boolean</span> canBreathe() {   <span class="c">// Eagle&#x27;s own version — ambiguity gone</span>
+        <span class="k">return</span> <span class="k">true</span>;
+    }
+}
+<span class="c">// This works.</span>
+</code></pre>
+<h3>Three Ways Default Methods Behave in an Interface Hierarchy</h3>
+<p>Instead of two separate parents, put the default method in <strong>one shared parent interface</strong> — then there is no clash. The notes show three variations:</p>
+<p><strong>Way 1 — Child interface simply inherits the default:</strong></p>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">LivingThing</span> {
+    <span class="k">default</span> <span class="k">boolean</span> canBreathe() { <span class="k">return</span> <span class="k">true</span>; }
+}
+
+<span class="k">public</span> <span class="k">interface</span> <span class="ty">Bird</span> <span class="k">extends</span> <span class="ty">LivingThing</span> {
+    <span class="c">// says nothing about canBreathe()</span>
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Eagle</span> <span class="k">implements</span> <span class="ty">Bird</span> {
+    <span class="c">// Nothing to do — Eagle gets canBreathe() from LivingThing. Works fine.</span>
+}
+</code></pre>
+<p><strong>Way 2 — Child interface re-declares the method as abstract (this "cancels" the default!):</strong></p>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">LivingThing</span> {
+    <span class="k">default</span> <span class="k">boolean</span> canBreathe() { <span class="k">return</span> <span class="k">true</span>; }
+}
+
+<span class="k">public</span> <span class="k">interface</span> <span class="ty">Bird</span> <span class="k">extends</span> <span class="ty">LivingThing</span> {
+    <span class="k">boolean</span> canBreathe();   <span class="c">// re-declared abstract: the default body is thrown away</span>
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Eagle</span> <span class="k">implements</span> <span class="ty">Bird</span> {
+}
+<span class="c">// COMPILE ERROR — does NOT work! Eagle must now implement canBreathe() itself:</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Eagle</span> <span class="k">implements</span> <span class="ty">Bird</span> {
+    <span class="k">public</span> <span class="k">boolean</span> canBreathe() { <span class="k">return</span> <span class="k">true</span>; }   <span class="c">// now it works</span>
+}
+</code></pre>
+<p><strong>Way 3 — Child interface overrides the default with a NEW default body:</strong></p>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">LivingThing</span> {
+    <span class="k">default</span> <span class="k">boolean</span> canBreathe() { <span class="k">return</span> <span class="k">true</span>; }
+}
+
+<span class="k">public</span> <span class="k">interface</span> <span class="ty">Bird</span> <span class="k">extends</span> <span class="ty">LivingThing</span> {
+    <span class="k">default</span> <span class="k">boolean</span> canBreathe() {          <span class="c">// new default implementation</span>
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Hello&quot;</span>);
+        <span class="k">return</span> <span class="k">true</span>;
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Eagle</span> <span class="k">implements</span> <span class="ty">Bird</span> {
+    <span class="c">// Works — Eagle inherits Bird&#x27;s version (the most specific one wins).</span>
+}
+</code></pre>
+<hr />
+<h2>Static Methods in Interfaces (Java 8)</h2>
+<ul>
+<li>Java 8 also lets us write <strong><code>static</code> methods with a body</strong> inside an interface.</li>
+<li>A static interface method <strong>cannot be overridden</strong> by the classes that implement the interface.</li>
+<li>We call it <strong>using the interface name itself</strong>: <code>Bird.canBreathe()</code>.</li>
+<li>It is <strong><code>public</code> by default</strong>.</li>
+</ul>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">Bird</span> {
+    <span class="k">static</span> <span class="k">boolean</span> canBreathe() {
+        <span class="k">return</span> <span class="k">true</span>;
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Eagle</span> <span class="k">implements</span> <span class="ty">Bird</span> {
+    <span class="k">public</span> <span class="k">void</span> digestive() {
+        <span class="k">if</span> (<span class="ty">Bird</span>.canBreathe()) {          <span class="c">// called via the INTERFACE name</span>
+            <span class="ty">System</span>.out.println(<span class="s">&quot;Digesting food...&quot;</span>);
+        }
+    }
+}
+
+<span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="k">new</span> <span class="ty">Eagle</span>().digestive();
+    }
+}
+</code></pre>
+<pre><code>Output:
+Digesting food...
+</code></pre>
+<hr />
+<h2>Private and Private Static Methods (Java 9)</h2>
+<p>Java 9 lets an interface have <strong><code>private</code></strong> and <strong><code>private static</code></strong> methods — helper methods with a body, hidden from the outside world.</p>
+<p><strong>All the rules from the notes:</strong></p>
+<ul>
+<li>We can provide a method implementation in the interface, but with a <strong><code>private</code> access modifier</strong>.</li>
+<li>The goal is <strong>readability / removing duplicate code</strong> — for example, if multiple <code>default</code> methods share some common steps, put those steps in one private method.</li>
+<li>Private interface methods can be <strong>static or non-static</strong>.</li>
+<li>From a <strong>static</strong> method you can call <strong>only private <em>static</em></strong> interface methods (a static method has no object to work with).</li>
+<li>A <strong>private static</strong> method can be called from <strong>both</strong> static and non-static methods.</li>
+<li>A private interface method <strong>cannot be abstract</strong> — since nobody outside can ever implement it, <strong>we must provide the implementation</strong> right there.</li>
+<li>It can be used <strong>only inside that particular interface</strong> — implementing classes cannot see or call it.</li>
+</ul>
+<hr />
+<h2>The Combined Bird Example — All Method Kinds Together</h2>
+<p>This one interface shows every kind of interface method living side by side:</p>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">Bird</span> {
+
+    <span class="k">void</span> canFly();   <span class="c">// equivalent to: public abstract void canFly()</span>
+
+    <span class="c">// Java 8: default method — has a body, inherited by implementing classes</span>
+    <span class="k">public</span> <span class="k">default</span> <span class="k">void</span> minimumFlyingHeight() {
+        myStaticPublicMethod();     <span class="c">// a default method CAN call a static method</span>
+        myPrivateMethod();          <span class="c">// ...and a private method</span>
+        myPrivateStaticMethod();    <span class="c">// ...and a private static method</span>
+    }
+
+    <span class="c">// Java 8: public static method — called as Bird.myStaticPublicMethod()</span>
+    <span class="k">static</span> <span class="k">void</span> myStaticPublicMethod() {
+        myPrivateStaticMethod();    <span class="c">// static may call only private STATIC helpers</span>
+    }
+
+    <span class="c">// Java 9: private (non-static) helper — usable only inside this interface</span>
+    <span class="k">private</span> <span class="k">void</span> myPrivateMethod() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;private helper&quot;</span>);
+    }
+
+    <span class="c">// Java 9: private static helper — callable from static AND non-static methods</span>
+    <span class="k">private</span> <span class="k">static</span> <span class="k">void</span> myPrivateStaticMethod() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;private static helper&quot;</span>);
+    }
+}
+
+<span class="k">class</span> <span class="ty">Eagle</span> <span class="k">implements</span> <span class="ty">Bird</span> {
+    <span class="k">public</span> <span class="k">void</span> canFly() {                    <span class="c">// the one abstract method we MUST implement</span>
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Eagle can fly&quot;</span>);
+    }
+}
+
+<span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Bird</span> eagle = <span class="k">new</span> <span class="ty">Eagle</span>();
+        eagle.canFly();
+        eagle.minimumFlyingHeight();
+    }
+}
+</code></pre>
+<pre><code>Output:
+Eagle can fly
+private static helper
+private helper
+private static helper
+</code></pre>
+<hr />
+<h2>Quick Revision</h2>
+<ul>
+<li>An interface is a <strong>contract</strong>: it says <em>what</em> to do, never <em>how</em> — that gives full <strong>abstraction</strong>.</li>
+<li>Declaration = modifier + <code>interface</code> keyword + name + optional parent interfaces + body. Only <code>public</code>/default modifiers allowed on top-level interfaces.</li>
+<li>You cannot <code>new</code> an interface, but an interface <strong>variable can hold any implementing class</strong> — that is <strong>polymorphism</strong> (<code>List list = new ArrayList&lt;&gt;();</code>).</li>
+<li><strong>Multiple inheritance</strong> in Java works only through interfaces.</li>
+<li>Methods are implicitly <strong><code>public abstract</code></strong> (never <code>final</code>); fields are implicitly <strong><code>public static final</code></strong> constants.</li>
+<li>A concrete class must implement <strong>all</strong> interface methods; an abstract class may skip some; overriding can never reduce visibility.</li>
+<li>Nested interface in an interface → must be public; nested in a class → any modifier; implement it via <code>Outer.Inner</code>.</li>
+<li>Know the <strong>10 differences</strong> between abstract class and interface (keyword, extends/implements, constructors, variables, multiple inheritance, ...).</li>
+<li><strong>Java 8 <code>default</code> methods</strong> let old interfaces grow without breaking legacy classes (e.g. <code>stream()</code> in <code>Collection</code>); resolve the <strong>diamond problem</strong> by overriding the clashing method.</li>
+<li><strong>Java 8 <code>static</code> methods</strong>: called on the interface name, cannot be overridden.</li>
+<li><strong>Java 9 <code>private</code> / <code>private static</code> methods</strong>: hidden helpers for shared code inside the interface only; they must have a body.</li>
+</ul>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Interfaces_Explained_Part1.mp4; Part 2 = Interfaces_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

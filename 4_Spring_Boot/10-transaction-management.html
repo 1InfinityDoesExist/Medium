@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Transaction Management</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#15803d22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #15803d40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#15803d0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #15803d33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#15803d;--a2:#22c55e">
+<header class="hero"><div class="in">
+  <span class="badge">🍃 SPRING BOOT</span>
+  <h1>Transaction Management</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>Where can @Transactional go?</em></p>
+<p class="chips">☕ 7 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> What a critical section is, and why transactions exist  ·  The ACID properties, one by one  ·  @Transactional — where to put it and how it works internally (AOP)  ·  The TransactionManager class hierarchy — local vs distributed</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Transaction_Management_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>Critical Section — why we need transactions</h2>
+<p>A <strong>critical section</strong> is a code segment where shared resources are being accessed and modified. When multiple requests try to access this critical section, <strong>data inconsistency</strong> can happen.</p>
+<figure><img alt="Transaction Management — diagram" src="10-transaction-management.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p>The solution is the usage of a <strong>Transaction</strong> — it helps to achieve the <strong>ACID</strong> properties:</p>
+<ul class="cards"><li><b><strong>A — Atomicity</strong></b> — Ensures all operations within a transaction are completed successfully. If any operation fails, the entire transaction gets rolled back.</li><li><b><strong>C — Consistency</strong></b> — Ensures that the DB state before and after the transaction stays consistent.</li><li><b><strong>I — Isolation</strong></b> — Ensures that even if multiple transactions run in parallel, they do not interfere with each other.</li><li><b><strong>D — Durability</strong></b> — Ensures that committed transactions are never lost, despite system failure or crash.</li></ul>
+<p>The classic money-transfer shape — everything between begin and end is one unit, and this is exactly what <code>@Transactional</code> wraps around your method:</p>
+<pre><code>BEGIN TRANSACTION
+    - Debit from A
+    - Credit to B                      }  @Transactional
+    if all success:  COMMIT
+    else:            ROLLBACK
+END TRANSACTION
+</code></pre>
+<h2>Setting it up</h2>
+<p>Dependencies needed: <code>spring-boot-starter-data-jpa</code> <strong>plus</strong> your database driver dependency.</p>
+<pre><code><span class="k">&lt;dependency</span><span class="k">&gt;</span>
+    <span class="k">&lt;groupId</span><span class="k">&gt;</span>org.springframework.boot<span class="k">&lt;/groupId</span><span class="k">&gt;</span>
+    <span class="k">&lt;artifactId</span><span class="k">&gt;</span>spring-boot-starter-data-jpa<span class="k">&lt;/artifactId</span><span class="k">&gt;</span>
+<span class="k">&lt;/dependency</span><span class="k">&gt;</span>
+<span class="k">&lt;dependency</span><span class="k">&gt;</span>
+    <span class="k">&lt;groupId</span><span class="k">&gt;</span>com.mysql<span class="k">&lt;/groupId</span><span class="k">&gt;</span>
+    <span class="k">&lt;artifactId</span><span class="k">&gt;</span>mysql-connector-j<span class="k">&lt;/artifactId</span><span class="k">&gt;</span>
+<span class="k">&lt;/dependency</span><span class="k">&gt;</span>
+</code></pre>
+<p>Activate transaction management by using <code>@EnableTransactionManagement</code> in the main class:</p>
+<pre><code><span class="a">@SpringBootApplication</span>
+<span class="a">@EnableTransactionManagement</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">MyApplication</span> { ... }
+</code></pre>
+<blockquote>
+<p>Good to know: Spring Boot auto-configuration usually enables transaction management for you when it sees a DataSource — but the notes' explicit <code>@EnableTransactionManagement</code> makes the intent visible and is required in plain Spring.</p>
+</blockquote>
+<h2>How it works internally — AOP</h2>
+<p><strong>Transaction Management in Spring Boot uses AOP:</strong></p>
+<ol>
+<li>It uses a pointcut expression to search for methods which have the <code>@Transactional</code> annotation — like <code>@within(org.springframework.transaction.annotation.Transactional)</code>.</li>
+<li>Once the pointcut expression matches, it runs an <strong>"Around"</strong> type advice.</li>
+<li>That advice is the <code>invokeWithinTransaction</code> method, present in the <code>TransactionInterceptor</code> class.</li>
+</ol>
+<blockquote>
+<p>Added — the self-invocation pitfall: because this is AOP (proxy-based), a <code>@Transactional</code> method called <strong>from inside the same class</strong> bypasses the proxy, so <strong>no transaction is created</strong>. Call it from another bean, or self-inject the proxy.</p>
+</blockquote>
+<h2>Hierarchy of Transaction Manager</h2>
+<ul>
+<li><code>PlatformTransactionManager</code> defines <strong>3 methods</strong>: <code>getTransaction</code>, <code>commit</code>, <code>rollback</code>.</li>
+<li><code>AbstractPlatformTransactionManager</code> provides the <strong>default implementation</strong> of those methods.</li>
+<li><strong>DataSource(JDBC), Hibernate and JPA transaction managers all manage LOCAL transactions</strong> (one database).</li>
+<li><strong>JTA TransactionManager manages DISTRIBUTED transactions</strong> (example: 2-phase commit across multiple resources).</li>
+</ul>
+<h2>Declarative vs Programmatic</h2>
+<h3>1) Declarative — through annotation</h3>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">User</span> {
+
+    <span class="a">@Transactional</span>
+    <span class="k">public</span> <span class="k">void</span> updateUser() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Hello&quot;</span>);
+    }
+}
+</code></pre>
+<p>Based on the underlying DataSource used (JDBC / JPA etc.), Spring Boot will choose the appropriate Transaction Manager.</p>
+<p><strong>Note:</strong> you can create a bean to tell Spring <em>which</em> transaction manager to use:</p>
+<pre><code><span class="a">@Bean</span>
+<span class="k">public</span> <span class="ty">PlatformTransactionManager</span> userTransactionManager(<span class="ty">DataSource</span> dataSource) {
+    <span class="k">return</span> <span class="k">new</span> <span class="ty">DataSourceTransactionManager</span>(dataSource);
+}
+</code></pre>
+<pre><code><span class="a">@Transactional</span>(transactionManager = <span class="s">&quot;userTransactionManager&quot;</span>)
+<span class="k">public</span> <span class="k">void</span> updateUser() { ... }
+</code></pre>
+<blockquote>
+<p>Added: two more useful <code>@Transactional</code> attributes — <code>readOnly = true</code> (optimization for pure reads) and <code>rollbackFor = Exception.class</code> (by default rollback happens only for unchecked exceptions; checked exceptions do NOT roll back unless you say so).</p>
+</blockquote>
+<h3>Rollback rules — when does @Transactional actually roll back?</h3>
+<blockquote>
+<p>Added: a favourite interview trap, so let's spell it out. <strong>Default rule: rollback happens only for <code>RuntimeException</code> and <code>Error</code>. Checked exceptions COMMIT.</strong></p>
+</blockquote>
+<pre><code><span class="a">@Transactional</span>
+<span class="k">public</span> <span class="k">void</span> transfer() <span class="k">throws</span> <span class="ty">Exception</span> {
+    debitAccountA();
+    <span class="k">throw</span> <span class="k">new</span> <span class="ty">Exception</span>(<span class="s">&quot;checked exception&quot;</span>);
+    <span class="c">// the transaction still COMMITS the debit — checked != rollback!</span>
+}
+
+<span class="a">@Transactional</span>(rollbackFor = <span class="ty">Exception</span>.<span class="k">class</span>)        <span class="c">// now checked rolls back too</span>
+<span class="k">public</span> <span class="k">void</span> transferSafe() <span class="k">throws</span> <span class="ty">Exception</span> { ... }
+
+<span class="a">@Transactional</span>(noRollbackFor = <span class="ty">ValidationException</span>.<span class="k">class</span>)  <span class="c">// opt OUT for one type</span>
+<span class="k">public</span> <span class="k">void</span> validateAndSave() { ... }
+</code></pre>
+<p><strong>The rollback-only trap</strong> — catching the exception does NOT save the transaction:</p>
+<pre><code><span class="a">@Transactional</span>
+<span class="k">public</span> <span class="k">void</span> outer() {
+    saveOrder();
+    <span class="k">try</span> {
+        inner();                 <span class="c">// REQUIRED (default) -&gt; joins the SAME transaction</span>
+    } <span class="k">catch</span> (<span class="ty">RuntimeException</span> e) {
+        <span class="c">// swallowed... but too late: when inner() threw, Spring already marked</span>
+        <span class="c">// the SHARED transaction &quot;rollback-only&quot;. At commit time outer() blows</span>
+        <span class="c">// up with UnexpectedRollbackException — and saveOrder() is rolled back.</span>
+    }
+}
+
+<span class="a">@Transactional</span>
+<span class="k">public</span> <span class="k">void</span> inner() { <span class="k">throw</span> <span class="k">new</span> <span class="ty">RuntimeException</span>(<span class="s">&quot;boom&quot;</span>); }
+</code></pre>
+<p>If <code>inner()</code> were <code>REQUIRES_NEW</code>, only its <strong>own</strong> transaction would roll back, and <code>outer()</code> could still commit. That is the practical reason REQUIRES_NEW exists.</p>
+<blockquote>
+<p>Added: the remaining attributes in one line — <code>timeout = 5</code> (seconds; the transaction is rolled back if it runs longer) and <code>isolation = Isolation.READ_COMMITTED</code> (how parallel transactions see each other — the whole next topic).</p>
+</blockquote>
+<h3>2) Programmatic — through code</h3>
+<p>Why would you need it? Look at this method:</p>
+<pre><code><span class="a">@Transactional</span>
+<span class="k">public</span> <span class="k">void</span> updateUser() {
+    <span class="c">// 1. Update DB</span>
+    <span class="c">// 2. External api call        &lt;-- PROBLEM</span>
+    <span class="c">// 3. Update DB</span>
+}
+</code></pre>
+<p>It creates a problem because of <strong>step 2 — the external API call</strong>: the whole method is one transaction, so a slow external call keeps the DB transaction (and its connection + locks) open. Programmatic management lets you keep the transaction only around the DB work.</p>
+<p><strong>Approach 1 — PlatformTransactionManager directly:</strong></p>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">UserProgrammaticApproach1</span> {
+
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">PlatformTransactionManager</span> userTransactionManager;
+
+    <span class="ty">UserProgrammaticApproach1</span>(<span class="ty">PlatformTransactionManager</span> userTransactionManager) {
+        <span class="k">this</span>.userTransactionManager = userTransactionManager;
+    }
+
+    <span class="k">public</span> <span class="k">void</span> updateUserProgrammatic() {
+        <span class="c">// external API call can happen HERE, outside the transaction</span>
+        <span class="ty">TransactionStatus</span> status = userTransactionManager.getTransaction(<span class="k">null</span>);
+        <span class="k">try</span> {
+            <span class="ty">System</span>.out.println(<span class="s">&quot;Insert Query&quot;</span>);
+            <span class="ty">System</span>.out.println(<span class="s">&quot;Update Query&quot;</span>);
+            userTransactionManager.commit(status);
+        } <span class="k">catch</span> (<span class="ty">Exception</span> e) {
+            userTransactionManager.rollback(status);
+        }
+    }
+}
+</code></pre>
+<p><strong>Approach 2 — TransactionTemplate (less boilerplate):</strong></p>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">UserProgrammaticApproach2</span> {
+
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">TransactionTemplate</span> transactionTemplate;
+
+    <span class="ty">UserProgrammaticApproach2</span>(<span class="ty">TransactionTemplate</span> transactionTemplate) {
+        <span class="k">this</span>.transactionTemplate = transactionTemplate;   <span class="c">// constructor injection</span>
+    }
+
+    <span class="k">public</span> <span class="k">void</span> updateUserProgrammatic() {
+        <span class="ty">TransactionCallback</span>&lt;<span class="ty">TransactionStatus</span>&gt; dbOperationTask = (<span class="ty">TransactionStatus</span> status) -&gt; {
+            <span class="ty">System</span>.out.println(<span class="s">&quot;Insert&quot;</span>);
+            <span class="ty">System</span>.out.println(<span class="s">&quot;Update&quot;</span>);
+            <span class="k">return</span> status;
+        };
+        transactionTemplate.execute(dbOperationTask);   <span class="c">// commit/rollback handled for you</span>
+    }
+}
+</code></pre>
+<pre><code><span class="a">@Bean</span>
+<span class="k">public</span> <span class="ty">TransactionTemplate</span> transactionTemplate(<span class="ty">PlatformTransactionManager</span> userTransactionManager) {
+    <span class="k">return</span> <span class="k">new</span> <span class="ty">TransactionTemplate</span>(userTransactionManager);
+}
+</code></pre>
+<h2>Propagation</h2>
+<p>When we try to create a new transaction, Spring first checks the <strong>propagation</strong> value set — this tells whether we have to create a new transaction or not.</p>
+<p>Example setup — a transactional method calling another transactional method:</p>
+<pre><code><span class="a">@Transactional</span>
+<span class="k">public</span> <span class="k">void</span> method1() {           <span class="c">// parent transaction starts here</span>
+    ...
+    method2();                    <span class="c">// what happens now depends on method2&#x27;s propagation</span>
+}
+
+<span class="a">@Transactional</span>(propagation = <span class="ty">Propagation</span>.<span class="ty">REQUIRED_NEW</span>)
+<span class="k">public</span> <span class="k">void</span> method2() { ... }
+</code></pre>
+<ul class="cards"><li><b><strong>REQUIRED</strong> (default)</b> — Use it — Create a new transaction</li><li><b><strong>REQUIRED_NEW</strong></b> — Suspend parent → create new txn → finish → resume parent — Create a new transaction</li><li><b><strong>SUPPORTS</strong></b> — Use it — Execute without any transaction</li><li><b><strong>NOT_SUPPORTED</strong></b> — Suspend parent → execute without txn → resume parent — Execute without any transaction</li><li><b><strong>MANDATORY</strong></b> — Use it — Throw an exception</li><li><b><strong>NEVER</strong></b> — Throw an exception — Execute without any transaction</li><li><b><strong>NESTED</strong></b> — Create a <strong>savepoint</strong> inside the parent txn — Create a new transaction</li></ul>
+<blockquote>
+<p>Added: <strong>NESTED</strong> is the often-forgotten 7th level. With a parent present it does NOT suspend it (unlike REQUIRES_NEW) — it sets a JDBC <strong>savepoint</strong> inside the <em>same</em> transaction. If the nested part fails, only the work after the savepoint is rolled back and the parent may continue and commit. It needs savepoint support: works with <code>DataSourceTransactionManager</code> (plain JDBC), but <strong>not</strong> with JPA/Hibernate.</p>
+<p>Also mind the exact enum spelling in real code: it is <strong><code>Propagation.REQUIRES_NEW</code></strong> (the notes' "REQUIRED_NEW" is the same concept).</p>
+</blockquote>
+<p>Each one as written in the notes:</p>
+<pre><code><span class="a">@Transactional</span>(propagation = <span class="ty">Propagation</span>.<span class="ty">REQUIRED</span>)       <span class="c">// if parent present: use it, else create new</span>
+<span class="a">@Transactional</span>(propagation = <span class="ty">Propagation</span>.<span class="ty">REQUIRED_NEW</span>)   <span class="c">// suspend parent, new txn, resume parent</span>
+<span class="a">@Transactional</span>(propagation = <span class="ty">Propagation</span>.<span class="ty">SUPPORTS</span>)       <span class="c">// use parent if present, else no txn</span>
+<span class="a">@Transactional</span>(propagation = <span class="ty">Propagation</span>.<span class="ty">NOT_SUPPORTED</span>)  <span class="c">// suspend parent, run without txn, resume</span>
+<span class="a">@Transactional</span>(propagation = <span class="ty">Propagation</span>.<span class="ty">MANDATORY</span>)      <span class="c">// parent required, else exception</span>
+<span class="a">@Transactional</span>(propagation = <span class="ty">Propagation</span>.<span class="ty">NEVER</span>)          <span class="c">// must NOT have parent, else exception</span>
+</code></pre>
+<h3>Programmatic way of setting Propagation</h3>
+<p><strong>(1) With DefaultTransactionDefinition:</strong></p>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">UserDAO</span> {
+    ...
+    <span class="ty">DefaultTransactionDefinition</span> transactionDefinition = <span class="k">new</span> <span class="ty">DefaultTransactionDefinition</span>();
+    transactionDefinition.setName(<span class="s">&quot;Testing&quot;</span>);
+    transactionDefinition.setPropagationBehavior(<span class="ty">TransactionDefinition</span>.<span class="ty">PROPAGATION_REQUIRED</span>);
+
+    <span class="ty">TransactionStatus</span> status = userTransactionManager.getTransaction(transactionDefinition);
+    ...
+}
+</code></pre>
+<p><strong>(2) Using TransactionTemplate:</strong></p>
+<pre><code>transactionTemplate.setPropagationBehavior(<span class="ty">TransactionDefinition</span>.<span class="ty">PROPAGATION_REQUIRED</span>);
+transactionTemplate.setName(<span class="s">&quot;Template Testing&quot;</span>);
+</code></pre>
+<h2>Architect's Corner</h2>
+<ul>
+<li><strong>Keep transactions short</strong> — no remote calls, no heavy computation inside; the notes' external-API example is the #1 real-world incident pattern (pool exhaustion under latency).</li>
+<li><strong>Atomic "DB write + publish event" does not exist naively</strong> — use the <strong>Transactional Outbox pattern</strong>: write the event to an outbox table in the same txn; a relay publishes it.</li>
+<li><strong>Distributed transactions</strong>: prefer <strong>sagas</strong> (compensating actions) over JTA/2PC in microservices — 2PC couples availability of all participants.</li>
+<li><strong><code>readOnly = true</code></strong> enables driver/ORM optimizations and can route to read replicas with a routing DataSource.</li>
+<li><strong>Checked exceptions don't roll back by default</strong> — set <code>rollbackFor = Exception.class</code> deliberately, org-wide, or document the default loudly.</li>
+</ul>
+<h2>Quick Revision</h2>
+<ul>
+<li><strong>Critical section</strong> = shared data being modified concurrently → data inconsistency → solved by transactions, which give <strong>ACID</strong> (atomicity, consistency, isolation, durability).</li>
+<li>Needs <code>data-jpa</code> + DB driver dependencies; activate with <code>@EnableTransactionManagement</code>.</li>
+<li><code>@Transactional</code> on a <strong>class</strong> applies to its <strong>public methods only</strong>; on a method, just that method.</li>
+<li>Internally it is <strong>AOP</strong>: pointcut finds <code>@Transactional</code> methods → <em>Around</em> advice → <code>invokeWithinTransaction</code> in <code>TransactionInterceptor</code>. Self-invocation bypasses it.</li>
+<li>Hierarchy: <code>PlatformTransactionManager</code> (getTransaction/commit/rollback) → <code>AbstractPlatformTransactionManager</code> → DataSource/Hibernate/JPA (<strong>local</strong>) and JTA (<strong>distributed</strong>, 2-phase commit).</li>
+<li><strong>Declarative</strong> = annotation, manager auto-chosen (or named via <code>transactionManager=</code>); <strong>Programmatic</strong> = code — <code>PlatformTransactionManager</code> try/commit/rollback, or <code>TransactionTemplate.execute(callback)</code> — useful when an external API call must stay OUTSIDE the transaction.</li>
+<li><strong>Propagation</strong> decides new-vs-reuse: REQUIRED (default), REQUIRES_NEW, SUPPORTS, NOT_SUPPORTED, MANDATORY, NEVER, <strong>NESTED</strong> (savepoint in the parent; JDBC only, not JPA) — set via annotation or programmatically (<code>DefaultTransactionDefinition</code> / <code>TransactionTemplate</code>).</li>
+<li><strong>Rollback rules</strong>: default = <code>RuntimeException</code>/<code>Error</code> only — <strong>checked exceptions commit</strong>; change with <code>rollbackFor</code> / <code>noRollbackFor</code>. Inner REQUIRED failure marks the shared txn <strong>rollback-only</strong> → outer commit throws <code>UnexpectedRollbackException</code> even if you caught the exception (REQUIRES_NEW isolates the inner failure).</li>
+<li>Other attributes: <code>timeout</code> (seconds), <code>isolation</code> (next topic), <code>readOnly</code>.</li>
+</ul>
+<hr />
+<p>Next topic: <strong>Isolation Levels and DB Locking</strong> — what happens when transactions run in parallel.</p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Transaction_Management_Explained_Part1.mp4; Part 2 = Transaction_Management_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

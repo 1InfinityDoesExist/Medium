@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JDK, JRE and JVM</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#e8590c22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #e8590c40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#e8590c0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #e8590c33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#e8590c;--a2:#fd7e14">
+<header class="hero"><div class="in">
+  <span class="badge">☕ CORE JAVA</span>
+  <h1>JDK, JRE and JVM</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>The journey of a Java program (bytecode flow)</em></p>
+<p class="chips">☕ 6 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> Why Java is a platform independent language (WORA — Write Once, Run Anywhere)  ·  What the JVM, JRE and JDK are, and how they fit inside each other  ·  How your Java code travels from a .java file to real output (bytecode flow)  ·  The three Java editions: JSE, JEE and JME</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload JDK_JRE_JVM_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>Java's Superpower: Platform Independence</h2>
+<p>First, four quick facts about Java:</p>
+<figure><img alt="JDK, JRE and JVM — diagram" src="04-jdk-jre-jvm.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<ul>
+<li>Java is a <strong>platform independent</strong> language — the same program runs on Windows, Linux, or Mac without any change.</li>
+<li>Java is an <strong>object-oriented programming language</strong>.</li>
+<li><strong>WORA — Write Once, Run Anywhere.</strong> You write your code one time, and it can run on any machine.</li>
+<li>Java is a <strong>portable language</strong> — your compiled program can be carried to any computer and it just works.</li>
+</ul>
+<p><strong>Everyday analogy:</strong> think of bytecode as a message written in a universal language, and the JVM as a local translator. You write your letter once (WORA). Every country (operating system) has its own translator (JVM) who converts the universal letter into the local language (machine code). You never rewrite the letter — you just need the right translator on each machine.</p>
+<p>To understand how this magic works, we need <strong>3 important concepts</strong>:</p>
+<ul>
+<li><strong>JVM</strong> — Java Virtual Machine</li>
+<li><strong>JRE</strong> — Java Runtime Environment</li>
+<li><strong>JDK</strong> — Java Development Kit</li>
+</ul>
+<hr />
+<h2>How They Fit Together (Nested Circles)</h2>
+<p>The notes show three nested circles: JDK is the biggest circle, JRE sits inside it, and JVM sits innermost.</p>
+<pre><code>+-----------------------------------------------+
+|                    <span class="ty">JDK</span>                        |
+|   (compiler javac, debugger, language...)     |
+|   +---------------------------------------+   |
+|   |                 <span class="ty">JRE</span>                   |   |
+|   |   (<span class="k">class</span> libraries: java.lang, ...)   |   |
+|   |      +------------------------+       |   |
+|   |      |          <span class="ty">JVM</span>           |       |   |
+|   |      |  (runs the bytecode)   |       |   |
+|   |      +------------------------+       |   |
+|   +---------------------------------------+   |
++-----------------------------------------------+
+</code></pre>
+<p>In plain words: <strong>JVM is inside JRE, and JRE is inside JDK.</strong> Every JDK contains a JRE, and every JRE contains a JVM.</p>
+<ul>
+<li><strong>JVM</strong> = the engine that actually runs your program.</li>
+<li><strong>JRE</strong> = JVM + the libraries needed to run programs.</li>
+<li><strong>JDK</strong> = JRE + the tools needed to <em>write and compile</em> programs.</li>
+</ul>
+<hr />
+<h2>JVM — Java Virtual Machine</h2>
+<ul>
+<li>JVM stands for <strong>Java Virtual Machine</strong>.</li>
+<li>It is an <strong>abstract machine</strong> — it is <strong>not physically present</strong>. You cannot touch it; it is a program that <em>behaves like</em> a computer inside your computer.</li>
+<li>The JVM's job: take <strong>bytecode</strong> and convert it into <strong>machine code</strong> that your actual CPU can execute.</li>
+</ul>
+<pre><code> <span class="ty">Java</span> <span class="ty">Program</span> --&gt; <span class="ty">Compiler</span> --&gt; <span class="ty">ByteCode</span> --&gt; <span class="ty">JVM</span> --&gt; <span class="ty">Machine</span> <span class="ty">Code</span> --&gt; <span class="ty">CPU</span> --&gt; <span class="ty">Output</span>
+|__________________________________________|
+        <span class="ty">Platform</span> <span class="ty">Independent</span> part
+</code></pre>
+<p>Step by step, in plain words:</p>
+<ol>
+<li><strong>Java Program</strong> — you write human-readable code in a <code>.java</code> file.</li>
+<li><strong>Compiler (<code>javac</code>)</strong> — translates your code into <strong>bytecode</strong>.</li>
+<li><strong>ByteCode</strong> — a universal, intermediate form of your program. Everything up to here is <strong>platform independent</strong> — the same bytecode works everywhere.</li>
+<li><strong>JVM</strong> — reads the bytecode and converts it to machine code <em>for the specific machine it is running on</em>.</li>
+<li><strong>Machine Code</strong> — raw instructions your processor understands.</li>
+<li><strong>CPU</strong> — executes the machine code.</li>
+<li><strong>Output</strong> — you see the result on your screen.</li>
+</ol>
+<p>Two very important points:</p>
+<ul>
+<li><strong>Bytecode is platform independent</strong>, but the <strong>JVM itself is platform dependent</strong> — there is a separate JVM built for Windows, another for Linux, another for Mac. That is exactly how "write once, run anywhere" works: one bytecode, many JVMs.</li>
+<li>The JVM contains a <strong>JIT (Just-In-Time) Compiler</strong> — a smart part of the JVM that compiles frequently used bytecode into machine code on the fly, making your program run faster.</li>
+</ul>
+<h3>Compiling a real file</h3>
+<p>If your file is <code>student.java</code>, this is what happens when you compile and run it:</p>
+<pre><code>student.java --(run: javac student.java)--&gt; <span class="ty">ByteCode</span> (student.<span class="k">class</span>)
+</code></pre>
+<pre><code><span class="c">// student.java</span>
+<span class="k">public</span> <span class="k">class</span> student {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Hello from bytecode!&quot;</span>);
+    }
+}
+</code></pre>
+<p>Commands and result:</p>
+<pre><code>$ javac student.java     <span class="c">// compiler creates the bytecode file: student.class</span>
+$ java student           <span class="c">// JVM runs the bytecode</span>
+<span class="ty">Hello</span> from bytecode!
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> <code>javac</code> turns <code>.java</code> into <code>.class</code> (bytecode). The JVM turns bytecode into machine code. Bytecode = platform independent; JVM = platform dependent.</p>
+</blockquote>
+<hr />
+<h2>JRE — Java Runtime Environment</h2>
+<ul>
+<li>JRE stands for <strong>Java Runtime Environment</strong>.</li>
+<li>The JRE contains the <strong>JVM</strong> plus the <strong>class libraries</strong> (ready-made code such as <code>java.lang</code>, <code>java.util</code>, etc.). These libraries give you <code>String</code>, <code>System.out.println</code>, <code>ArrayList</code> and thousands of other tools for free.</li>
+<li><strong>If you have bytecode, you can run it using the JRE — but you cannot write (develop) code with the JRE alone.</strong> It has no compiler.</li>
+</ul>
+<p><strong>Analogy:</strong> the JRE is like a music player. It can <em>play</em> songs (run bytecode), but it cannot <em>record</em> new songs (write and compile code).</p>
+<hr />
+<h2>JDK — Java Development Kit</h2>
+<ul>
+<li>JDK stands for <strong>Java Development Kit</strong>. It is the full toolbox for programmers. It contains:</li>
+<li>The <strong>programming language</strong> itself (everything needed for your <code>.java</code> files)</li>
+<li>The <strong>compiler (<code>javac</code>)</strong></li>
+<li>A <strong>debugger</strong> (tool to find and fix bugs step by step)</li>
+<li>Plus the entire <strong>JRE</strong> inside it</li>
+</ul>
+<p>The simple formula from the notes:</p>
+<pre><code><span class="ty">JDK</span> = <span class="ty">JRE</span> + (<span class="ty">Programming</span> <span class="ty">Language</span> + <span class="ty">Compiler</span> + <span class="ty">Debugger</span>)
+</code></pre>
+<ul class="cards"><li><b>Only <strong>run</strong> a Java program (bytecode)</b> — <strong>JRE</strong> (which includes JVM)</li><li><b><strong>Write, compile, debug and run</strong> Java programs</b> — <strong>JDK</strong> (which includes JRE)</li></ul>
+<blockquote>
+<p><strong>Remember:</strong> Developers install the <strong>JDK</strong>. Users who only run Java programs need just the <strong>JRE</strong>.</p>
+</blockquote>
+<hr />
+<h2>Java Editions — JSE, JEE, JME</h2>
+<p>Java comes in three editions, each for a different kind of work:</p>
+<ul class="cards"><li><b><strong>JSE</strong></b> — Java Standard Edition — <strong>Core Java</strong> — the fundamentals (classes, OOP, collections, etc.)</li><li><b><strong>JEE</strong></b> — Java Enterprise Edition — Large business/web applications</li><li><b><strong>JME</strong></b> — Java Micro/Mobile Edition — Mobile and small-device applications</li></ul>
+<ul>
+<li><strong>JSE</strong> is Core Java — what beginners learn first.</li>
+<li><strong>JEE = JSE + extra APIs.</strong> It adds enterprise features on top of standard Java, such as:</li>
+<li><strong>Transaction API</strong> (managing units of work safely)</li>
+<li><strong>Rollback</strong> (undoing a failed transaction)</li>
+<li><strong>Servlet</strong> (handling web requests)</li>
+<li><strong>JSP</strong> (JavaServer Pages, for building web pages)</li>
+<li><strong>JME</strong> provides <strong>APIs for mobile applications</strong> (small devices).</li>
+</ul>
+<hr />
+<h2>Why Can One Java File Have Only ONE Public Class?</h2>
+<blockquote>
+<p><strong>Note:</strong> One Java file must have only <strong>one public class</strong>.</p>
+</blockquote>
+<p>Also, a class can contain these members:</p>
+<ul>
+<li><strong>Variables</strong></li>
+<li><strong>Methods</strong></li>
+<li><strong>Constructor</strong></li>
+<li><strong>Inner Class</strong></li>
+</ul>
+<h3>The rules first</h3>
+<pre><code><span class="c">// File name: A.java</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">A</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Hello&quot;</span>);
+    }
+}
+</code></pre>
+<p><strong>Output:</strong></p>
+<pre><code><span class="ty">Hello</span>
+</code></pre>
+<p>Two rules work together here:</p>
+<ol>
+<li><strong>The main method should be inside a public class.</strong></li>
+<li><strong>The public class name should be the same as the file name</strong> (<code>public class A</code> must live in <code>A.java</code>).</li>
+</ol>
+<h3>The reasons (in plain words)</h3>
+<p>Remember the flow: Java Program --Compile--&gt; ByteCode --&gt; <strong>the JVM calls the <code>main()</code> method</strong>.</p>
+<p><strong>Reason 1:</strong> The <strong>JVM calls the main method using the class name</strong>. So that class must be accessible from anywhere — which means it should be <strong>public</strong>. If the JVM could not reach the class, it could not start your program at all.</p>
+<p><strong>Reason 2:</strong> Suppose one file could hold two public classes:</p>
+<pre><code><span class="c">// File name: Employee.java  — NOT allowed, will NOT compile!</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">A</span> {
+}
+<span class="k">public</span> <span class="k">class</span> <span class="ty">B</span> {
+}
+</code></pre>
+<p>Now the JVM has a puzzle: the file is called <code>Employee.java</code>, but which public class should it match with the file — <code>A</code> or <code>B</code>? Where should it look for <code>main()</code>? By forcing <strong>one public class per file, named the same as the file</strong>, the <strong>JVM does not have to worry about other public classes</strong> — it can find the right class instantly just from the file name.</p>
+<p><strong>Analogy:</strong> a file is like a house and the public class is its name plate at the front door. One house, one name plate, and the plate must match the address (file name). If a house had two different name plates, the postman (JVM) would never know whom to deliver to.</p>
+<blockquote>
+<p><strong>Remember:</strong> The main method lives inside the public class, and the public class name must equal the file name. That is how the JVM finds and starts your program.</p>
+</blockquote>
+<hr />
+<h2>Quick Revision</h2>
+<ul>
+<li>Java is <strong>platform independent</strong>, object-oriented, and <strong>portable</strong> — <strong>WORA: Write Once, Run Anywhere</strong>.</li>
+<li>Nesting: <strong>JDK ⊃ JRE ⊃ JVM</strong> (JVM inside JRE, JRE inside JDK).</li>
+<li><strong>JVM</strong> = abstract machine (not physically present); converts <strong>bytecode → machine code</strong>; contains the <strong>JIT compiler</strong>; the JVM itself is <strong>platform dependent</strong>, while bytecode is platform independent.</li>
+<li>Flow: <strong>Java Program → Compiler (javac) → ByteCode (.class) → JVM → Machine Code → CPU → Output</strong>.</li>
+<li><strong>JRE</strong> = JVM + class libraries (<code>java.lang</code>, <code>java.util</code>, ...); can <strong>run</strong> bytecode but cannot compile code.</li>
+<li><strong>JDK</strong> = JRE + programming language + compiler (<code>javac</code>) + debugger — the full developer toolbox.</li>
+<li>Editions: <strong>JSE</strong> (Core Java), <strong>JEE</strong> = JSE + APIs (Transaction API, Rollback, Servlet, JSP), <strong>JME</strong> (mobile APIs).</li>
+<li>A class can contain <strong>variables, methods, a constructor, and inner classes</strong>.</li>
+<li>One file = <strong>one public class</strong>, named exactly like the file, holding <code>main</code> — so the <strong>JVM</strong> can find and call <code>main()</code> without confusion.</li>
+</ul>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload JDK_JRE_JVM_Explained.mp4 to YouTube, then replace YOUTUBE_FULL_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK">YOUTUBE_FULL_LINK</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

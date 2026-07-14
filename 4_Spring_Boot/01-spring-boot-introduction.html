@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spring Boot Introduction</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#15803d22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #15803d40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#15803d0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #15803d33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#15803d;--a2:#22c55e">
+<header class="hero"><div class="in">
+  <span class="badge">🍃 SPRING BOOT</span>
+  <h1>Spring Boot Introduction</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>The 3 big challenges of plain Spring MVC that Spring Boot solves  ·  What &quot;Convention over Configuration&quot; means  ·  JAR…</em></p>
+<p class="chips">☕ 5 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> The 3 big challenges of plain Spring MVC that Spring Boot solves  ·  What &quot;Convention over Configuration&quot; means  ·  JAR vs WAR packaging — and when to use which  ·  How a minimal Spring Boot application actually looks in code</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Spring_Boot_Introduction_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>Spring Boot solves challenges which exist with Spring MVC</h2>
+<p>Before Spring Boot, building a Spring MVC application meant a lot of manual setup. Spring Boot removes that pain in three ways:</p>
+<figure><img alt="Spring Boot Introduction — diagram" src="01-spring-boot-introduction.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p>No need for adding different dependencies separately — and no more "compatible version" headache. One <strong>starter</strong> brings everything needed, with versions that are tested to work together.</p>
+<pre><code><span class="c">&lt;!-- pom.xml — one starter instead of 10+ individual, version-matched jars --&gt;</span>
+<span class="k">&lt;parent</span><span class="k">&gt;</span>
+    <span class="k">&lt;groupId</span><span class="k">&gt;</span>org.springframework.boot<span class="k">&lt;/groupId</span><span class="k">&gt;</span>
+    <span class="k">&lt;artifactId</span><span class="k">&gt;</span>spring-boot-starter-parent<span class="k">&lt;/artifactId</span><span class="k">&gt;</span>
+    <span class="k">&lt;version</span><span class="k">&gt;</span>3.2.5<span class="k">&lt;/version</span><span class="k">&gt;</span>
+<span class="k">&lt;/parent</span><span class="k">&gt;</span>
+
+<span class="k">&lt;dependencies</span><span class="k">&gt;</span>
+    <span class="k">&lt;dependency</span><span class="k">&gt;</span>
+        <span class="k">&lt;groupId</span><span class="k">&gt;</span>org.springframework.boot<span class="k">&lt;/groupId</span><span class="k">&gt;</span>
+        <span class="k">&lt;artifactId</span><span class="k">&gt;</span>spring-boot-starter-web<span class="k">&lt;/artifactId</span><span class="k">&gt;</span>
+        <span class="c">&lt;!-- no &lt;version&gt; needed: the parent manages it --&gt;</span>
+    <span class="k">&lt;/dependency</span><span class="k">&gt;</span>
+<span class="k">&lt;/dependencies</span><span class="k">&gt;</span>
+</code></pre>
+<blockquote>
+<p>Good to know: common starters — <code>spring-boot-starter-web</code> (REST + embedded Tomcat), <code>spring-boot-starter-data-jpa</code> (JPA + Hibernate), <code>spring-boot-starter-test</code>, <code>spring-boot-starter-aop</code>, <code>spring-boot-starter-actuator</code>.</p>
+</blockquote>
+<h3>2) Auto Configuration</h3>
+<p>No need for separately configuring <code>DispatcherServlet</code>, <code>AppConfig</code>, <code>@EnableWebMvc</code>, <code>@ComponentScan</code> — Spring Boot adds them internally, by default.</p>
+<pre><code><span class="c">// This ONE annotation replaces all of that manual configuration.</span>
+<span class="c">// @SpringBootApplication = @Configuration + @EnableAutoConfiguration + @ComponentScan</span>
+<span class="a">@SpringBootApplication</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">MyApplication</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">SpringApplication</span>.run(<span class="ty">MyApplication</span>.<span class="k">class</span>, args);
+    }
+}
+</code></pre>
+<h3>3) Embedded Server</h3>
+<p>The servlet container (Tomcat by default) is already embedded. You do not install and configure an external Tomcat and deploy a WAR into it — you just run the JAR:</p>
+<pre><code>mvn clean package
+java -jar target/my-application-0.0.1-SNAPSHOT.jar
+<span class="c"># Tomcat starts INSIDE your app on port 8080</span>
+</code></pre>
+<h2>Other advantages of Spring Boot</h2>
+<ul>
+<li>It provides a <strong>quick way to create a production-ready application</strong> (metrics, health checks via Actuator, externalized configuration).</li>
+<li>It is <strong>based on the Spring Framework</strong> — everything you know about Spring (IoC, DI, AOP) still applies.</li>
+<li>It supports <strong>"Convention over Configuration"</strong> — it uses sensible default values for configuration, and if the developer doesn't want to go with the convention (the way something is done by default), they can override it.</li>
+<li>It helps to <strong>run an application as quickly as possible</strong> — from zero to a running web app in minutes.</li>
+</ul>
+<blockquote>
+<p>Example of convention over configuration: Spring Boot assumes the server port is <code>8080</code>. Don't like it? Override one line in <code>application.properties</code>: <code>server.port=9090</code>. The convention worked until you chose otherwise.</p>
+</blockquote>
+<h3>How Auto Configuration works under the hood</h3>
+<blockquote>
+<p>Added: interviewers almost always follow up with <em>"but HOW does Spring Boot know what to configure?"</em> — this is the answer.</p>
+</blockquote>
+<ol>
+<li><code>@SpringBootApplication</code> contains <code>@EnableAutoConfiguration</code>.</li>
+<li>At startup, Spring Boot reads a list of auto-configuration classes from the file
+   <code>META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</code>
+   (in older Boot 2.x: <code>META-INF/spring.factories</code>) inside the <code>spring-boot-autoconfigure</code> jar.</li>
+<li>Each auto-configuration class is <strong>conditional</strong> — it only activates when the right things are on the classpath and you have not defined your own bean:</li>
+</ol>
+<pre><code><span class="c">// Simplified idea of what DataSourceAutoConfiguration looks like inside Spring Boot:</span>
+<span class="a">@AutoConfiguration</span>
+<span class="a">@ConditionalOnClass</span>(<span class="ty">DataSource</span>.<span class="k">class</span>)      <span class="c">// only if a JDBC driver/pool is on classpath</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">DataSourceAutoConfiguration</span> {
+
+    <span class="a">@Bean</span>
+    <span class="a">@ConditionalOnMissingBean</span>              <span class="c">// only if YOU did not define a DataSource bean</span>
+    <span class="k">public</span> <span class="ty">DataSource</span> dataSource(<span class="ty">DataSourceProperties</span> props) {
+        <span class="k">return</span> props.initializeDataSourceBuilder().build();
+    }
+}
+</code></pre>
+<blockquote>
+<p>Added: this is why "convention over configuration" works — add <code>spring-boot-starter-data-jpa</code> and a <code>DataSource</code> appears automatically; define your own <code>@Bean DataSource</code> and Boot silently backs off (<code>@ConditionalOnMissingBean</code>).</p>
+</blockquote>
+<p><strong>Excluding an auto-configuration</strong> you don't want:</p>
+<pre><code><span class="a">@SpringBootApplication</span>(exclude = <span class="ty">DataSourceAutoConfiguration</span>.<span class="k">class</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">MyApplication</span> { ... }
+</code></pre>
+<pre><code><span class="c"># or in application.properties</span>
+<span class="a">spring.autoconfigure.exclude</span>=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+</code></pre>
+<blockquote>
+<p>Added: to <em>see</em> the decisions Boot made, start the app with <code>--debug</code> — the "CONDITIONS EVALUATION REPORT" lists every auto-configuration that matched (and why) and every one that did not.</p>
+</blockquote>
+<h3>What happens inside <code>SpringApplication.run()</code>?</h3>
+<blockquote>
+<p>Added: a favourite interview question. In order:
+1. Creates the <code>ApplicationContext</code> (IoC container) — picks servlet/reactive/plain type automatically.
+2. Loads environment: <code>application.properties</code> / <code>application.yml</code>, profiles, command-line args.
+3. Runs component scan + auto-configuration, creates and wires all beans.
+4. Starts the embedded server (Tomcat on 8080 by default).
+5. Calls any <code>CommandLineRunner</code> / <code>ApplicationRunner</code> beans — your "run once at startup" hook.</p>
+</blockquote>
+<h2>JAR vs WAR</h2>
+<ul class="cards"><li><b>What it is</b> — Standalone application — Complete web bundle (html, css, javascript)</li><li><b>Server</b> — Embedded (Tomcat inside the JAR) — Needs an external servlet container</li><li><b>How to run</b> — <code>java -jar app.jar</code> — Deploy into Tomcat / JBoss / WebLogic</li><li><b>Spring Boot default</b> — Yes — default packaging — Possible via <code>&lt;packaging&gt;war&lt;/packaging&gt;</code></li><li><b>Best for</b> — Microservices, Docker, cloud — Legacy infrastructure with shared app servers</li></ul>
+<pre><code><span class="c">&lt;!-- Only if you NEED a WAR (legacy app server): --&gt;</span>
+<span class="k">&lt;packaging</span><span class="k">&gt;</span>war<span class="k">&lt;/packaging</span><span class="k">&gt;</span>
+<span class="c">&lt;!-- and exclude/mark embedded Tomcat as provided --&gt;</span>
+<span class="k">&lt;dependency</span><span class="k">&gt;</span>
+    <span class="k">&lt;groupId</span><span class="k">&gt;</span>org.springframework.boot<span class="k">&lt;/groupId</span><span class="k">&gt;</span>
+    <span class="k">&lt;artifactId</span><span class="k">&gt;</span>spring-boot-starter-tomcat<span class="k">&lt;/artifactId</span><span class="k">&gt;</span>
+    <span class="k">&lt;scope</span><span class="k">&gt;</span>provided<span class="k">&lt;/scope</span><span class="k">&gt;</span>
+<span class="k">&lt;/dependency</span><span class="k">&gt;</span>
+</code></pre>
+<h2>Trying it yourself</h2>
+<blockquote>
+<p>Added: the fastest way to create a Spring Boot project is <strong>start.spring.io</strong> (Spring Initializr) — pick Maven, Java, the Spring Boot version, add the <code>Web</code> dependency, click Generate, unzip, and run <code>mvn spring-boot:run</code>.</p>
+</blockquote>
+<pre><code><span class="c">// A complete working REST application — this is ALL the code you need:</span>
+<span class="a">@SpringBootApplication</span>
+<span class="a">@RestController</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">HelloApplication</span> {
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">SpringApplication</span>.run(<span class="ty">HelloApplication</span>.<span class="k">class</span>, args);
+    }
+
+    <span class="a">@GetMapping</span>(<span class="s">&quot;/hello&quot;</span>)
+    <span class="k">public</span> <span class="ty">String</span> hello() {
+        <span class="k">return</span> <span class="s">&quot;Hello from Spring Boot!&quot;</span>;
+    }
+}
+<span class="c">// Run it, open http://localhost:8080/hello</span>
+</code></pre>
+<h2>Architect's Corner — what the notes don't cover</h2>
+<ul>
+<li><strong>Spring Boot 3.x baseline</strong>: Java 17 minimum, <code>jakarta.*</code> packages (not <code>javax.*</code>). Plan upgrades around this.</li>
+<li><strong>Virtual threads (Boot 3.2+, JDK 21)</strong>: one flag — <code>spring.threads.virtual.enabled=true</code> — lets Tomcat serve each request on a lightweight virtual thread. Huge win for I/O-bound services without reactive rewrite.</li>
+<li><strong>GraalVM native images</strong>: <code>mvn -Pnative native:compile</code> produces instant-startup, low-memory binaries — relevant for serverless/scale-to-zero.</li>
+<li><strong>Layered JARs for Docker</strong>: Boot splits the fat JAR into layers (dependencies / app classes) so image rebuilds are fast and cache-friendly.</li>
+<li><strong>Production-ready is a feature</strong>: Actuator health/metrics endpoints, graceful shutdown (<code>server.shutdown=graceful</code>) — see Topic 19.</li>
+</ul>
+<h2>Quick Revision</h2>
+<ul>
+<li>Spring Boot fixes 3 Spring MVC pains: <strong>dependency management</strong> (starters + version harmony), <strong>auto configuration</strong> (<code>DispatcherServlet</code>, <code>@ComponentScan</code> etc. set up by default), <strong>embedded server</strong> (Tomcat inside).</li>
+<li><code>@SpringBootApplication</code> = <code>@Configuration</code> + <code>@EnableAutoConfiguration</code> + <code>@ComponentScan</code>.</li>
+<li><strong>Convention over Configuration</strong> — sensible defaults, override only what you need.</li>
+<li><strong>JAR</strong> = standalone with embedded server (<code>java -jar</code>); <strong>WAR</strong> = web bundle for an external server.</li>
+<li>Spring Boot is <em>based on</em> Spring Framework — it is not a replacement, it is a faster way to use it.</li>
+<li>Auto-configuration mechanism: <code>@EnableAutoConfiguration</code> → reads <code>AutoConfiguration.imports</code> → applies classes guarded by <code>@ConditionalOnClass</code> / <code>@ConditionalOnMissingBean</code>; exclude via <code>@SpringBootApplication(exclude = ...)</code>; inspect with <code>--debug</code>.</li>
+</ul>
+<hr />
+<p>Next topic: <strong>Layered Architecture</strong> — how Controller, Service and Repository layers are organized.</p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload Spring_Boot_Introduction_Explained.mp4 to YouTube, then replace YOUTUBE_FULL_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK">YOUTUBE_FULL_LINK</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

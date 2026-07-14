@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classes and Nested Classes</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#e8590c22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #e8590c40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#e8590c0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #e8590c33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#e8590c;--a2:#fd7e14">
+<header class="hero"><div class="in">
+  <span class="badge">☕ CORE JAVA</span>
+  <h1>Classes and Nested Classes</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>Object — the topmost class in Java</em></p>
+<p class="chips">☕ 8 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> What a concrete class is  ·  What an abstract class is (and the 2 ways to hide implementation)  ·  Super class and sub class, and why Object is the root of everything  ·  The famous methods of the Object class (toString, equals, clone, wait, notify)</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Classes_and_Nested_Classes_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>Concrete Class</h2>
+<p>A <strong>concrete class</strong> is a "normal, complete" class:</p>
+<figure><img alt="Classes and Nested Classes — diagram" src="10-classes-and-nested-classes.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<ul>
+<li>You <strong>can create an instance</strong> of it using the <strong><code>new</code></strong> keyword.</li>
+<li><strong>All of its methods have implementations</strong> (real bodies with code) — nothing is left abstract or unfinished.</li>
+<li>It can also be a <strong>child class</strong>: it may implement an interface or extend an abstract class — as long as it fills in <em>all</em> the missing method bodies, it is still concrete.</li>
+<li>A top-level class's access modifier can only be <strong><code>public</code></strong> or <strong>package-private</strong> (package-private means <em>no</em> modifier is written).</li>
+</ul>
+<p>Analogy: a concrete class is like a <strong>finished house</strong> — you can move in (<code>new</code>) right away. An abstract class is only a <strong>blueprint</strong> — you cannot live in a blueprint.</p>
+<pre><code><span class="c">// A concrete class implementing an interface — still concrete,</span>
+<span class="c">// because it implements EVERY method with a real body.</span>
+<span class="k">interface</span> <span class="ty">Animal</span> {
+    <span class="k">void</span> makeSound();
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Dog</span> <span class="k">implements</span> <span class="ty">Animal</span> {      <span class="c">// public concrete class</span>
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">void</span> makeSound() {             <span class="c">// full implementation</span>
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Woof!&quot;</span>);
+    }
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Dog</span> d = <span class="k">new</span> <span class="ty">Dog</span>();                <span class="c">// &#x27;new&#x27; works -&gt; concrete!</span>
+        d.makeSound();
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+<span class="ty">Woof</span>!
+</code></pre>
+<hr />
+<h2>Abstract Class (Abstraction)</h2>
+<p><strong>Abstraction</strong> means: <strong>show only the important features to the user and hide the internal implementation.</strong></p>
+<p>Example from real life: a car's <strong>brake pedal</strong>. You only need to know "press it to stop" — you do not need to know the hydraulics behind it.</p>
+<p>There are <strong>2 ways</strong> to achieve abstraction in Java:</p>
+<ol>
+<li><strong>Interface</strong></li>
+<li><strong>Abstract class</strong></li>
+</ol>
+<pre><code><span class="k">abstract</span> <span class="k">class</span> <span class="ty">Vehicle</span> {
+    <span class="c">// abstract method: WHAT to do, no body — the &quot;important feature&quot; shown</span>
+    <span class="k">abstract</span> <span class="k">void</span> start();
+
+    <span class="c">// abstract classes can also have normal methods (hidden details)</span>
+    <span class="k">void</span> fuelUp() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Filling fuel...&quot;</span>);
+    }
+}
+
+<span class="k">class</span> <span class="ty">Bike</span> <span class="k">extends</span> <span class="ty">Vehicle</span> {
+    <span class="a">@Override</span>
+    <span class="k">void</span> start() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Bike starts with a kick&quot;</span>);
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">AbstractDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="c">// Vehicle v = new Vehicle();  // ERROR! Cannot instantiate abstract class</span>
+        <span class="ty">Vehicle</span> v = <span class="k">new</span> <span class="ty">Bike</span>();        <span class="c">// but a reference to the child is fine</span>
+        v.fuelUp();
+        v.start();
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+<span class="ty">Filling</span> fuel...
+<span class="ty">Bike</span> starts with a kick
+</code></pre>
+<hr />
+<h2>Super Class and Sub Class</h2>
+<ul>
+<li>The class being <strong>extended</strong> is the <strong>Super class</strong> (parent).</li>
+<li>The class that <strong>extends</strong> is the <strong>Sub class</strong> (child).</li>
+</ul>
+<pre><code>        <span class="ty">Class</span> <span class="ty">A</span>          &lt;- <span class="ty">Super</span> <span class="k">class</span> (parent)
+           |
+           |  <span class="k">extends</span>
+           v
+   <span class="ty">Class</span> <span class="ty">B</span> <span class="k">extends</span> <span class="ty">A</span>     &lt;- <span class="ty">Sub</span> <span class="k">class</span> (child)
+</code></pre>
+<pre><code><span class="k">class</span> <span class="ty">A</span> {                 <span class="c">// Super class</span>
+    <span class="k">void</span> greet() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Hello from A&quot;</span>);
+    }
+}
+
+<span class="k">class</span> <span class="ty">B</span> <span class="k">extends</span> <span class="ty">A</span> {       <span class="c">// Sub class</span>
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">SuperSubDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">B</span> b = <span class="k">new</span> <span class="ty">B</span>();
+        b.greet();        <span class="c">// inherited from the super class</span>
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+<span class="ty">Hello</span> from <span class="ty">A</span>
+</code></pre>
+<p>Look at this tiny class:</p>
+<pre><code><span class="k">class</span> <span class="ty">Person</span> {
+
+}
+</code></pre>
+<p>It looks like <code>Person</code> has no parent — but it secretly does! <strong>If a class does not explicitly extend anything, its super class is <code>Object</code>.</strong></p>
+<blockquote>
+<p><strong>Remember:</strong> In Java, in the absence of any other explicit superclass, <strong>every class is implicitly a subclass of the <code>Object</code> class</strong>. <code>Object</code> is the topmost class in Java — the great-grandparent of every class you will ever write.</p>
+</blockquote>
+<p>Because of this, <em>every</em> object automatically inherits the useful methods of <code>Object</code>:</p>
+<ul class="cards"><li><b><code>toString()</code></b> — Returns a text description of the object (used when you print it)</li><li><b><code>equals(Object o)</code></b> — Checks whether two objects are "equal"</li><li><b><code>clone()</code></b> — Makes a copy of the object</li><li><b><code>hashCode()</code></b> — Returns a number used by hash-based collections (HashMap etc.)</li><li><b><code>wait()</code></b> — Makes the current thread wait (used in multithreading)</li><li><b><code>notify()</code> / <code>notifyAll()</code></b> — Wakes up waiting thread(s) (used in multithreading)</li></ul>
+<pre><code><span class="k">class</span> <span class="ty">Person</span> {            <span class="c">// implicitly: class Person extends Object</span>
+    <span class="ty">String</span> name = <span class="s">&quot;Asha&quot;</span>;
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="ty">String</span> toString() {          <span class="c">// overriding Object&#x27;s method</span>
+        <span class="k">return</span> <span class="s">&quot;Person named &quot;</span> + name;
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">ObjectDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Person</span> p = <span class="k">new</span> <span class="ty">Person</span>();
+        <span class="ty">System</span>.out.println(p.toString());        <span class="c">// our overridden version</span>
+        <span class="ty">System</span>.out.println(p.equals(p));         <span class="c">// from Object -&gt; true</span>
+        <span class="ty">System</span>.out.println(p <span class="k">instanceof</span> <span class="ty">Object</span>); <span class="c">// proof of inheritance</span>
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+<span class="ty">Person</span> named <span class="ty">Asha</span>
+<span class="k">true</span>
+<span class="k">true</span>
+</code></pre>
+<hr />
+<h2>Nested Classes</h2>
+<p><strong>A class written inside another class is called a Nested Class.</strong></p>
+<h3>The family tree</h3>
+<pre><code>                       <span class="ty">Nested</span> <span class="ty">Class</span>
+                       /          \
+        <span class="ty">Static</span> <span class="ty">Nested</span> <span class="ty">Class</span>     <span class="ty">Non</span>-<span class="k">static</span> <span class="ty">Nested</span> <span class="ty">Class</span>
+                                (also known as <span class="ty">INNER</span> <span class="k">class</span>)
+                                 /        |          \
+                     <span class="ty">Member</span> <span class="ty">Inner</span>    <span class="ty">Local</span> <span class="ty">Inner</span>    <span class="ty">Anonymous</span>
+                        <span class="ty">Class</span>           <span class="ty">Class</span>       <span class="ty">Inner</span> <span class="ty">Class</span>
+</code></pre>
+<p>In plain words: nested classes split into two branches. The <strong>static</strong> branch has one kind (static nested class). The <strong>non-static</strong> branch is called the <strong>inner class</strong>, and it comes in three flavours: <strong>member</strong>, <strong>local</strong>, and <strong>anonymous</strong>.</p>
+<h3>When should you use a nested class?</h3>
+<ul>
+<li>If you know that a class <strong>A</strong> will be used by <strong>only one</strong> other class <strong>B</strong>, then instead of creating a whole new file (<code>A.java</code>), you can create A as a nested class <strong>inside</strong> B.</li>
+<li>It also helps you <strong>group logically related classes in one file</strong> — everything that belongs together stays together.</li>
+</ul>
+<p>Analogy: if a remote control is only ever used with one specific TV, you pack it <strong>inside the TV's box</strong> instead of shipping it separately.</p>
+<h3>Scope</h3>
+<p>A nested class's <strong>scope is the same as its outer class</strong> — it lives and dies with the class that contains it.</p>
+<h3>Access modifiers — an important difference</h3>
+<ul class="cards"><li><b>Top-level (outer) class</b> — <code>public</code> or package-private (no modifier) only</li><li><b>Nested class</b> — <code>private</code>, <code>public</code>, <code>protected</code>, or package-private — <strong>all four!</strong></li></ul>
+<hr />
+<h2>Static Nested Class</h2>
+<p>Rules:</p>
+<ul>
+<li>It <strong>does NOT have access to the non-static (instance) variables and methods</strong> of the outer class. It can only touch the outer class's <strong>static</strong> members.</li>
+<li>Its object <strong>can be created WITHOUT creating an object of the outer class</strong>.</li>
+<li>It can be <code>private</code>, <code>public</code>, <code>protected</code> or package-private (default — no explicit declaration).</li>
+</ul>
+<pre><code><span class="k">class</span> <span class="ty">OuterClass</span> {
+    <span class="k">int</span> instanceVariable = <span class="n">10</span>;          <span class="c">// non-static (belongs to an object)</span>
+    <span class="k">static</span> <span class="k">int</span> classVariable = <span class="n">20</span>;      <span class="c">// static (belongs to the class)</span>
+
+    <span class="k">static</span> <span class="k">class</span> <span class="ty">NestedClass</span> {
+        <span class="k">public</span> <span class="k">void</span> print() {
+            <span class="ty">System</span>.out.println(classVariable);      <span class="c">// OK  - static member</span>
+            <span class="c">// System.out.println(instanceVariable); // ERROR! non-static</span>
+        }
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">StaticNestedDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="c">// Create it directly — NO outer object needed:</span>
+        <span class="ty">OuterClass</span>.<span class="ty">NestedClass</span> nestedObj = <span class="k">new</span> <span class="ty">OuterClass</span>.<span class="ty">NestedClass</span>();
+        nestedObj.print();
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+<span class="n">20</span>
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> a static nested class is like a <strong>lodger</strong> in the outer class's house — it lives at the same address but has its own key (no outer object needed) and cannot use the family's <em>personal</em> (non-static) belongings.</p>
+</blockquote>
+<hr />
+<h2>Inner Class (Non-static Nested Class)</h2>
+<p>An <strong>inner class</strong> is a nested class <em>without</em> the <code>static</code> keyword. Because it is non-static, every inner-class object is <strong>tied to an object of the outer class</strong> — and it can access <strong>both</strong> static and non-static members of the outer class.</p>
+<h3>6.1 Member Inner Class</h3>
+<ul>
+<li>Declared directly inside the outer class (like a member variable).</li>
+<li>It can be <code>private</code>, <code>public</code>, <code>protected</code> or default (package-private).</li>
+<li>To create it, you <strong>first need an object of the outer class</strong>, then use the special <strong><code>outerObject.new</code></strong> syntax.</li>
+</ul>
+<pre><code><span class="k">class</span> <span class="ty">OuterClass</span> {
+    <span class="k">int</span> instanceVariable = <span class="n">10</span>;
+    <span class="k">static</span> <span class="k">int</span> classVariable = <span class="n">20</span>;
+
+    <span class="k">class</span> <span class="ty">InnerClass</span> {                      <span class="c">// member inner class</span>
+        <span class="k">public</span> <span class="k">void</span> print() {
+            <span class="c">// Can access BOTH static and non-static outer members:</span>
+            <span class="ty">System</span>.out.println(classVariable + instanceVariable);
+        }
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">MemberInnerDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="c">// Step 1: create the outer object first</span>
+        <span class="ty">OuterClass</span> outerClass = <span class="k">new</span> <span class="ty">OuterClass</span>();
+
+        <span class="c">// Step 2: use the special &#x27;outerObject.new&#x27; syntax</span>
+        <span class="ty">OuterClass</span>.<span class="ty">InnerClass</span> innerClassObj = outerClass.<span class="k">new</span> <span class="ty">InnerClass</span>();
+
+        innerClassObj.print();
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+<span class="n">30</span>
+</code></pre>
+<h3>How to instantiate each kind — side by side</h3>
+<pre><code><span class="c">// 1) Static nested class — no outer object needed:</span>
+<span class="ty">OuterClass</span>.<span class="ty">NestedClass</span> nestedObj = <span class="k">new</span> <span class="ty">OuterClass</span>.<span class="ty">NestedClass</span>();
+
+<span class="c">// 2) Member inner class — outer object needed, note &quot;outer.new&quot;:</span>
+<span class="ty">OuterClass</span> outerClass = <span class="k">new</span> <span class="ty">OuterClass</span>();
+<span class="ty">OuterClass</span>.<span class="ty">InnerClass</span> innerClassObj = outerClass.<span class="k">new</span> <span class="ty">InnerClass</span>();
+</code></pre>
+<h3>6.2 Local Inner Class</h3>
+<ul>
+<li>These are classes <strong>defined inside a block</strong> — inside a method, a <code>for</code> loop, a <code>while</code> loop, an <code>if</code> block, etc.</li>
+<li>It <strong>cannot</strong> be declared <code>private</code>, <code>protected</code> or <code>public</code>. Only the <strong>default</strong> access (nothing written) is allowed.</li>
+<li>It <strong>cannot be instantiated outside of its block</strong> — it only exists inside the block where it was written.</li>
+</ul>
+<pre><code><span class="k">class</span> <span class="ty">OuterClass</span> {
+    <span class="k">int</span> instanceVariable = <span class="n">1</span>;
+    <span class="k">static</span> <span class="k">int</span> classVariable = <span class="n">2</span>;
+
+    <span class="k">public</span> <span class="k">void</span> display() {
+        <span class="k">int</span> methodVariable = <span class="n">3</span>;
+
+        <span class="k">class</span> <span class="ty">LocalInnerClass</span> {              <span class="c">// class inside a method!</span>
+            <span class="k">int</span> localInnerVariable = <span class="n">4</span>;
+
+            <span class="k">public</span> <span class="k">void</span> print() {
+                <span class="ty">System</span>.out.println(instanceVariable + classVariable
+                        + methodVariable + localInnerVariable);
+            }
+        }
+
+        <span class="c">// must be used INSIDE the same block:</span>
+        <span class="ty">LocalInnerClass</span> localObj = <span class="k">new</span> <span class="ty">LocalInnerClass</span>();
+        localObj.print();
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">LocalInnerDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">OuterClass</span> outerClassObj = <span class="k">new</span> <span class="ty">OuterClass</span>();
+        outerClassObj.display();     <span class="c">// 1 + 2 + 3 + 4</span>
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+<span class="n">10</span>
+</code></pre>
+<h3>6.3 Anonymous Inner Class</h3>
+<ul>
+<li>An inner class <strong>without a name</strong> is called an <strong>anonymous class</strong>.</li>
+<li>Use it when you want to <strong>override the behaviour of a method without creating a real, named subclass</strong> — perfect for quick, one-time-use implementations.</li>
+</ul>
+<pre><code><span class="k">abstract</span> <span class="k">class</span> <span class="ty">Car</span> {
+    <span class="k">public</span> <span class="k">abstract</span> <span class="k">void</span> pressBreak();
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">AnonymousDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="c">// We create a subclass and its object in ONE step —</span>
+        <span class="c">// the subclass has no name, hence &quot;anonymous&quot;:</span>
+        <span class="ty">Car</span> audiCar = <span class="k">new</span> <span class="ty">Car</span>() {
+            <span class="a">@Override</span>
+            <span class="k">public</span> <span class="k">void</span> pressBreak() {
+                <span class="ty">System</span>.out.println(<span class="s">&quot;Hi&quot;</span>);
+            }
+        };
+        audiCar.pressBreak();
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+<span class="ty">Hi</span>
+</code></pre>
+<p>What actually happens: the compiler secretly creates a subclass of <code>Car</code> (named something like <code>AnonymousDemo$1</code>), overrides <code>pressBreak()</code>, and gives you one object of it. You wrote a subclass without ever naming it!</p>
+<h3>Nested class kinds — comparison table</h3>
+<ul class="cards"><li><b><strong>Static nested</strong></b> — Inside class, with <code>static</code> — private/public/protected/default — <strong>No</strong> — <code>new Outer.Nested()</code></li><li><b><strong>Member inner</strong></b> — Inside class, no <code>static</code> — private/public/protected/default — <strong>Yes</strong> — <code>outerObj.new Inner()</code></li><li><b><strong>Local inner</strong></b> — Inside a block/method/loop/if — default only — Lives inside its block — <code>new Local()</code> — inside the block only</li><li><b><strong>Anonymous</strong></b> — Inside an expression — none (it has no name!) — Depends on context — <code>new Parent() { ...overrides... }</code></li></ul>
+<hr />
+<h2>Quick Revision</h2>
+<ul>
+<li><strong>Concrete class</strong> = instantiable with <code>new</code>, all methods implemented; top-level classes can only be <code>public</code> or package-private.</li>
+<li><strong>Abstraction</strong> = show important features, hide implementation; achieved via <strong>interface</strong> or <strong>abstract class</strong>.</li>
+<li><strong>Super/sub class</strong>: <code>class B extends A</code> → A is super, B is sub.</li>
+<li>With no explicit parent, every class <strong>implicitly extends <code>Object</code></strong> — the topmost class — giving it <code>toString()</code>, <code>equals()</code>, <code>clone()</code>, <code>hashCode()</code>, <code>wait()</code>, <code>notify()</code>.</li>
+<li><strong>Nested class</strong> = class inside a class. Use it when one class is used by only one other class, or to group related classes in one file. Its scope equals the outer class's scope.</li>
+<li><strong>Static nested class</strong>: no access to outer instance members; created without an outer object: <code>new Outer.Nested()</code>.</li>
+<li><strong>Member inner class</strong>: access to everything; needs an outer object: <code>outer.new Inner()</code>.</li>
+<li><strong>Local inner class</strong>: lives inside a block/method; default access only; unusable outside its block.</li>
+<li><strong>Anonymous class</strong>: a nameless inner class used to override a method on the spot, without writing a named subclass.</li>
+</ul>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Classes_and_Nested_Classes_Explained_Part1.mp4; Part 2 = Classes_and_Nested_Classes_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

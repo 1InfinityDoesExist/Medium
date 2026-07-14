@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enum, POJO and Immutable Class</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#e8590c22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #e8590c40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#e8590c0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #e8590c33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#e8590c;--a2:#fd7e14">
+<header class="hero"><div class="in">
+  <span class="badge">☕ CORE JAVA</span>
+  <h1>Enum, POJO and Immutable Class</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>Properties of an enum (all the rules)</em></p>
+<p class="chips">☕ 7 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> What a POJO (Plain Old Java Object) is, with a simple example  ·  What an enum is: a collection of constants that are implicitly static final  ·  Why an enum cannot extend a class and cannot be instantiated (private constructor)  ·  Enums with variables, constructors, methods — and abstract methods inside enums</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Enum_POJO_and_Immutable_Class_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>POJO — Plain Old Java Object</h2>
+<p><strong>POJO</strong> stands for <strong>Plain Old Java Object</strong>. It is the simplest kind of Java class — just a plain container for data, with nothing fancy attached.</p>
+<figure><img alt="Enum, POJO and Immutable Class — diagram" src="12-enum-pojo-and-immutable-class.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p>A POJO:</p>
+<ul>
+<li>Is an <strong>ordinary class</strong> — it does <strong>not</strong> extend any framework class and does <strong>not</strong> implement any framework interface. No special parent required.</li>
+<li>Has <strong>private fields</strong> to hold its data.</li>
+<li>Has <strong>public getters and setters</strong> to read and change those fields.</li>
+<li>Usually has a <strong>no-argument constructor</strong>.</li>
+<li>Has no special annotations or rules forced on it.</li>
+</ul>
+<p>Analogy: a POJO is like a <strong>plain cardboard box with labels</strong> — it just holds your data (name, age, ...) neatly, and the getters/setters are the labels through which you look inside or put things in. Frameworks like Spring and Hibernate love POJOs precisely because they are so simple to work with.</p>
+<pre><code><span class="c">// A classic POJO: plain fields + getters + setters. Nothing else.</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Student</span> {
+    <span class="k">private</span> <span class="ty">String</span> name;      <span class="c">// private data</span>
+    <span class="k">private</span> <span class="k">int</span> age;
+
+    <span class="k">public</span> <span class="ty">Student</span>() {        <span class="c">// no-arg constructor</span>
+    }
+
+    <span class="k">public</span> <span class="ty">String</span> getName() { <span class="k">return</span> name; }
+    <span class="k">public</span> <span class="k">void</span> setName(<span class="ty">String</span> name) { <span class="k">this</span>.name = name; }
+
+    <span class="k">public</span> <span class="k">int</span> getAge() { <span class="k">return</span> age; }
+    <span class="k">public</span> <span class="k">void</span> setAge(<span class="k">int</span> age) { <span class="k">this</span>.age = age; }
+}
+
+<span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Student</span> s = <span class="k">new</span> <span class="ty">Student</span>();
+        s.setName(<span class="s">&quot;Ravi&quot;</span>);
+        s.setAge(<span class="n">21</span>);
+        <span class="ty">System</span>.out.println(s.getName() + <span class="s">&quot; is &quot;</span> + s.getAge() + <span class="s">&quot; years old&quot;</span>);
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+<span class="ty">Ravi</span> is <span class="n">21</span> years old
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> POJO = <strong>P</strong>lain <strong>O</strong>ld <strong>J</strong>ava <strong>O</strong>bject — private fields + public getters/setters + no framework baggage.</p>
+</blockquote>
+<hr />
+<h2>Enum</h2>
+<p>An <strong>enum</strong> is a special class used when you have a <strong>fixed set of constants</strong> — days of the week, directions, order statuses, etc.</p>
+<ul>
+<li>It is a <strong>collection of CONSTANTS</strong>.</li>
+<li>Its constants are <strong><code>static</code> and <code>final</code> implicitly</strong> — you do not write those keywords; Java adds them for you.</li>
+<li>It <strong>cannot extend any class</strong>, because internally every enum <strong>already extends <code>java.lang.Enum</code></strong> (and Java allows only one parent). This <code>extends Enum</code> happens <strong>by default</strong> — you never write it yourself.</li>
+<li>It <strong>can implement interfaces</strong>.</li>
+<li>It <strong>can have variables, constructors and methods</strong> — an enum is much more than a list of names!</li>
+<li>It <strong>cannot be instantiated</strong> with <code>new</code>, because its <strong>constructor is always private</strong>. Even if you write a default (package-private) constructor, <strong>in the bytecode Java makes it private</strong>.</li>
+<li><strong>No other class can extend an enum class.</strong> (Think of an enum like a final class — and a <em>final class cannot be inherited</em>.)</li>
+<li>It <strong>can have abstract methods</strong> — but then <strong>every constant must implement</strong> that abstract method.</li>
+</ul>
+<h3>A basic enum + the four famous methods</h3>
+<p>The <code>Enum</code> class gives every enum some famous ready-made methods:</p>
+<ul class="cards"><li><b><code>values()</code></b> — Returns an <strong>array of all constants</strong> of the enum — perfect for looping</li><li><b><code>ordinal()</code></b> — Returns the <strong>position (index)</strong> of the constant, starting from 0</li><li><b><code>valueOf("NAME")</code></b> — Converts a <strong>String into the matching constant</strong> (name must match exactly)</li><li><b><code>name()</code></b> — Returns the <strong>name of the constant as a String</strong></li></ul>
+<pre><code><span class="k">public</span> <span class="k">enum</span> <span class="ty">CustomEnum</span> {     <span class="c">// internally: extends java.lang.Enum (default)</span>
+    <span class="ty">MONDAY</span>,                  <span class="c">// ordinal 0   — implicitly public static final</span>
+    <span class="ty">TUESDAY</span>,                 <span class="c">// ordinal 1</span>
+    <span class="ty">WEDNESDAY</span>,               <span class="c">// ordinal 2</span>
+    <span class="ty">THURSDAY</span>,                <span class="c">// ordinal 3</span>
+    <span class="ty">FRIDAY</span>                   <span class="c">// ordinal 4</span>
+}
+
+<span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="c">// values() -&gt; loop over every constant</span>
+        <span class="k">for</span> (<span class="ty">CustomEnum</span> sample : <span class="ty">CustomEnum</span>.values()) {
+            <span class="ty">System</span>.out.println(sample.name() + <span class="s">&quot; -&gt; &quot;</span> + sample.ordinal());
+        }
+
+        <span class="c">// valueOf() -&gt; String to constant (exact name required)</span>
+        <span class="ty">CustomEnum</span> myEnum = <span class="ty">CustomEnum</span>.valueOf(<span class="s">&quot;FRIDAY&quot;</span>);
+        <span class="ty">System</span>.out.println(myEnum.name());
+
+        <span class="c">// CustomEnum c = new CustomEnum();  // ERROR! constructor is private</span>
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+<span class="ty">MONDAY</span> -&gt; <span class="n">0</span>
+<span class="ty">TUESDAY</span> -&gt; <span class="n">1</span>
+<span class="ty">WEDNESDAY</span> -&gt; <span class="n">2</span>
+<span class="ty">THURSDAY</span> -&gt; <span class="n">3</span>
+<span class="ty">FRIDAY</span> -&gt; <span class="n">4</span>
+<span class="ty">FRIDAY</span>
+</code></pre>
+<h3>Enum with variables, constructor and methods</h3>
+<p>The constructor runs <strong>once for each constant</strong>, automatically. It is private (even if you don't say so):</p>
+<pre><code><span class="k">public</span> <span class="k">enum</span> <span class="ty">Coffee</span> {
+    <span class="ty">SMALL</span>(<span class="n">100</span>), <span class="ty">MEDIUM</span>(<span class="n">150</span>), <span class="ty">LARGE</span>(<span class="n">200</span>);   <span class="c">// constants call the constructor</span>
+
+    <span class="k">private</span> <span class="k">final</span> <span class="k">int</span> price;               <span class="c">// enums can have variables</span>
+
+    <span class="ty">Coffee</span>(<span class="k">int</span> price) {                    <span class="c">// private by default —</span>
+        <span class="k">this</span>.price = price;                <span class="c">// even in bytecode it is private!</span>
+    }
+
+    <span class="k">public</span> <span class="k">int</span> getPrice() {                <span class="c">// enums can have methods</span>
+        <span class="k">return</span> price;
+    }
+}
+
+<span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="k">for</span> (<span class="ty">Coffee</span> c : <span class="ty">Coffee</span>.values()) {
+            <span class="ty">System</span>.out.println(c.name() + <span class="s">&quot; costs Rs.&quot;</span> + c.getPrice());
+        }
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+<span class="ty">SMALL</span> costs <span class="ty">Rs</span>.<span class="n">100</span>
+<span class="ty">MEDIUM</span> costs <span class="ty">Rs</span>.<span class="n">150</span>
+<span class="ty">LARGE</span> costs <span class="ty">Rs</span>.<span class="n">200</span>
+</code></pre>
+<h3>Enum implementing an interface</h3>
+<p>An enum cannot <em>extend</em> a class, but it <strong>can implement</strong> interfaces:</p>
+<pre><code><span class="k">interface</span> <span class="ty">Describable</span> {
+    <span class="ty">String</span> describe();
+}
+
+<span class="k">public</span> <span class="k">enum</span> <span class="ty">Direction</span> <span class="k">implements</span> <span class="ty">Describable</span> {
+    <span class="ty">NORTH</span>, <span class="ty">SOUTH</span>;
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="ty">String</span> describe() {
+        <span class="k">return</span> <span class="s">&quot;Direction: &quot;</span> + name();
+    }
+}
+
+<span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">System</span>.out.println(<span class="ty">Direction</span>.<span class="ty">NORTH</span>.describe());
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+<span class="ty">Direction</span>: <span class="ty">NORTH</span>
+</code></pre>
+<h3>Enum with an abstract method</h3>
+<p>If an enum declares an abstract method, <strong>every single constant must implement it</strong> (each constant gets its own body):</p>
+<pre><code><span class="k">public</span> <span class="k">enum</span> <span class="ty">Operation</span> {
+    <span class="ty">ADD</span> {
+        <span class="a">@Override</span>
+        <span class="k">public</span> <span class="k">int</span> apply(<span class="k">int</span> a, <span class="k">int</span> b) { <span class="k">return</span> a + b; }
+    },
+    <span class="ty">MULTIPLY</span> {
+        <span class="a">@Override</span>
+        <span class="k">public</span> <span class="k">int</span> apply(<span class="k">int</span> a, <span class="k">int</span> b) { <span class="k">return</span> a * b; }
+    };
+    <span class="c">// every constant MUST implement this:</span>
+    <span class="k">public</span> <span class="k">abstract</span> <span class="k">int</span> apply(<span class="k">int</span> a, <span class="k">int</span> b);
+}
+
+<span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">System</span>.out.println(<span class="ty">Operation</span>.<span class="ty">ADD</span>.apply(<span class="n">2</span>, <span class="n">3</span>));
+        <span class="ty">System</span>.out.println(<span class="ty">Operation</span>.<span class="ty">MULTIPLY</span>.apply(<span class="n">2</span>, <span class="n">3</span>));
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+<span class="n">5</span>
+<span class="n">6</span>
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> enum constants are implicitly <code>static final</code>; the constructor is always private; an enum already extends <code>java.lang.Enum</code>, so it cannot extend anything else — and nothing can extend it. A <strong>final class cannot be inherited</strong>, and an enum behaves the same way.</p>
+</blockquote>
+<hr />
+<h2>Immutable Class</h2>
+<p><strong>Immutable</strong> means: <strong>once an object is created, its value can never be changed.</strong> Any "change" must create a <em>new</em> object instead.</p>
+<p>Real examples from the JDK: <strong><code>String</code></strong> and the <strong>wrapper classes</strong> (<code>Integer</code>, <code>Double</code>, <code>Boolean</code>, ...). When you do <code>s = s + "x"</code>, Java builds a brand-new String — the old one never changes.</p>
+<p>Why bother? Immutable objects are automatically <strong>thread-safe</strong>, safe to share, safe to cache, and safe to use as HashMap keys — because nobody can secretly modify them.</p>
+<h3>The rules for building an immutable class</h3>
+<ol>
+<li><strong>Declare the class as <code>final</code></strong> — so no subclass can be created that might break immutability. (A final class cannot be inherited.)</li>
+<li><strong>Make all class members (fields) <code>private</code></strong> — so nobody outside can touch the data directly.</li>
+<li>Also make the fields <strong><code>final</code></strong> — each field is <strong>initialized only once, through the constructor</strong>, and can never be reassigned.</li>
+<li><strong>Do NOT provide any setter methods</strong> — setters exist to change values, and change is exactly what we forbid.</li>
+<li><strong>Provide only getter methods</strong> — and for mutable members (like a <code>List</code>), the getter must <strong>return a COPY</strong> of the member, not the original (a "defensive copy"). Otherwise the caller could modify your internal list through the reference!</li>
+</ol>
+<h3>The <code>MyImmutableClass</code> example</h3>
+<pre><code><span class="k">import</span> java.util.<span class="ty">ArrayList</span>;
+<span class="k">import</span> java.util.<span class="ty">List</span>;
+
+<span class="k">final</span> <span class="k">class</span> <span class="ty">MyImmutableClass</span> {                 <span class="c">// rule 1: final class</span>
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">String</span> name;                 <span class="c">// rules 2+3: private final</span>
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">List</span>&lt;<span class="ty">Object</span>&gt; petNameList;
+
+    <span class="ty">MyImmutableClass</span>(<span class="ty">String</span> name, <span class="ty">List</span>&lt;<span class="ty">Object</span>&gt; petNameList) {
+        <span class="k">this</span>.name = name;                      <span class="c">// rule 3: set once, in the</span>
+        <span class="k">this</span>.petNameList = petNameList;        <span class="c">//         constructor only</span>
+    }
+
+    <span class="c">// rule 4: NO setters anywhere!</span>
+
+    <span class="k">public</span> <span class="ty">String</span> getName() {                  <span class="c">// rule 5: getters only</span>
+        <span class="k">return</span> name;                           <span class="c">// String is already immutable</span>
+    }
+
+    <span class="k">public</span> <span class="ty">List</span>&lt;<span class="ty">Object</span>&gt; getPetNameList() {
+        <span class="c">// rule 5: return a COPY, not the real list (defensive copy)</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="ty">ArrayList</span>&lt;&gt;(petNameList);
+    }
+}
+
+<span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">List</span>&lt;<span class="ty">Object</span>&gt; pets = <span class="k">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+        pets.add(<span class="s">&quot;Tommy&quot;</span>);
+        pets.add(<span class="s">&quot;Sheru&quot;</span>);
+
+        <span class="ty">MyImmutableClass</span> obj = <span class="k">new</span> <span class="ty">MyImmutableClass</span>(<span class="s">&quot;Uttam&quot;</span>, pets);
+
+        <span class="c">// Try to hack the object through the getter:</span>
+        obj.getPetNameList().add(<span class="s">&quot;Hacker Dog&quot;</span>);   <span class="c">// modifies only the COPY</span>
+
+        <span class="ty">System</span>.out.println(obj.getName());
+        <span class="ty">System</span>.out.println(obj.getPetNameList()); <span class="c">// original is untouched!</span>
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+<span class="ty">Uttam</span>
+[<span class="ty">Tommy</span>, <span class="ty">Sheru</span>]
+</code></pre>
+<p>Notice the trick: the caller added <code>"Hacker Dog"</code>, but only to the <em>copy</em> returned by the getter. The object's real list stayed <code>[Tommy, Sheru]</code> — that is the power of the defensive copy.</p>
+<h3>Immutable class checklist</h3>
+<ul class="cards"><li><b>Class is <code>final</code></b> — Nobody can extend it and break the rules</li><li><b>Fields are <code>private</code></b> — No direct access from outside</li><li><b>Fields are <code>final</code>, set once in the constructor</b> — Value fixed at birth</li><li><b>No setter methods</b> — Nothing can be changed later</li><li><b>Getters return <strong>copies</strong> of mutable fields</b> — The original data can never leak out</li></ul>
+<hr />
+<h2>Quick Revision</h2>
+<ul>
+<li><strong>POJO</strong> = Plain Old Java Object: private fields + public getters/setters + no framework parent. The simplest data-holder class.</li>
+<li><strong>Enum</strong> = a collection of constants that are <strong>implicitly <code>static final</code></strong>.</li>
+<li>An enum <strong>internally extends <code>java.lang.Enum</code></strong>, so it cannot extend any other class; it <strong>can implement interfaces</strong>; <strong>no class can extend an enum</strong>.</li>
+<li>An enum can have <strong>variables, constructors and methods</strong>; the constructor is <strong>always private</strong> (even in bytecode), so <code>new</code> is impossible.</li>
+<li>An enum can declare <strong>abstract methods</strong> — every constant must then implement them.</li>
+<li>Famous enum methods: <strong><code>values()</code></strong> (all constants), <strong><code>ordinal()</code></strong> (position from 0), <strong><code>valueOf("NAME")</code></strong> (String → constant), <strong><code>name()</code></strong> (constant → String).</li>
+<li>A <strong>final class cannot be inherited</strong>.</li>
+<li><strong>Immutable class</strong> = value fixed forever: <code>final</code> class, <code>private final</code> fields, constructor-only initialization, <strong>no setters</strong>, getters return <strong>defensive copies</strong>. Examples: <code>String</code>, wrapper classes.</li>
+</ul>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Enum_POJO_and_Immutable_Class_Explained_Part1.mp4; Part 2 = Enum_POJO_and_Immutable_Class_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Observer Design Pattern</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#6366f122;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #6366f140}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#6366f10d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #6366f133}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#6366f114,#818cf822);border:1px solid #6366f133;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#6366f114,#818cf822);border:1px solid #6366f133;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#6366f1;--a2:#818cf8">
+<header class="hero"><div class="in">
+  <span class="badge">🏛️ GANG-OF-FOUR PATTERN</span>
+  <h1>Observer Design Pattern</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>The contracts</em></p>
+<p class="chips">☕ 4 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> Define a one-to-many dependency: when the subject&#x27;s state changes, all subscribed observers are notified automatically.</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Observer_Short_Overview_EN.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<hr />
+<h2>Intent</h2>
+<p>Define a <strong>one-to-many</strong> dependency: when the subject's state changes, <strong>all subscribed observers are notified automatically</strong>. The subject knows observers only through a common interface — never their concrete types.</p>
+<hr />
+<h2>The example domain</h2>
+<p>A <strong>CI build pipeline</strong> publishes build results. A Slack notifier and a live dashboard both need to react to every status change — and reactors come and go (the Slack notifier unsubscribes; a metrics recorder might subscribe later). The pipeline must not hard-code who's listening.</p>
+<hr />
+<h2>How the pattern works</h2>
+<ul>
+<li><code>IBuildObserver</code> is the observer contract — <code>onBuildStatusChanged()</code>.</li>
+<li><code>IBuildSubject</code> is the subject contract — <code>subscribe</code> / <code>unsubscribe</code> / <code>publishStatus</code>.</li>
+<li><code>BuildPipeline</code> keeps <code>List&lt;IBuildObserver&gt; watchers</code> and its <code>status</code>; <strong><code>setStatus</code> calls <code>publishStatus()</code> itself</strong> — state change and notification are one atomic act.</li>
+<li><code>SlackNotifierObserver</code> / <code>DashboardObserver</code> self-subscribe in their constructors and, on notification, <strong>pull</strong> the new status from the pipeline.</li>
+<li>The demo proves the dynamic part: both react to build #128; Slack unsubscribes; only the dashboard sees build #129.</li>
+</ul>
+<hr />
+<h2>UML Class Diagram</h2>
+<figure><img alt="Observer Design Pattern — diagram" src="observer.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p><strong>Reading the diagram:</strong> one status change fans out to every watcher (dashed arrow). The subject's list is typed to the interface — it never knows Slack or dashboards exist.</p>
+<hr />
+<h2>The players</h2>
+<ul class="cards"><li><b><code>IBuildSubject</code></b> — Subject contract — subscribe/unsubscribe/publish.</li><li><b><code>BuildPipeline</code></b> — Concrete subject — watchers + status, auto-publishing setter.</li><li><b><code>IBuildObserver</code></b> — Observer contract — <code>onBuildStatusChanged()</code>.</li><li><b><code>SlackNotifierObserver</code> / <code>DashboardObserver</code></b> — Concrete observers — independent reactions.</li><li><b><code>BuildPipelineNotificationDemo</code></b> — Client — proves subscribe, broadcast, unsubscribe.</li></ul>
+<hr />
+<h2>Code walkthrough — every line explained</h2>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">IBuildObserver</span> {
+    <span class="k">void</span> onBuildStatusChanged();
+}
+
+<span class="k">public</span> <span class="k">interface</span> <span class="ty">IBuildSubject</span> {
+    <span class="k">void</span> subscribe(<span class="ty">IBuildObserver</span> observer);
+    <span class="k">void</span> unsubscribe(<span class="ty">IBuildObserver</span> observer);
+    <span class="k">void</span> publishStatus();
+}
+</code></pre>
+<ul>
+<li>Minimal: a subject manages subscriptions and broadcasts; an observer exposes one callback.</li>
+</ul>
+<h3><code>BuildPipeline.java</code> — the concrete subject</h3>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">BuildPipeline</span> <span class="k">implements</span> <span class="ty">IBuildSubject</span> {
+
+    <span class="k">private</span> <span class="ty">List</span>&lt;<span class="ty">IBuildObserver</span>&gt; watchers = <span class="k">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+    <span class="k">private</span> <span class="ty">String</span> status;
+
+    <span class="a">@Override</span> <span class="k">public</span> <span class="k">void</span> subscribe(<span class="ty">IBuildObserver</span> observer) { watchers.add(observer); }
+    <span class="a">@Override</span> <span class="k">public</span> <span class="k">void</span> unsubscribe(<span class="ty">IBuildObserver</span> observer) { watchers.remove(observer); }
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">void</span> publishStatus() {
+        watchers.forEach(<span class="ty">IBuildObserver</span>::onBuildStatusChanged);
+    }
+
+    <span class="k">public</span> <span class="ty">String</span> getStatus() { <span class="k">return</span> status; }
+
+    <span class="k">public</span> <span class="k">void</span> setStatus(<span class="ty">String</span> status) {
+        <span class="k">this</span>.status = status;
+        publishStatus();
+    }
+}
+</code></pre>
+<ul>
+<li><strong>The watcher list is typed <code>List&lt;IBuildObserver&gt;</code></strong> — the pipeline can notify anything implementing the interface, with zero knowledge of concrete classes.</li>
+<li><strong><code>setStatus</code> welds state change to notification</strong> — a publisher can't forget to notify. <code>getStatus</code> serves the <em>pull</em> model: observers come back for the value.</li>
+</ul>
+<h3><code>SlackNotifierObserver.java</code> — a concrete observer</h3>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">SlackNotifierObserver</span> <span class="k">implements</span> <span class="ty">IBuildObserver</span> {
+
+    <span class="k">private</span> <span class="ty">BuildPipeline</span> pipeline;
+
+    <span class="k">public</span> <span class="ty">SlackNotifierObserver</span>(<span class="ty">BuildPipeline</span> pipeline) {
+        <span class="k">this</span>.pipeline = pipeline;
+        <span class="k">this</span>.pipeline.subscribe(<span class="k">this</span>);
+    }
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">void</span> onBuildStatusChanged() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Slack notifier posted: &quot;</span> + <span class="k">this</span>.pipeline.getStatus());
+    }
+}
+</code></pre>
+<ul>
+<li><strong>Self-subscription in the constructor</strong> — an observer can't exist half-wired. On notification it <em>pulls</em> <code>getStatus()</code> and reacts. The dashboard observer is identical in shape with its own reaction.</li>
+</ul>
+<h3>The client</h3>
+<pre><code><span class="ty">BuildPipeline</span> pipeline = <span class="k">new</span> <span class="ty">BuildPipeline</span>();
+<span class="ty">SlackNotifierObserver</span> slackNotifier = <span class="k">new</span> <span class="ty">SlackNotifierObserver</span>(pipeline);
+<span class="ty">DashboardObserver</span> dashboard = <span class="k">new</span> <span class="ty">DashboardObserver</span>(pipeline);
+
+pipeline.setStatus(<span class="s">&quot;BUILD #128 PASSED&quot;</span>);   <span class="c">// both react</span>
+pipeline.unsubscribe(slackNotifier);
+pipeline.setStatus(<span class="s">&quot;BUILD #129 FAILED&quot;</span>);   <span class="c">// only the dashboard reacts</span>
+</code></pre>
+<ul>
+<li>The demo's proof: two reactions to #128, then after unsubscribing Slack, exactly one reaction to #129 — the subscription list is genuinely consulted at each broadcast.</li>
+</ul>
+<hr />
+<h2>Why the design decisions</h2>
+<ul>
+<li><strong>Why notify inside the setter?</strong> Notification is part of what a status change <em>means</em> — leaving it to callers invites the forgot-to-notify bug.</li>
+<li><strong>Push vs pull:</strong> the callback carries no payload; observers pull what they need — the interface stays stable as the subject's state grows.</li>
+<li><strong>Why demonstrate unsubscribe?</strong> Dynamic subscription is half the pattern: reactors attach and detach at runtime without the pipeline changing.</li>
+</ul>
+<hr />
+<h2>Expected output</h2>
+<pre><code><span class="ty">Slack</span> notifier posted: <span class="ty">BUILD</span> #<span class="n">128</span> <span class="ty">PASSED</span>
+<span class="ty">Dashboard</span> updated with status: <span class="ty">BUILD</span> #<span class="n">128</span> <span class="ty">PASSED</span>
+<span class="ty">Dashboard</span> updated with status: <span class="ty">BUILD</span> #<span class="n">129</span> <span class="ty">FAILED</span>
+</code></pre>
+<hr />
+<h2>Where this pattern shows up in real systems</h2>
+<ul>
+<li>CI status fan-out (this example).</li>
+<li>Spring <code>ApplicationEvent</code>/<code>@EventListener</code>; GUI listeners; webhooks; reactive streams.</li>
+</ul>
+<hr />
+<p><em>One change, many reactions — and the pipeline never knows who's listening.</em></p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload Observer_Design_Pattern_Explained_EN.mp4 to YouTube, then replace YOUTUBE_FULL_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK">YOUTUBE_FULL_LINK</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

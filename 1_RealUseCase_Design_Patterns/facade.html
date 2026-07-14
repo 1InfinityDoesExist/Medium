@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Facade Design Pattern</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#0d948822;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #0d948840}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#0d94880d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #0d948833}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#0d948814,#14b8a622);border:1px solid #0d948833;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#0d948814,#14b8a622);border:1px solid #0d948833;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#0d9488;--a2:#14b8a6">
+<header class="hero"><div class="in">
+  <span class="badge">🧩 REAL-WORLD DESIGN PATTERN</span>
+  <h1>Facade Design Pattern</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>The subsystems</em></p>
+<p class="chips">☕ 4 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> Provide a single, simplified interface to a set of subsystems.</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Facade_Short_Overview_EN.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<hr />
+<h2>Intent</h2>
+<p>Provide a <strong>single, simplified interface</strong> to a set of subsystems. The Facade owns and coordinates the complex parts internally; the client makes one call and never learns the subsystems exist.</p>
+<p>Facade doesn't add behavior (like Decorator) or translate interfaces (like Adapter) — it <em>orchestrates</em>, replacing a multi-step dance across several classes with one intention-revealing method.</p>
+<hr />
+<h2>How it mirrors production code</h2>
+<p>Query-orchestration services routinely run this sequence: resolve which schema version to hit, run two queries against the store, then intersect the two result-ID sets (the Redis <code>SINTERSTORE</code> idiom) to find records matching <em>both</em> filters. Forcing every caller to know those three subsystems — and their order — spreads fragile knowledge everywhere. The production fix is one facade method: <code>executeAndIntersect(schemaId, queryA, queryB)</code>. Callers state <em>what</em> they want; the facade owns <em>how</em>.</p>
+<hr />
+<h2>How the pattern works</h2>
+<ul>
+<li><code>VersionResolver</code>, <code>QueryService</code>, <code>RedisSetMerger</code> are three independent <strong>subsystems</strong>, each with its own small job.</li>
+<li><code>QueryFacade</code> is the <strong>Facade</strong>: it constructs its own subsystem instances (private fields — the client can't reach them) and its one public method runs the whole pipeline in the right order.</li>
+<li>The <strong>client</strong> creates the facade and makes exactly one call.</li>
+</ul>
+<hr />
+<h2>UML Class Diagram</h2>
+<figure><img alt="Facade Design Pattern — diagram" src="facade.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p><strong>Reading the diagram:</strong> the client makes one simple call to the facade; the numbered arrows show the orchestration the facade performs internally — resolve, query twice, intersect. No arrow ever connects the client to a subsystem.</p>
+<hr />
+<h2>The players</h2>
+<ul class="cards"><li><b><code>QueryFacade</code></b> — The Facade — owns the subsystems, exposes one intention-revealing method.</li><li><b><code>VersionResolver</code></b> — Subsystem 1 — maps a schema id to its active version.</li><li><b><code>QueryService</code></b> — Subsystem 2 — executes a query against a database type.</li><li><b><code>RedisSetMerger</code></b> — Subsystem 3 — intersects two result-ID lists into a set.</li><li><b><code>FacadeDesignPattern</code></b> — Client — one facade, one call.</li></ul>
+<hr />
+<h2>Code walkthrough — every line explained</h2>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">VersionResolver</span> {
+    <span class="k">public</span> <span class="ty">String</span> resolve(<span class="ty">String</span> schemaId) { <span class="k">return</span> schemaId + <span class="s">&quot;-v1&quot;</span>; }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">QueryService</span> {
+    <span class="k">public</span> <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; execute(<span class="ty">String</span> databaseType, <span class="ty">String</span> query) {
+        <span class="k">return</span> <span class="ty">Arrays</span>.asList(databaseType + <span class="s">&quot;-id-1&quot;</span>, databaseType + <span class="s">&quot;-id-2&quot;</span>);
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">RedisSetMerger</span> {
+    <span class="k">public</span> <span class="ty">Set</span>&lt;<span class="ty">String</span>&gt; intersect(<span class="ty">List</span>&lt;<span class="ty">String</span>&gt; firstResultIds, <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; secondResultIds) {
+        <span class="ty">Set</span>&lt;<span class="ty">String</span>&gt; result = <span class="k">new</span> <span class="ty">LinkedHashSet</span>&lt;&gt;(firstResultIds);
+        result.retainAll(secondResultIds);
+        <span class="k">return</span> result;
+    }
+}
+</code></pre>
+<ul>
+<li>Three focused classes, each a stand-in for a real component: a schema-registry lookup, a Mongo query executor, and a Redis set-intersection. Note <code>RedisSetMerger</code> uses <code>LinkedHashSet</code> + <code>retainAll</code> — a genuine intersection preserving first-list order.</li>
+<li>None of them knows the others exist. Coordination is <em>not</em> their job.</li>
+</ul>
+<h3><code>QueryFacade.java</code> — the Facade</h3>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">QueryFacade</span> {
+
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">QueryService</span> queryService = <span class="k">new</span> <span class="ty">QueryService</span>();
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">RedisSetMerger</span> redisSetMerger = <span class="k">new</span> <span class="ty">RedisSetMerger</span>();
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">VersionResolver</span> versionResolver = <span class="k">new</span> <span class="ty">VersionResolver</span>();
+
+    <span class="k">public</span> <span class="ty">Set</span>&lt;<span class="ty">String</span>&gt; executeAndIntersect(<span class="ty">String</span> schemaId, <span class="ty">String</span> queryA, <span class="ty">String</span> queryB) {
+        <span class="ty">String</span> version = versionResolver.resolve(schemaId);
+        <span class="ty">System</span>.out.println(<span class="s">&quot;resolved version: &quot;</span> + version);
+        <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; resultsA = queryService.execute(<span class="s">&quot;mongo&quot;</span>, queryA);
+        <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; resultsB = queryService.execute(<span class="s">&quot;mongo&quot;</span>, queryB);
+        <span class="k">return</span> redisSetMerger.intersect(resultsA, resultsB);
+    }
+}
+</code></pre>
+<ul>
+<li><strong>The facade constructs its own subsystems</strong> as <code>private final</code> fields — the client never sees, supplies, or touches them. This is what makes the simplification real rather than cosmetic.</li>
+<li><code>executeAndIntersect</code> encodes the <em>entire workflow</em> in one place: resolve the version, run both queries, intersect the results. If the pipeline someday needs caching or a fourth step, exactly one method changes — every caller is untouched.</li>
+</ul>
+<h3><code>FacadeDesignPattern.java</code> — the client</h3>
+<pre><code><span class="ty">QueryFacade</span> facade = <span class="k">new</span> <span class="ty">QueryFacade</span>();
+<span class="ty">System</span>.out.println(facade.executeAndIntersect(<span class="s">&quot;schema-1&quot;</span>, <span class="s">&quot;q1&quot;</span>, <span class="s">&quot;q2&quot;</span>));
+</code></pre>
+<ul>
+<li>Two lines. The client's code reads as its <em>intent</em> — "execute and intersect" — with zero knowledge of versions, query services, or set merging.</li>
+</ul>
+<hr />
+<h2>Why the design decisions</h2>
+<ul>
+<li><strong>Why does the facade build its own subsystems?</strong> If the client passed them in, it would need to know they exist — the exact coupling Facade removes. (In a Spring service the same idea appears as injected private dependencies; the point is they're not the <em>caller's</em> concern.)</li>
+<li><strong>Why one coarse method instead of three fine ones?</strong> The value is the <em>encoded order</em>. Three public steps would let callers skip or reorder them; one method makes the correct sequence the only possible sequence.</li>
+<li><strong>Facade vs Adapter vs Decorator:</strong> Adapter changes an interface's <em>shape</em>; Decorator adds behavior behind the <em>same</em> interface; Facade <em>reduces many interfaces to one</em>. Here nothing is translated or wrapped — three subsystems are orchestrated.</li>
+</ul>
+<hr />
+<h2>Expected output</h2>
+<pre><code>$ java -cp target/classes com.realusecase.patterns.<span class="ty">FacadeDesignPattern</span>
+
+resolved version: schema-<span class="n">1</span>-v1
+[mongo-id-<span class="n">1</span>, mongo-id-<span class="n">2</span>]
+</code></pre>
+<hr />
+<h2>Where this pattern shows up in real systems</h2>
+<ul>
+<li>Query orchestration across resolver + store + merger (this example).</li>
+<li><code>javax.faces.context.FacesContext</code>, SLF4J's <code>LoggerFactory</code>, Spring's <code>JdbcTemplate</code> — each hides a multi-object dance behind one entry point.</li>
+<li>Checkout services orchestrating inventory + payment + shipping; trip-booking facades over flight/hotel/car subsystems.</li>
+</ul>
+<hr />
+<p><em>One call in, a whole pipeline behind it — and the client never has to know.</em></p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload Facade_Design_Pattern_Explained_EN.mp4 to YouTube, then replace YOUTUBE_FULL_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK">YOUTUBE_FULL_LINK</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

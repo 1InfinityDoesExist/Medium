@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Layered Architecture</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#15803d22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #15803d40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#15803d0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #15803d33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#15803d;--a2:#22c55e">
+<header class="hero"><div class="in">
+  <span class="badge">🍃 SPRING BOOT</span>
+  <h1>Layered Architecture</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>Are the stereotype annotations just labels?</em></p>
+<p class="chips">☕ 5 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> How a Spring Boot application is organized into Controller, Service and Repository layers  ·  What the supporting packages do: DTO, Utility, Entity, Configuration  ·  Which annotation marks each layer  ·  A complete request flow — one small class per layer</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Layered_Architecture_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>The big picture</h2>
+<p>In a layered architecture every class has one clear home. A request enters at the top,
+travels down through the layers, touches the database at the bottom, and the response
+travels back up the same path.</p>
+<figure><img alt="Layered Architecture — diagram" src="02-layered-architecture.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<ul>
+<li><strong>Client</strong> — whoever calls your API: a browser, Postman, a mobile app or another service.</li>
+<li><strong>Controller Layer</strong> — receives the HTTP request, delegates to the service, returns the response.</li>
+<li><strong>Service Layer</strong> — the business logic lives here (rules, validation, orchestration).</li>
+<li><strong>Repository Layer</strong> — talks to the database; no business logic here.</li>
+<li><strong>Database</strong> — the actual storage the repository reads from and writes to.</li>
+</ul>
+<blockquote>
+<p>Added: each layer has its own annotation — <code>@RestController</code> for the controller layer, <code>@Service</code> for the service layer, <code>@Repository</code> for the repository layer, and <code>@Configuration</code> for configuration classes. All of them are specializations of <code>@Component</code>, so component scanning picks them up and registers them as beans automatically.</p>
+<p>Added: classic interview question — <em>"is there any real difference between <code>@Component</code>, <code>@Service</code>, <code>@Repository</code> and <code>@Controller</code>?"</em> Mostly they differ in <strong>intent</strong> (readability + a hook for tools/AOP pointcuts), but two have real behavior:
+- <strong><code>@Repository</code> adds exception translation</strong>: Spring wraps low-level persistence exceptions (JDBC <code>SQLException</code>, Hibernate exceptions) into its unified, unchecked <code>DataAccessException</code> hierarchy. Your service layer catches one consistent family of exceptions no matter which DB technology sits below.
+- <strong><code>@Controller</code> / <code>@RestController</code> are what Spring MVC scans</strong> for <code>@RequestMapping</code> handler methods — a plain <code>@Component</code> with <code>@GetMapping</code> will not receive requests.
+- <code>@Service</code> adds no extra behavior today — it marks the business layer and keeps pointcuts/architecture rules expressible ("all beans in <code>@Service</code> classes").</p>
+</blockquote>
+<h3>Why bother with layers at all?</h3>
+<blockquote>
+<p>Added: the benefits worth naming in an interview:
+- <strong>Separation of concerns</strong> — HTTP details, business rules and SQL never mix in one class.
+- <strong>Testability</strong> — each layer is unit-tested by mocking the layer directly below it (mock <code>UserRepository</code>, test <code>UserService</code> with plain JUnit + Mockito, no database needed).
+- <strong>Replaceability</strong> — swap MySQL for Mongo by changing the repository layer only; the service and controller do not change.
+- <strong>Loose coupling</strong> — layers depend on interfaces, wired by dependency injection (Topic 06), never <code>new</code>-ed by hand.</p>
+</blockquote>
+<pre><code><span class="c">// Testability in practice: service tested WITHOUT database or web server.</span>
+<span class="a">@ExtendWith</span>(<span class="ty">MockitoExtension</span>.<span class="k">class</span>)
+<span class="k">class</span> <span class="ty">UserServiceTest</span> {
+
+    <span class="a">@Mock</span> <span class="ty">UserRepository</span> repo;                 <span class="c">// fake the layer below</span>
+    <span class="a">@InjectMocks</span> <span class="ty">UserService</span> service;          <span class="c">// real class under test</span>
+
+    <span class="a">@Test</span>
+    <span class="k">void</span> returnsDtoWhenUserExists() {
+        when(repo.findById(<span class="n">1L</span>)).thenReturn(<span class="ty">Optional</span>.of(<span class="k">new</span> <span class="ty">User</span>(<span class="n">1L</span>, <span class="s">&quot;Asha&quot;</span>, <span class="s">&quot;a@x.io&quot;</span>)));
+        <span class="ty">UserDto</span> dto = service.getUser(<span class="n">1L</span>);
+        assertEquals(<span class="s">&quot;Asha&quot;</span>, dto.getName());
+    }
+}
+</code></pre>
+<h2>The supporting packages</h2>
+<p>These sit beside the three layers and are used across all of them:</p>
+<ul>
+<li><strong>DTO</strong> — data transfer object.</li>
+<li><strong>Request DTO</strong> — the shape of the data the client sends in.</li>
+<li><strong>Response DTO</strong> — the shape of the data you send back.</li>
+<li><strong>Utility</strong> — put all the common code/methods in a utility (or helper) class, so the same logic is written once and reused by every layer.</li>
+<li><strong>Entity</strong> — these are POJOs and the <strong>direct representation of a table/schema of the DB</strong>. One entity class = one table; one field = one column.</li>
+<li><strong>Configuration</strong> — classes that define shared beans and settings (data source, mappers, security rules) in one place.</li>
+</ul>
+<blockquote>
+<p>Good to know: keep DTOs and Entities separate. The entity mirrors your table — it may hold columns (passwords, internal ids, audit fields) that must never reach the client. The DTO is the public contract of your API; the entity is the private storage shape. A utility/mapper converts between the two.</p>
+</blockquote>
+<h2>One request, one class per layer</h2>
+<p>The same <code>GET /users/1</code> request, followed through the code — top to bottom.</p>
+<pre><code><span class="c">// controller/UserController.java — HTTP in, HTTP out. No business logic here.</span>
+<span class="a">@RestController</span>
+<span class="a">@RequestMapping</span>(<span class="s">&quot;/users&quot;</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">UserController</span> {
+
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">UserService</span> service;
+
+    <span class="k">public</span> <span class="ty">UserController</span>(<span class="ty">UserService</span> service) { <span class="k">this</span>.service = service; }
+
+    <span class="a">@GetMapping</span>(<span class="s">&quot;/{id}&quot;</span>)
+    <span class="k">public</span> <span class="ty">UserDto</span> getUser(<span class="a">@PathVariable</span> <span class="ty">Long</span> id) {
+        <span class="k">return</span> service.getUser(id);          <span class="c">// delegate to the service layer</span>
+    }
+}
+</code></pre>
+<pre><code><span class="c">// service/UserService.java — business logic lives here.</span>
+<span class="a">@Service</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">UserService</span> {
+
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">UserRepository</span> repo;
+
+    <span class="k">public</span> <span class="ty">UserService</span>(<span class="ty">UserRepository</span> repo) { <span class="k">this</span>.repo = repo; }
+
+    <span class="k">public</span> <span class="ty">UserDto</span> getUser(<span class="ty">Long</span> id) {
+        <span class="ty">User</span> user = repo.findById(id)
+                .orElseThrow(() -&gt; <span class="k">new</span> <span class="ty">RuntimeException</span>(<span class="s">&quot;User not found: &quot;</span> + id));
+        <span class="k">return</span> <span class="ty">MapperUtil</span>.toDto(user);       <span class="c">// Utility does the Entity -&gt; DTO mapping</span>
+    }
+}
+</code></pre>
+<pre><code><span class="c">// repository/UserRepository.java — data access only. Spring writes the SQL.</span>
+<span class="a">@Repository</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="ty">UserRepository</span> <span class="k">extends</span> <span class="ty">JpaRepository</span>&lt;<span class="ty">User</span>, <span class="ty">Long</span>&gt; { }
+</code></pre>
+<pre><code><span class="c">// entity/User.java — direct representation of the &quot;users&quot; table.</span>
+<span class="a">@Entity</span>
+<span class="a">@Table</span>(name = <span class="s">&quot;users&quot;</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">User</span> {
+    <span class="a">@Id</span>
+    <span class="a">@GeneratedValue</span>(strategy = <span class="ty">GenerationType</span>.<span class="ty">IDENTITY</span>)
+    <span class="k">private</span> <span class="ty">Long</span> id;
+    <span class="k">private</span> <span class="ty">String</span> name;
+    <span class="k">private</span> <span class="ty">String</span> email;
+    <span class="c">// getters &amp; setters</span>
+}
+</code></pre>
+<pre><code><span class="c">// dto/UserDto.java — only what the client is allowed to see.</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">UserDto</span> {
+    <span class="k">private</span> <span class="ty">String</span> name;
+    <span class="k">private</span> <span class="ty">String</span> email;
+    <span class="c">// getters &amp; setters</span>
+}
+</code></pre>
+<pre><code><span class="c">// util/MapperUtil.java — common code lives in ONE place.</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">MapperUtil</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="ty">UserDto</span> toDto(<span class="ty">User</span> user) {
+        <span class="ty">UserDto</span> dto = <span class="k">new</span> <span class="ty">UserDto</span>();
+        dto.setName(user.getName());
+        dto.setEmail(user.getEmail());
+        <span class="k">return</span> dto;
+    }
+}
+</code></pre>
+<pre><code><span class="c">// config/AppConfig.java — shared beans &amp; settings for the whole application.</span>
+<span class="a">@Configuration</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">AppConfig</span> {
+    <span class="a">@Bean</span>
+    <span class="k">public</span> <span class="ty">ObjectMapper</span> objectMapper() {
+        <span class="k">return</span> <span class="k">new</span> <span class="ty">ObjectMapper</span>();
+    }
+}
+</code></pre>
+<blockquote>
+<p>Added: request flow example — client calls <code>GET /users/1</code> → <strong>Controller</strong> receives it and extracts <code>id = 1</code> → <strong>Service</strong> applies the business rules → <strong>Repository</strong> runs <code>SELECT * FROM users WHERE id = 1</code> → the <strong>Entity</strong> comes back from the DB → the <strong>Utility</strong> maps Entity → Response <strong>DTO</strong> → the controller returns the DTO, serialized as JSON, to the <strong>Client</strong>.</p>
+</blockquote>
+<h2>Architect's Corner</h2>
+<ul>
+<li><strong>Never expose entities northbound</strong> — controllers accept/return DTOs only; map with MapStruct or manual mappers. Entities leaking into JSON couples your API contract to your DB schema.</li>
+<li><strong>Transaction boundary belongs to the Service layer</strong> — controllers stay txn-free; repositories stay logic-free.</li>
+<li><strong>Package-by-feature beats package-by-layer at scale</strong>: <code>user/ (controller, service, repo)</code> keeps a feature's blast radius in one place.</li>
+<li><strong>Hexagonal / clean architecture</strong> is this diagram matured: Service = domain core, Controller/Repository = adapters behind ports (interfaces). Worth adopting when domain logic grows.</li>
+<li><strong>Validation placement</strong>: syntactic validation (<code>@Valid</code>) at the controller edge; business rules inside services.</li>
+</ul>
+<h2>Quick Revision</h2>
+<ul>
+<li>Layered architecture: <strong>Client → Controller → Service → Repository → Database</strong>, response flows back up the same way.</li>
+<li><strong>Controller</strong> handles HTTP, <strong>Service</strong> holds business logic, <strong>Repository</strong> talks to the DB — one job per layer.</li>
+<li><strong>DTO</strong> = data transfer object (request DTO in, response DTO out).</li>
+<li><strong>Utility</strong> = common code/methods in one helper class.</li>
+<li><strong>Entity</strong> = POJO that directly represents a table/schema of the DB.</li>
+<li><strong>Configuration</strong> = shared beans and settings.</li>
+<li>Annotations per layer: <code>@RestController</code>, <code>@Service</code>, <code>@Repository</code>, <code>@Configuration</code> — all specializations of <code>@Component</code>.</li>
+<li>Stereotypes are not just labels: <code>@Repository</code> adds <strong>exception translation</strong> to <code>DataAccessException</code>; <code>@Controller</code>/<code>@RestController</code> enable request-mapping detection; <code>@Service</code> marks intent.</li>
+<li>Layering pays off in <strong>testability</strong>: mock the layer below, unit-test the layer above.</li>
+</ul>
+<hr />
+<p>Next topic: <strong>Maven</strong> — the project management tool: pom.xml, the build lifecycle and repositories.</p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Layered_Architecture_Explained_Part1.mp4; Part 2 = Layered_Architecture_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

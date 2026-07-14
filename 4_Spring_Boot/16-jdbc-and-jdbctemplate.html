@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JDBC and JdbcTemplate</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#15803d22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #15803d40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#15803d0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #15803d33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#15803d;--a2:#22c55e">
+<header class="hero"><div class="in">
+  <span class="badge">🍃 SPRING BOOT</span>
+  <h1>JDBC and JdbcTemplate</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>How JdbcTemplate solves each plain-JDBC problem</em></p>
+<p class="chips">☕ 8 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> The data-access architecture: Application Logic → ORM → JDBC → DB Driver → Relational DB  ·  What JDBC is, and the real driver classes for MySQL, Postgres and H2  ·  The 5 problems of plain JDBC — and how spring-boot-starter-jdbc solves every one of them  ·  JdbcTemplate + @Repository and granular exception translation</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload JDBC_and_JdbcTemplate_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>The big picture — where JDBC sits</h2>
+<p><strong>JDBC (Java Database Connectivity)</strong> provides an <em>interface</em> to:</p>
+<figure><img alt="JDBC and JdbcTemplate — diagram" src="16-jdbc-and-jdbctemplate.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<ul>
+<li>Make a connection with the DB</li>
+<li>Query the DB</li>
+<li>and process the result.</li>
+</ul>
+<p>The <strong>actual implementation is provided by the specific DB driver</strong>:</p>
+<ul class="cards"><li><b>MySQL</b> — Connector/J — <code>com.mysql.cj.jdbc.Driver</code></li><li><b>Postgres</b> — PostgreSQL JDBC Driver — <code>org.postgresql.Driver</code></li><li><b>H2 (in-memory)</b> — H2 Database Engine — <code>org.h2.Driver</code></li></ul>
+<p>Everything above JDBC (JPA + Hibernate, the ORM layer) also ends up talking to the database <em>through</em> JDBC — this topic is about using JDBC directly; the ORM layer comes in the next topics.</p>
+<h2>The problems with plain JDBC</h2>
+<p>Using raw JDBC, all of this is your job, every single time:</p>
+<ul>
+<li><strong>Driver class loading</strong></li>
+<li><strong>DB connection making</strong></li>
+<li><strong>Exception handling</strong></li>
+<li><strong>Closing of the DB connection</strong> and other objects like <code>Statement</code> etc.</li>
+<li><strong>Manual handling of the DB connection pool</strong></li>
+<li>etc.</li>
+</ul>
+<pre><code><span class="c">// Plain JDBC — everything is on YOU:</span>
+<span class="ty">Class</span>.forName(<span class="s">&quot;com.mysql.cj.jdbc.Driver&quot;</span>);                    <span class="c">// 1. driver loading</span>
+<span class="ty">Connection</span> con = <span class="ty">DriverManager</span>.getConnection(url, user, pwd); <span class="c">// 2. connection making</span>
+<span class="k">try</span> {
+    <span class="ty">PreparedStatement</span> ps = con.prepareStatement(<span class="s">&quot;SELECT * FROM users&quot;</span>);
+    <span class="ty">ResultSet</span> rs = ps.executeQuery();
+    <span class="c">// loop rs, map columns by hand ...</span>
+} <span class="k">catch</span> (<span class="ty">SQLException</span> e) {                                    <span class="c">// 3. exception handling</span>
+    <span class="c">// ONE abstract SQLException for every possible failure</span>
+} <span class="k">finally</span> {
+    <span class="c">// 4. close ResultSet, Statement, Connection — in the right order</span>
+}
+<span class="c">// 5. connection pool? build and manage it yourself...</span>
+</code></pre>
+<h2>JDBC using Spring Boot</h2>
+<p>Add one starter:</p>
+<pre><code><span class="k">&lt;dependency</span><span class="k">&gt;</span>
+    <span class="k">&lt;groupId</span><span class="k">&gt;</span>org.springframework.boot<span class="k">&lt;/groupId</span><span class="k">&gt;</span>
+    <span class="k">&lt;artifactId</span><span class="k">&gt;</span>spring-boot-starter-jdbc<span class="k">&lt;/artifactId</span><span class="k">&gt;</span>
+<span class="k">&lt;/dependency</span><span class="k">&gt;</span>
+</code></pre>
+<p>Spring Boot provides the <strong><code>JdbcTemplate</code></strong> class, which helps to remove all the boilerplate. A minimal repository:</p>
+<pre><code><span class="a">@Repository</span>   <span class="c">// -&gt; granular SQL exceptions returned (see below)</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">UserRepository</span> {
+
+    <span class="a">@Autowired</span>
+    <span class="ty">JdbcTemplate</span> jdbcTemplate;
+
+    <span class="k">public</span> <span class="k">void</span> createTable() {
+        jdbcTemplate.execute(
+            <span class="s">&quot;CREATE TABLE users (id INT PRIMARY KEY, name VARCHAR(50), age INT)&quot;</span>);
+    }
+}
+</code></pre>
+<p>Point it at your database with <code>spring.datasource.*</code> properties — note that <strong><code>datasource</code> controls two things</strong>: the database <em>connection</em> and the <em>connection pool</em>:</p>
+<pre><code><span class="a">spring.datasource.url</span>=jdbc:mysql:<span class="c">//localhost:3306/mydb</span>
+<span class="a">spring.datasource.username</span>=root
+<span class="a">spring.datasource.password</span>=secret
+<span class="a">spring.datasource.driver-class-name</span>=com.mysql.cj.jdbc.Driver
+</code></pre>
+<ul>
+<li><strong>Driver class loading</strong> — <code>JdbcTemplate</code> loads it at application startup, in the <code>DriverManager</code> class.</li>
+<li><strong>DB connection making</strong> — <code>jdbcTemplate</code> takes care of it whenever we execute any query.</li>
+<li><strong>Exception handling</strong> — in plain JDBC we get the very abstracted <code>SQLException</code>; with <code>jdbcTemplate</code> we get <strong>granular</strong> errors like <code>DuplicateKeyException</code>, <code>QueryTimeoutException</code> etc. (defined in the <code>org.springframework.dao</code> package).</li>
+<li><strong>Closing of the DB connection and other resources</strong> — when we invoke an <code>update</code> or <code>query</code> method, after success <em>or</em> failure of the operation, <code>jdbcTemplate</code> takes care of either closing the connection or returning it to the pool itself.</li>
+<li><strong>Manual handling of the DB connection pool</strong> — Spring Boot provides a default JDBC connection pool, <strong>HikariCP</strong>, with min and max pool size of 10.</li>
+</ul>
+<blockquote>
+<p>Good to know: the <code>@Repository</code> annotation is what enables that exception translation — Spring converts checked <code>SQLException</code>s into its unchecked <code>DataAccessException</code> subtypes, so a unique-key violation really arrives as <code>DuplicateKeyException</code>, not a generic SQL error.</p>
+</blockquote>
+<h2>The connection pool — HikariCP</h2>
+<p>The defaults can be tuned from properties:</p>
+<pre><code><span class="a">spring.datasource.hikari.maximum-pool-size</span>=10
+<span class="a">spring.datasource.hikari.minimum-idle</span>=5
+</code></pre>
+<blockquote>
+<p>Added: out of the box Hikari's <code>maximum-pool-size</code> is 10, and <code>minimum-idle</code> <em>defaults to the same value as the max</em> — which is why the notes say "min and max pool size of 10". Set <code>minimum-idle</code> lower (like 5 above) only if you want the pool to shrink when idle.</p>
+</blockquote>
+<h3>Custom JDBC connection pool configuration</h3>
+<p>If properties are not enough, define the pool yourself as a <code>@Bean</code>:</p>
+<pre><code><span class="a">@Configuration</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">DataSourceConfig</span> {
+
+    <span class="a">@Bean</span>
+    <span class="k">public</span> <span class="ty">DataSource</span> dataSource() {
+        <span class="ty">HikariDataSource</span> dataSource = <span class="k">new</span> <span class="ty">HikariDataSource</span>();
+        dataSource.setDriverClassName(<span class="s">&quot;com.mysql.cj.jdbc.Driver&quot;</span>);   <span class="c">// &quot;x&quot;</span>
+        dataSource.setJdbcUrl(<span class="s">&quot;jdbc:mysql://localhost:3306/mydb&quot;</span>);   <span class="c">// &quot;y&quot;</span>
+        dataSource.setUsername(<span class="s">&quot;root&quot;</span>);                              <span class="c">// &quot;p&quot;</span>
+        dataSource.setPassword(<span class="s">&quot;secret&quot;</span>);                            <span class="c">// &quot;k&quot;</span>
+        dataSource.setMaximumPoolSize(<span class="n">20</span>);
+        dataSource.setMinimumIdle(<span class="n">5</span>);
+        <span class="k">return</span> dataSource;
+    }
+}
+</code></pre>
+<h2>JdbcTemplate — frequently used methods</h2>
+<ul class="cards"><li><b>1</b> — <code>update(String sql, Object... args)</code> — Insert, Update, Delete</li><li><b>2</b> — <code>update(String sql, PreparedStatementSetter pss)</code> — Insert, Update, Delete</li><li><b>3</b> — <code>query(String sql, RowMapper&lt;T&gt; rowMapper)</code> — Get multiple rows</li><li><b>4</b> — <code>queryForList(String sql, Class&lt;T&gt; elementType)</code> — Get a single column of multiple rows</li><li><b>5</b> — <code>queryForObject(String sql, Object[] args, Class&lt;T&gt; type)</code> — Get a single row</li><li><b>6</b> — <code>queryForObject(String sql, Class&lt;T&gt; requiredType)</code> — Get a single value</li></ul>
+<p>All six in one runnable repository:</p>
+<pre><code><span class="a">@Repository</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">UserRepository</span> {
+
+    <span class="a">@Autowired</span>
+    <span class="k">private</span> <span class="ty">JdbcTemplate</span> jdbcTemplate;
+
+    <span class="c">// 1) update(sql, args...) — Insert / Update / Delete</span>
+    <span class="k">public</span> <span class="k">int</span> insertUser(<span class="k">int</span> id, <span class="ty">String</span> name, <span class="k">int</span> age) {
+        <span class="k">return</span> jdbcTemplate.update(
+            <span class="s">&quot;INSERT INTO users (id, name, age) VALUES (?, ?, ?)&quot;</span>, id, name, age);
+    }
+
+    <span class="c">// 2) update(sql, PreparedStatementSetter) — Insert / Update / Delete</span>
+    <span class="k">public</span> <span class="k">int</span> updateName(<span class="k">int</span> id, <span class="ty">String</span> newName) {
+        <span class="k">return</span> jdbcTemplate.update(<span class="s">&quot;UPDATE users SET name = ? WHERE id = ?&quot;</span>,
+            ps -&gt; { ps.setString(<span class="n">1</span>, newName); ps.setInt(<span class="n">2</span>, id); });
+    }
+
+    <span class="c">// 3) query(sql, RowMapper) — get multiple rows</span>
+    <span class="k">public</span> <span class="ty">List</span>&lt;<span class="ty">User</span>&gt; findAll() {
+        <span class="k">return</span> jdbcTemplate.query(<span class="s">&quot;SELECT id, name, age FROM users&quot;</span>,
+            (rs, rowNum) -&gt; <span class="k">new</span> <span class="ty">User</span>(rs.getInt(<span class="s">&quot;id&quot;</span>),
+                                     rs.getString(<span class="s">&quot;name&quot;</span>), rs.getInt(<span class="s">&quot;age&quot;</span>)));
+    }
+
+    <span class="c">// 4) queryForList(sql, elementType) — single column of multiple rows</span>
+    <span class="k">public</span> <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; findAllNames() {
+        <span class="k">return</span> jdbcTemplate.queryForList(<span class="s">&quot;SELECT name FROM users&quot;</span>, <span class="ty">String</span>.<span class="k">class</span>);
+    }
+
+    <span class="c">// 5) queryForObject(sql, args, rowMapper/type) — get a single row</span>
+    <span class="k">public</span> <span class="ty">User</span> findById(<span class="k">int</span> id) {
+        <span class="k">return</span> jdbcTemplate.queryForObject(
+            <span class="s">&quot;SELECT id, name, age FROM users WHERE id = ?&quot;</span>,
+            (rs, rowNum) -&gt; <span class="k">new</span> <span class="ty">User</span>(rs.getInt(<span class="s">&quot;id&quot;</span>),
+                                     rs.getString(<span class="s">&quot;name&quot;</span>), rs.getInt(<span class="s">&quot;age&quot;</span>)), id);
+    }
+
+    <span class="c">// 6) queryForObject(sql, requiredType) — get a single value</span>
+    <span class="k">public</span> <span class="k">int</span> countUsers() {
+        <span class="k">return</span> jdbcTemplate.queryForObject(<span class="s">&quot;SELECT COUNT(*) FROM users&quot;</span>,
+                                           <span class="ty">Integer</span>.<span class="k">class</span>);
+    }
+}
+</code></pre>
+<blockquote>
+<p>Added: a <strong><code>RowMapper&lt;T&gt;</code></strong> is a tiny functional interface with one method — <code>T mapRow(ResultSet rs, int rowNum)</code>. <code>JdbcTemplate</code> calls it once per row of the <code>ResultSet</code> and collects the returned objects into a <code>List&lt;T&gt;</code> — it is how one row of SQL becomes one Java object. The lambdas <code>(rs, rowNum) -&gt; new User(...)</code> above are RowMappers.</p>
+<p>Good to know: always pass values through the <code>?</code> placeholders (parameterized queries) as in the examples above — never concatenate user input into the SQL string. The driver sends parameters separately from the query, which makes <strong>SQL injection</strong> impossible for those values.</p>
+</blockquote>
+<h2>5b. Beyond the basics — batch, named parameters, generated keys</h2>
+<blockquote>
+<p>Added: four <code>JdbcTemplate</code> features that come up constantly in real projects and interviews: <code>batchUpdate</code>, <code>BeanPropertyRowMapper</code>, <code>NamedParameterJdbcTemplate</code>, and <code>KeyHolder</code>.</p>
+</blockquote>
+<h3>batchUpdate — many rows in one round-trip</h3>
+<p>Inserting 1,000 rows with 1,000 <code>update()</code> calls means 1,000 network round-trips. <strong><code>batchUpdate</code></strong> sends them as one JDBC batch — often 10–50x faster:</p>
+<pre><code><span class="k">public</span> <span class="k">int</span>[] insertAll(<span class="ty">List</span>&lt;<span class="ty">User</span>&gt; users) {
+    <span class="k">return</span> jdbcTemplate.batchUpdate(
+        <span class="s">&quot;INSERT INTO users (id, name, age) VALUES (?, ?, ?)&quot;</span>,
+        <span class="k">new</span> <span class="ty">BatchPreparedStatementSetter</span>() {
+            <span class="k">public</span> <span class="k">void</span> setValues(<span class="ty">PreparedStatement</span> ps, <span class="k">int</span> i) <span class="k">throws</span> <span class="ty">SQLException</span> {
+                <span class="ty">User</span> u = users.get(i);
+                ps.setInt(<span class="n">1</span>, u.getId());
+                ps.setString(<span class="n">2</span>, u.getName());
+                ps.setInt(<span class="n">3</span>, u.getAge());
+            }
+            <span class="k">public</span> <span class="k">int</span> getBatchSize() { <span class="k">return</span> users.size(); }
+        });
+}
+</code></pre>
+<p>For MySQL add <code>rewriteBatchedStatements=true</code> to the JDBC URL so the driver really merges the inserts.</p>
+<h3>BeanPropertyRowMapper — skip writing the RowMapper</h3>
+<p>If column names match the bean's property names (<code>user_name</code> → <code>userName</code> works too — it converts snake_case), Spring can map rows automatically:</p>
+<pre><code><span class="k">public</span> <span class="ty">List</span>&lt;<span class="ty">User</span>&gt; findAllAuto() {
+    <span class="k">return</span> jdbcTemplate.query(<span class="s">&quot;SELECT id, name, age FROM users&quot;</span>,
+        <span class="k">new</span> <span class="ty">BeanPropertyRowMapper</span>&lt;&gt;(<span class="ty">User</span>.<span class="k">class</span>));
+}
+</code></pre>
+<p>Convenient for simple read models; a hand-written <code>RowMapper</code> is still faster and more explicit for hot paths.</p>
+<h3>NamedParameterJdbcTemplate — <code>:name</code> instead of <code>?</code></h3>
+<p>With more than 2–3 placeholders, counting <code>?</code> positions gets error-prone. <strong><code>NamedParameterJdbcTemplate</code></strong> wraps <code>JdbcTemplate</code> and lets you name the parameters:</p>
+<pre><code><span class="a">@Repository</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">UserSearchRepository</span> {
+
+    <span class="a">@Autowired</span>
+    <span class="k">private</span> <span class="ty">NamedParameterJdbcTemplate</span> namedTemplate;   <span class="c">// auto-configured by Boot too</span>
+
+    <span class="k">public</span> <span class="ty">List</span>&lt;<span class="ty">User</span>&gt; findByAgeRange(<span class="k">int</span> min, <span class="k">int</span> max) {
+        <span class="ty">String</span> sql = <span class="s">&quot;SELECT id, name, age FROM users WHERE age BETWEEN :min AND :max&quot;</span>;
+        <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Object</span>&gt; params = <span class="ty">Map</span>.of(<span class="s">&quot;min&quot;</span>, min, <span class="s">&quot;max&quot;</span>, max);
+        <span class="k">return</span> namedTemplate.query(sql, params,
+            <span class="k">new</span> <span class="ty">BeanPropertyRowMapper</span>&lt;&gt;(<span class="ty">User</span>.<span class="k">class</span>));
+    }
+}
+</code></pre>
+<p>Bonus: named parameters make <code>IN (:ids)</code> queries easy — pass a <code>List</code> as the value and Spring expands it.</p>
+<h3>KeyHolder — reading the auto-generated ID after INSERT</h3>
+<p>When the primary key is <code>AUTO_INCREMENT</code>, you usually need the generated ID back:</p>
+<pre><code><span class="k">public</span> <span class="k">long</span> insertAndReturnId(<span class="ty">String</span> name, <span class="k">int</span> age) {
+    <span class="ty">KeyHolder</span> keyHolder = <span class="k">new</span> <span class="ty">GeneratedKeyHolder</span>();
+    jdbcTemplate.update(con -&gt; {
+        <span class="ty">PreparedStatement</span> ps = con.prepareStatement(
+            <span class="s">&quot;INSERT INTO users (name, age) VALUES (?, ?)&quot;</span>,
+            <span class="ty">Statement</span>.<span class="ty">RETURN_GENERATED_KEYS</span>);
+        ps.setString(<span class="n">1</span>, name);
+        ps.setInt(<span class="n">2</span>, age);
+        <span class="k">return</span> ps;
+    }, keyHolder);
+    <span class="k">return</span> keyHolder.getKey().longValue();   <span class="c">// the DB-generated id</span>
+}
+</code></pre>
+<h3>schema.sql / data.sql — bootstrap the tables</h3>
+<blockquote>
+<p>Added: Spring Boot can create tables and seed data at startup from two files on the classpath (<code>src/main/resources</code>): <strong><code>schema.sql</code></strong> (DDL — <code>CREATE TABLE ...</code>) and <strong><code>data.sql</code></strong> (DML — <code>INSERT ...</code>). For embedded DBs like H2 this runs automatically; for MySQL/Postgres you must opt in:</p>
+</blockquote>
+<pre><code><span class="a">spring.sql.init.mode</span>=always        <span class="c"># default is &quot;embedded&quot; (H2 only)</span>
+</code></pre>
+<h2>ORM (Object-Relational Mapping)</h2>
+<ul>
+<li>Acts as a <strong>bridge between Java objects and database tables</strong>.</li>
+<li>Unlike JDBC, where we have to work with SQL, with ORM we can <strong>interact with the database using Java objects</strong>.</li>
+</ul>
+<p>This is exactly the top layer of the diagram in section 1 — JPA is the interface, Hibernate the implementation. How it works inside (EntityManager, Persistence Context...) is the next topic.</p>
+<h2>Architect's Corner</h2>
+<ul>
+<li><strong><code>JdbcClient</code> (Boot 3.2)</strong> is the fluent successor to JdbcTemplate — same engine, chainable API: <code>jdbcClient.sql("...").param(...).query(User.class).list()</code>.</li>
+<li><strong>Pool sizing</strong>: Hikari's own guidance — <code>connections ≈ cores × 2 + spindle count</code>; more is usually worse. Monitor <code>hikaricp.connections.pending</code>.</li>
+<li><strong>Timeouts everywhere</strong>: <code>connection-timeout</code>, <code>validation-timeout</code>, socket timeout in the JDBC URL, plus <code>@Transactional(timeout=...)</code> — a missing timeout is an outage waiting to happen.</li>
+<li><strong>Parameterized queries only</strong> (<code>?</code> placeholders) — this is your SQL-injection defense; string-concatenated SQL should fail code review.</li>
+<li><strong>RowMapper</strong> is worth naming: it's the single place a result set becomes an object — keep one per read-model, test it directly.</li>
+</ul>
+<h2>Quick Revision</h2>
+<ul>
+<li>Architecture: <strong>Application Logic → ORM (JPA interface / Hibernate implementation) → JDBC (interface) → specific DB driver (implementation) → Relational DB</strong>.</li>
+<li>JDBC = interface to <em>connect, query, process results</em>; drivers implement it (<code>com.mysql.cj.jdbc.Driver</code>, <code>org.postgresql.Driver</code>, <code>org.h2.Driver</code>).</li>
+<li>Plain-JDBC pains: driver loading, connection making, exception handling, closing resources, manual pooling.</li>
+<li><code>spring-boot-starter-jdbc</code> + <code>JdbcTemplate</code> remove all of that; <code>@Repository</code> gives granular <code>org.springframework.dao</code> exceptions (<code>DuplicateKeyException</code>, <code>QueryTimeoutException</code>...).</li>
+<li>Default pool = <strong>HikariCP</strong> (min/max size 10); tune via <code>spring.datasource.hikari.*</code> or a custom <code>HikariDataSource</code> <code>@Bean</code>.</li>
+<li>Method families: <code>update(...)</code> for Insert/Update/Delete; <code>query(...)</code> + <code>RowMapper</code> for multiple rows; <code>queryForList</code> for one column; <code>queryForObject</code> for one row / one value.</li>
+<li>Extras: <code>batchUpdate</code> for bulk writes in one round-trip; <code>BeanPropertyRowMapper</code> for auto row-to-bean mapping; <code>NamedParameterJdbcTemplate</code> for <code>:name</code> params (and easy <code>IN (:ids)</code>); <code>KeyHolder</code> to read auto-generated IDs; <code>schema.sql</code>/<code>data.sql</code> (+ <code>spring.sql.init.mode</code>) for startup DDL/DML.</li>
+<li>ORM = bridge between Java objects and tables — work with objects, not SQL.</li>
+</ul>
+<hr />
+<p>Next topic: <strong>JPA Architecture</strong> — Persistence Unit, EntityManagerFactory, EntityManager, Persistence Context and Dialect.</p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = JDBC_and_JdbcTemplate_Explained_Part1.mp4; Part 2 = JDBC_and_JdbcTemplate_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

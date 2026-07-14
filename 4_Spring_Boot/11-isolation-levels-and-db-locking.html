@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Isolation Levels and DB Locking</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#15803d22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #15803d40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#15803d0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #15803d33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#15803d;--a2:#22c55e">
+<header class="hero"><div class="in">
+  <span class="badge">🍃 SPRING BOOT</span>
+  <h1>Isolation Levels and DB Locking</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>What an isolation level is, and the 4 standard levels compared in one matrix  ·  The 3 read anomalies — dirty read,…</em></p>
+<p class="chips">☕ 9 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> What an isolation level is, and the 4 standard levels compared in one matrix  ·  The 3 read anomalies — dirty read, non-repeatable read, phantom read — with timelines  ·  Shared (S) vs Exclusive (X) locks and their compatibility matrix  ·  The locking strategy behind each isolation level (&quot;final thoughts&quot;)</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Isolation_Levels_and_DB_Locking_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>What is an Isolation Level?</h2>
+<p>Isolation level tells <strong>how the changes made by one transaction are visible to other
+transactions running in parallel</strong>.</p>
+<figure><img alt="Isolation Levels and DB Locking — diagram" src="11-isolation-levels-and-db-locking.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p>It is the "I" in ACID, and in Spring you pick it right on the annotation:</p>
+<pre><code><span class="a">@Service</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">BookingService</span> {
+
+    <span class="a">@Transactional</span>(propagation = <span class="ty">Propagation</span>.<span class="ty">REQUIRED</span>,
+                   isolation = <span class="ty">Isolation</span>.<span class="ty">READ_COMMITTED</span>)
+    <span class="k">public</span> <span class="k">void</span> bookSeat(<span class="k">long</span> seatId) {
+        <span class="c">// all queries in this method run at READ_COMMITTED isolation</span>
+    }
+}
+</code></pre>
+<h2>The isolation-level matrix</h2>
+<p>Each level allows or prevents the three read anomalies. The stricter the level, the
+lower the concurrency (more locking):</p>
+<ul class="cards"><li><b>READ_UNCOMMITTED</b> — Yes — Yes — Yes — Highest</li><li><b>READ_COMMITTED</b> — No — Yes — Yes — High</li><li><b>REPEATABLE_READ</b> — No — No — Yes — Low</li><li><b>SERIALIZABLE</b> — No — No — No — Lowest</li></ul>
+<p>The <strong>default isolation level depends upon the DB</strong> which we are using. Most relational
+databases use READ_COMMITTED as default isolation — but again, it depends upon DB to DB.</p>
+<blockquote>
+<p>Added: <code>Isolation.DEFAULT</code> (Spring's default) means "use whatever the database uses".
+MySQL (InnoDB) defaults to <strong>REPEATABLE_READ</strong>; PostgreSQL, Oracle and SQL Server
+default to <strong>READ_COMMITTED</strong>. So the same code can behave differently on different DBs.</p>
+</blockquote>
+<h2>Dirty Read Problem</h2>
+<p>Transaction A reads the <strong>un-committed</strong> data of another transaction — and if that other
+transaction gets <strong>ROLLED BACK</strong>, the un-committed data which was read by transaction A
+is known as a <strong>Dirty Read</strong>.</p>
+<ul class="cards"><li><b>T1</b> — Begin_Transaction — Begin_Transaction — ID:123, status: Free</li><li><b>T2</b> — Update row ID:123, status = Booked — ID:123, status: Booked (NOT committed by Transaction B yet)</li><li><b>T3</b> — Read row ID:123 → got status: <strong>Booked</strong> — ID:123, status: Booked (NOT committed by Transaction B yet)</li><li><b>T4</b> — <strong>RollBack</strong> — ID:123, status: Free (all un-committed changes of Txn B got rolled back)</li></ul>
+<p>Transaction A is now working with <code>Booked</code> — a value that never truly existed in the DB.</p>
+<h2>Non-Repeatable Read Problem</h2>
+<p>Suppose Transaction A reads the <strong>same row several times</strong> and there is a chance that it
+gets a <strong>different value</strong> each time — that is known as the Non-Repeatable Read problem.</p>
+<ul class="cards"><li><b>T1</b> — Begin_Transaction — ID:1, status: Free</li><li><b>T2</b> — Read row ID:1 → read status: Free — ID:1, status: Free</li><li><b>T3</b> — Changed the row and <strong>committed</strong> — ID:1, status: Booked</li><li><b>T4</b> — Read row ID:1 → read status: <strong>Booked</strong> — ID:1, status: Booked</li><li><b>T5</b> — Commit</li></ul>
+<p>Same row, same query, two different answers inside one transaction.</p>
+<h2>Phantom Read Problem</h2>
+<p>Suppose Transaction A executes some <strong>query several times</strong> but there is a chance that the
+<strong>rows returned are different</strong>. That is known as the Phantom Read problem.</p>
+<ul class="cards"><li><b>T1</b> — Begin_Transaction — ID:1 Free · ID:3 Booked</li><li><b>T2</b> — Read rows where ID &gt; 0 and ID &lt; 5 → <strong>2 rows</strong> (1 and 3) — ID:1 Free · ID:3 Booked</li><li><b>T3</b> — <strong>Inserted</strong> row ID:2 and committed — ID:1 Free · ID:2 Free · ID:3 Booked</li><li><b>T4</b> — Read rows where ID &gt; 0 and ID &lt; 5 → <strong>3 rows</strong> (1, 2 and 3) — ID:1 Free · ID:2 Free · ID:3 Booked</li><li><b>T5</b> — Commit</li></ul>
+<blockquote>
+<p>Good to know: non-repeatable read is about an <strong>existing row changing value</strong>; phantom
+read is about <strong>new rows appearing (or disappearing)</strong> for the same range query.</p>
+</blockquote>
+<h2>DB Locking Types</h2>
+<p>Locking makes sure that <strong>no other transaction updates the locked rows</strong>.</p>
+<ul>
+<li><strong>Shared Lock (S)</strong> — also known as <strong>Read Lock</strong>.</li>
+<li><strong>Exclusive Lock (X)</strong> — also known as <strong>Write Lock</strong>.</li>
+</ul>
+<p>Lock compatibility — can another transaction take a lock on the same row?</p>
+<ul class="cards"><li><b>Have Shared Lock (S)</b> — Yes — No</li><li><b>Have Exclusive Lock (X)</b> — No — No</li></ul>
+<p><strong>Example 1 — shared locks coexist.</strong> More than 1 transaction can put the (S) lock on the
+same row, and all of them can read the value:</p>
+<p><strong>Example 2 — exclusive lock blocks everyone.</strong> Once the (X) lock is taken by any
+transaction, no other transaction could even Read / Write:</p>
+<blockquote>
+<p>Added: in Spring Data JPA you can take these locks yourself (pessimistic locking):
+<code>@Lock(LockModeType.PESSIMISTIC_READ)</code> issues <code>SELECT ... FOR SHARE</code> (shared lock) and
+<code>@Lock(LockModeType.PESSIMISTIC_WRITE)</code> issues <code>SELECT ... FOR UPDATE</code> (exclusive lock).</p>
+</blockquote>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">SeatRepository</span> <span class="k">extends</span> <span class="ty">JpaRepository</span>&lt;<span class="ty">Seat</span>, <span class="ty">Long</span>&gt; {
+
+    <span class="a">@Lock</span>(<span class="ty">LockModeType</span>.<span class="ty">PESSIMISTIC_WRITE</span>)   <span class="c">// exclusive (X) lock on the selected row</span>
+    <span class="a">@Query</span>(<span class="s">&quot;select s from Seat s where s.id = :id&quot;</span>)
+    <span class="ty">Optional</span>&lt;<span class="ty">Seat</span>&gt; findByIdForUpdate(<span class="a">@Param</span>(<span class="s">&quot;id&quot;</span>) <span class="k">long</span> id);
+}
+</code></pre>
+<h2>Final Thoughts — locking strategy per isolation level</h2>
+<p><strong>READ_UNCOMMITTED</strong> — useful for read-only applications; concurrency is high as there is
+no locking.</p>
+<ul>
+<li>Dirty Read possible, Non-Repeatable Read possible, Phantom Read possible</li>
+<li>Why? <strong>Read:</strong> no lock acquired. <strong>Write:</strong> no lock acquired.</li>
+</ul>
+<p><strong>READ_COMMITTED</strong></p>
+<ul>
+<li>Non-Repeatable Read possible, Phantom Read possible (dirty read is gone)</li>
+<li>Why? <strong>Read:</strong> shared lock acquired and <strong>released as soon as the read is done</strong>.</li>
+<li><strong>Write:</strong> exclusive lock acquired and <strong>kept till the end of the transaction</strong>.</li>
+</ul>
+<p><strong>REPEATABLE_READ</strong></p>
+<ul>
+<li>Only Phantom Read still possible</li>
+<li>Why? <strong>Read:</strong> shared lock acquired and <strong>released only at the end of the transaction</strong>.</li>
+<li><strong>Write:</strong> exclusive lock acquired and <strong>released only at the end of the transaction</strong>.</li>
+</ul>
+<p><strong>SERIALIZABLE</strong></p>
+<ul>
+<li>Same as the Repeatable Read locking strategy <strong>+ applies Range Locks</strong>, and every lock is released only at the end of the transaction. No anomalies — and lowest concurrency.</li>
+</ul>
+<blockquote>
+<p>Good to know: a range lock locks the <em>query range</em> (e.g. <code>ID &gt; 0 and ID &lt; 5</code>), so no other
+transaction can even INSERT a new row into that range — which is exactly what kills the
+phantom read.</p>
+</blockquote>
+<pre><code><span class="c">// Picking the level per use case:</span>
+<span class="a">@Transactional</span>(isolation = <span class="ty">Isolation</span>.<span class="ty">READ_UNCOMMITTED</span>) <span class="c">// reporting, approximations OK</span>
+<span class="k">public</span> <span class="k">long</span> roughDashboardCount() { ... }
+
+<span class="a">@Transactional</span>(isolation = <span class="ty">Isolation</span>.<span class="ty">READ_COMMITTED</span>)   <span class="c">// typical OLTP default</span>
+<span class="k">public</span> <span class="k">void</span> updateProfile(<span class="ty">User</span> u) { ... }
+
+<span class="a">@Transactional</span>(isolation = <span class="ty">Isolation</span>.<span class="ty">REPEATABLE_READ</span>)  <span class="c">// re-reads must be stable</span>
+<span class="k">public</span> <span class="k">void</span> reconcileInvoice(<span class="k">long</span> id) { ... }
+
+<span class="a">@Transactional</span>(isolation = <span class="ty">Isolation</span>.<span class="ty">SERIALIZABLE</span>)     <span class="c">// money movement, seat booking</span>
+<span class="k">public</span> <span class="k">void</span> transferMoney(<span class="k">long</span> from, <span class="k">long</span> to, <span class="ty">BigDecimal</span> amt) { ... }
+</code></pre>
+<blockquote>
+<p>Added: the lock-based explanation above is the classic textbook (2-Phase-Locking) model.
+Modern databases (PostgreSQL, MySQL/InnoDB, Oracle) actually implement READ_COMMITTED and
+REPEATABLE_READ with <strong>MVCC (Multi-Version Concurrency Control)</strong>: every transaction reads
+a <strong>snapshot</strong> (an older version of the row) instead of taking a shared lock, so
+<strong>readers never block writers and writers never block readers</strong>. Locks are still taken for
+writes (<code>UPDATE</code>, <code>SELECT ... FOR UPDATE</code>). Interviewers love this follow-up: "if reads
+don't lock, how does Postgres avoid dirty reads?" — answer: snapshots, not shared locks.</p>
+</blockquote>
+<h2>Optimistic vs Pessimistic Locking</h2>
+<blockquote>
+<p>Added: this whole section. "Which one would you pick and why?" is one of the most common
+locking interview questions, so it deserves its own section with runnable code.</p>
+</blockquote>
+<p>Two application-level strategies to handle two transactions touching the <strong>same row</strong>:</p>
+<ul class="cards"><li><b>Idea</b> — Don't lock — detect the conflict at commit time — Lock first — block others until I finish</li><li><b>How</b> — A <code>@Version</code> column checked on every UPDATE — <code>SELECT ... FOR UPDATE</code> / <code>FOR SHARE</code></li><li><b>Conflict result</b> — <code>OptimisticLockException</code> → retry or fail fast — Other transaction <strong>waits</strong> (or times out)</li><li><b>Readers blocked?</b> — Never — Yes, when X lock is held</li><li><b>Best for</b> — Low contention (typical web traffic) — Hot rows (inventory, seat, account balance)</li><li><b>Cost</b> — Retries on conflict — Lock waits, deadlock risk, lower throughput</li></ul>
+<p><strong>Optimistic locking</strong> — add one annotated field and JPA does the rest:</p>
+<pre><code><span class="a">@Entity</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Seat</span> {
+    <span class="a">@Id</span> <span class="k">private</span> <span class="ty">Long</span> id;
+    <span class="k">private</span> <span class="ty">String</span> status;
+
+    <span class="a">@Version</span>                 <span class="c">// JPA increments this on every successful update</span>
+    <span class="k">private</span> <span class="ty">Long</span> version;
+}
+</code></pre>
+<p>Under the hood every update becomes:</p>
+<pre><code><span class="k">UPDATE</span> seat <span class="k">SET</span> status = &#x27;BOOKED&#x27;, version = 6
+<span class="k">WHERE</span> id = 1 <span class="k">AND</span> version = 5;   -- 0 rows updated =&gt; someone changed it =&gt; exception
+</code></pre>
+<p>If another transaction already bumped <code>version</code> from 5 to 6, our UPDATE matches <strong>0 rows</strong>
+and JPA throws <code>ObjectOptimisticLockingFailureException</code> (wrapping <code>OptimisticLockException</code>).
+Typical handling — retry a few times:</p>
+<pre><code><span class="a">@Service</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">BookingService</span> {
+
+    <span class="a">@Retryable</span>(retryFor = <span class="ty">ObjectOptimisticLockingFailureException</span>.<span class="k">class</span>,
+               maxAttempts = <span class="n">3</span>)                     <span class="c">// spring-retry</span>
+    <span class="a">@Transactional</span>
+    <span class="k">public</span> <span class="k">void</span> bookSeat(<span class="k">long</span> seatId) {
+        <span class="ty">Seat</span> seat = seatRepository.findById(seatId).orElseThrow();
+        <span class="k">if</span> (!<span class="s">&quot;FREE&quot;</span>.equals(seat.getStatus())) <span class="k">throw</span> <span class="k">new</span> <span class="ty">SeatTakenException</span>(seatId);
+        seat.setStatus(<span class="s">&quot;BOOKED&quot;</span>);                   <span class="c">// version check happens on flush</span>
+    }
+}
+</code></pre>
+<p><strong>Pessimistic locking</strong> — the <code>@Lock(PESSIMISTIC_WRITE)</code> repository method from section 6
+takes the X lock up front; the second transaction simply waits at the <code>SELECT</code>. Set a
+timeout so it doesn't wait forever:</p>
+<pre><code><span class="a">@Lock</span>(<span class="ty">LockModeType</span>.<span class="ty">PESSIMISTIC_WRITE</span>)
+<span class="a">@QueryHints</span>(<span class="a">@QueryHint</span>(name = <span class="s">&quot;jakarta.persistence.lock.timeout&quot;</span>, value = <span class="s">&quot;3000&quot;</span>)) <span class="c">// ms</span>
+<span class="a">@Query</span>(<span class="s">&quot;select s from Seat s where s.id = :id&quot;</span>)
+<span class="ty">Optional</span>&lt;<span class="ty">Seat</span>&gt; findByIdForUpdate(<span class="a">@Param</span>(<span class="s">&quot;id&quot;</span>) <span class="k">long</span> id);   <span class="c">// waits max 3s, then throws</span>
+</code></pre>
+<blockquote>
+<p>Good to know: optimistic locking is not an isolation level — it works <strong>on top of</strong>
+READ_COMMITTED and protects only rows carrying a <code>@Version</code> column.</p>
+</blockquote>
+<h2>Deadlocks — when locks collide</h2>
+<blockquote>
+<p>Added: this whole section. A locking chapter without deadlocks is incomplete —
+"what is a deadlock and how do you avoid it?" is a guaranteed interview question.</p>
+</blockquote>
+<p>A <strong>deadlock</strong> is two (or more) transactions each holding a lock the other one needs —
+neither can ever proceed:</p>
+<ul class="cards"><li><b>T1</b> — X lock on row <strong>1</strong> (update account 1) — X lock on row <strong>2</strong> (update account 2)</li><li><b>T2</b> — wants X lock on row <strong>2</strong> → waits for B</li><li><b>T3</b> — wants X lock on row <strong>1</strong> → waits for A</li><li><b>T4</b> — <strong>Deadlock</strong> — A waits for B, B waits for A, forever</li></ul>
+<p><strong>How the DB reacts:</strong> databases detect the cycle and <strong>kill one transaction</strong> (the
+"victim") so the other can finish. The victim gets an error — MySQL:
+<code>Deadlock found when trying to get lock</code>, Postgres: <code>deadlock detected</code>. Spring translates
+it to <code>DeadlockLoserDataAccessException</code> (a <code>TransientDataAccessException</code>, i.e. retryable).</p>
+<p><strong>How to avoid / survive deadlocks:</strong></p>
+<ol>
+<li><strong>Lock rows in a consistent order</strong> — if every transaction updates accounts in
+   ascending id order, the T1/T3 cycle above cannot form:</li>
+</ol>
+<pre><code><span class="a">@Transactional</span>
+<span class="k">public</span> <span class="k">void</span> transfer(<span class="k">long</span> fromId, <span class="k">long</span> toId, <span class="ty">BigDecimal</span> amt) {
+    <span class="k">long</span> first = <span class="ty">Math</span>.min(fromId, toId);        <span class="c">// always lock the smaller id first</span>
+    <span class="k">long</span> second = <span class="ty">Math</span>.max(fromId, toId);
+    <span class="ty">Account</span> a = accountRepo.findByIdForUpdate(first).orElseThrow();
+    <span class="ty">Account</span> b = accountRepo.findByIdForUpdate(second).orElseThrow();
+    <span class="c">// ... move the money</span>
+}
+</code></pre>
+<ol start="2">
+<li><strong>Keep transactions short</strong> — no HTTP/Kafka calls inside <code>@Transactional</code>; the longer
+   locks are held, the bigger the collision window.</li>
+<li><strong>Retry the victim</strong> — deadlock errors are transient by definition:</li>
+</ol>
+<pre><code><span class="a">@Retryable</span>(retryFor = <span class="ty">DeadlockLoserDataAccessException</span>.<span class="k">class</span>,
+           maxAttempts = <span class="n">3</span>, backoff = <span class="a">@Backoff</span>(delay = <span class="n">100</span>))
+<span class="a">@Transactional</span>
+<span class="k">public</span> <span class="k">void</span> transfer(<span class="k">long</span> fromId, <span class="k">long</span> toId, <span class="ty">BigDecimal</span> amt) { ... }
+</code></pre>
+<ol start="4">
+<li><strong>Prefer optimistic locking</strong> where contention is low — no locks held, no deadlocks.</li>
+</ol>
+<h2>Architect's Corner</h2>
+<ul>
+<li><strong>Know your DB's default</strong>: MySQL/InnoDB = REPEATABLE_READ, PostgreSQL/Oracle/SQL Server = READ_COMMITTED. The same <code>@Transactional</code> behaves differently across engines.</li>
+<li><strong>Optimistic locking (<code>@Version</code>) is the app-level alternative</strong> to raising isolation: readers never block, conflicts fail fast with <code>OptimisticLockException</code> — right choice for low-contention web traffic.</li>
+<li><strong>Pessimistic locking</strong> via <code>SELECT ... FOR UPDATE</code> (<code>@Lock(PESSIMISTIC_WRITE)</code> in JPA) for genuine hot rows (inventory, balances).</li>
+<li><strong>SERIALIZABLE is a last resort</strong> — in Postgres it aborts conflicting txns (retry loops required), in MySQL it locks ranges. Design around it with idempotency + unique constraints first.</li>
+<li>Long-running transactions at any isolation level are the real killer — they hold locks and bloat undo/VACUUM.</li>
+</ul>
+<h2>Quick Revision</h2>
+<ul>
+<li>Isolation level = how one transaction's changes are <strong>visible to parallel transactions</strong>.</li>
+<li>Matrix: READ_UNCOMMITTED allows all 3 anomalies → SERIALIZABLE allows none; concurrency drops as strictness rises.</li>
+<li><strong>Dirty read</strong> — read un-committed data that later gets rolled back.</li>
+<li><strong>Non-repeatable read</strong> — same row, different value on re-read.</li>
+<li><strong>Phantom read</strong> — same range query, different set of rows.</li>
+<li><strong>Shared (S) = read lock</strong> (S+S compatible); <strong>Exclusive (X) = write lock</strong> (blocks all).</li>
+<li>Locking per level: READ_UNCOMMITTED = no locks; READ_COMMITTED = S released after read, X till end; REPEATABLE_READ = S and X till end; SERIALIZABLE = + range locks.</li>
+<li>Default isolation <strong>depends on the DB</strong> (MySQL: REPEATABLE_READ, Postgres: READ_COMMITTED).</li>
+<li><strong>Optimistic locking</strong> = <code>@Version</code> column, conflict detected at commit (<code>OptimisticLockException</code> → retry); <strong>pessimistic</strong> = <code>SELECT ... FOR UPDATE</code>, others wait.</li>
+<li><strong>Deadlock</strong> = two txns each waiting for the other's lock; DB kills one victim (Spring: <code>DeadlockLoserDataAccessException</code>). Avoid: lock in consistent order, short txns, retry.</li>
+<li>Modern DBs use <strong>MVCC</strong> — readers get snapshots instead of shared locks, so readers never block writers.</li>
+</ul>
+<hr />
+<p>Next topic: <strong>@Async and Thread Pools</strong> — running methods asynchronously with executors.</p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Isolation_Levels_and_DB_Locking_Explained_Part1.mp4; Part 2 = Isolation_Levels_and_DB_Locking_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

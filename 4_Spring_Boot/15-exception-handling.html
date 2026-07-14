@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exception Handling</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#15803d22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #15803d40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#15803d0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #15803d33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#15803d;--a2:#22c55e">
+<header class="hero"><div class="in">
+  <span class="badge">🍃 SPRING BOOT</span>
+  <h1>Exception Handling</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>Controller level exception handling</em></p>
+<p class="chips">☕ 10 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> The 5 very important classes involved in handling an exception (the resolver hierarchy)  ·  The runtime flow: how DispatcherServlet tries resolver 1 → 2 → 3, then DefaultErrorAttributes  ·  Controller-level @ExceptionHandler — all 3 ways to write it, and what parameters it takes  ·  Global exception handling with @ControllerAdvice + the priority rules</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Exception_Handling_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>Classes involved in handling an exception</h2>
+<p>When an exception escapes your controller, Spring does not just crash — a small family of <strong>resolver classes</strong> takes over. These 5 are very important:</p>
+<figure><img alt="Exception Handling — diagram" src="15-exception-handling.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<ul>
+<li><strong>(1) ExceptionHandlerExceptionResolver</strong> — handles <code>@ExceptionHandler</code> / <code>@ControllerAdvice</code></li>
+<li><strong>(2) ResponseStatusExceptionResolver</strong> — handles exceptions annotated with <code>@ResponseStatus</code></li>
+<li><strong>(3) DefaultHandlerExceptionResolver</strong> — handles Spring MVC's own pre-defined exceptions</li>
+<li><strong>(4) HandlerExceptionResolverComposite</strong> — holds resolvers 1–3 and calls them <strong>in sequence</strong></li>
+<li><strong>(5) DefaultErrorAttributes</strong> — fills default values if nobody else set status/message</li>
+</ul>
+<blockquote>
+<p>The notes say it twice: <strong>this diagram is important — learn it.</strong> Interview questions on exception handling almost always start from this hierarchy.</p>
+</blockquote>
+<h2>Runtime flow — how DispatcherServlet resolves an exception</h2>
+<p>How to read the flow:</p>
+<ol>
+<li><code>DispatcherServlet</code> detects that an exception was thrown while handling the request.</li>
+<li>It hands the exception to <code>HandlerExceptionResolverComposite</code>, which tries the three resolvers <strong>in sequence: 1 → 2 → 3</strong>.</li>
+<li>After resolver 1, Spring checks: <em>was the exception handled by the previous resolver?</em> If <strong>no</strong>, resolver 2 gets a chance; the same check again, then resolver 3.</li>
+<li><strong>Each resolver sets the proper status and message in the HTTP response</strong> for the exceptions which they take care of.</li>
+<li>Control then reaches <code>DefaultErrorAttributes</code>, and the error response is returned to the client.</li>
+</ol>
+<p>But what about a <code>NullPointerException</code>, or a custom exception with no annotations? <strong>All 3 resolvers do not understand it</strong>, so status and message are <em>not</em> set. When control reaches the <code>DefaultErrorAttributes</code> class, it fills the values in the HTTP response with <strong>default values</strong>.</p>
+<blockquote>
+<p>Good to know: those "default values" are the familiar JSON you get from an unhandled error — <code>timestamp</code>, <code>status: 500</code>, <code>error: "Internal Server Error"</code>, <code>path</code> — produced via Spring Boot's <code>/error</code> mapping (<code>BasicErrorController</code>).</p>
+</blockquote>
+<p><strong>Q. What do these 3 resolvers handle?</strong> — the next three sections answer this, one resolver at a time.</p>
+<h2>ExceptionHandlerExceptionResolver — @ExceptionHandler and @ControllerAdvice</h2>
+<p>Resolver <strong>(1)</strong> is responsible for handling these two annotations: <code>@ExceptionHandler</code> and <code>@ControllerAdvice</code>.</p>
+<p>Write the handler <strong>inside the controller class</strong> itself. First, a custom exception to work with:</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">CustomException</span> <span class="k">extends</span> <span class="ty">RuntimeException</span> {
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">HttpStatus</span> status;
+
+    <span class="k">public</span> <span class="ty">CustomException</span>(<span class="ty">String</span> message, <span class="ty">HttpStatus</span> status) {
+        <span class="k">super</span>(message);
+        <span class="k">this</span>.status = status;
+    }
+    <span class="k">public</span> <span class="ty">HttpStatus</span> getStatus() { <span class="k">return</span> status; }
+}
+</code></pre>
+<p><strong>Variant 1 — return a <code>ResponseEntity</code> directly:</strong></p>
+<pre><code><span class="a">@RestController</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">UserController</span> {
+
+    <span class="a">@GetMapping</span>(<span class="s">&quot;/users/{id}&quot;</span>)
+    <span class="k">public</span> <span class="ty">User</span> getUser(<span class="a">@PathVariable</span> <span class="ty">Long</span> id) {
+        <span class="k">throw</span> <span class="k">new</span> <span class="ty">CustomException</span>(<span class="s">&quot;User &quot;</span> + id + <span class="s">&quot; not found&quot;</span>, <span class="ty">HttpStatus</span>.<span class="ty">NOT_FOUND</span>);
+    }
+
+    <span class="a">@ExceptionHandler</span>(<span class="ty">CustomException</span>.<span class="k">class</span>)     <span class="c">// &lt;-- written INSIDE the controller</span>
+    <span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">String</span>&gt; handleCustomException(<span class="ty">CustomException</span> ex) {
+        <span class="k">return</span> <span class="k">new</span> <span class="ty">ResponseEntity</span>&lt;&gt;(ex.getMessage(), ex.getStatus());
+    }
+}
+</code></pre>
+<p><strong>Variant 2 — return an <code>ErrorResponse</code> POJO</strong> (a structured JSON body instead of a plain string):</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">ErrorResponse</span> {                     <span class="c">// the POJO</span>
+    <span class="k">private</span> <span class="ty">Date</span> timestamp;
+    <span class="k">private</span> <span class="ty">String</span> message;
+    <span class="k">private</span> <span class="k">int</span> status;
+
+    <span class="k">public</span> <span class="ty">ErrorResponse</span>(<span class="ty">Date</span> timestamp, <span class="ty">String</span> message, <span class="k">int</span> status) {
+        <span class="k">this</span>.timestamp = timestamp;
+        <span class="k">this</span>.message = message;
+        <span class="k">this</span>.status = status;
+    }
+    <span class="c">// getters — Jackson needs them to serialize the JSON body</span>
+}
+</code></pre>
+<pre><code><span class="a">@ExceptionHandler</span>(<span class="ty">CustomException</span>.<span class="k">class</span>)
+<span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">ErrorResponse</span>&gt; handleCustomException(<span class="ty">CustomException</span> ex) {
+    <span class="ty">ErrorResponse</span> response = <span class="k">new</span> <span class="ty">ErrorResponse</span>(<span class="k">new</span> <span class="ty">Date</span>(),
+            ex.getMessage(), ex.getStatus().value());
+    <span class="k">return</span> <span class="k">new</span> <span class="ty">ResponseEntity</span>&lt;&gt;(response, ex.getStatus());
+}
+</code></pre>
+<p><strong>Variant 3 — use <code>response.sendError(...)</code>:</strong></p>
+<pre><code><span class="a">@ExceptionHandler</span>(<span class="ty">CustomException</span>.<span class="k">class</span>)
+<span class="k">public</span> <span class="k">void</span> handleCustomException(<span class="ty">HttpServletResponse</span> response,
+        <span class="ty">CustomException</span> ex) <span class="k">throws</span> <span class="ty">IOException</span> {
+    response.sendError(<span class="ty">HttpStatus</span>.<span class="ty">BAD_REQUEST</span>.value(), ex.getMessage());
+}
+</code></pre>
+<p>You can write <strong>multiple <code>@ExceptionHandler</code> methods in the same class</strong> for various exceptions.</p>
+<h3>What parameters can @ExceptionHandler methods take?</h3>
+<ul>
+<li><code>HttpServletResponse</code></li>
+<li><code>HttpServletRequest</code></li>
+<li>the <code>Exception</code> itself</li>
+</ul>
+<p>You can use them <strong>in any order</strong>. And one handler can cover <strong>more than one exception type</strong> — in that case, use the <strong>parent</strong> exception as the method parameter:</p>
+<pre><code><span class="a">@ExceptionHandler</span>({<span class="ty">CustomException</span>.<span class="k">class</span>, <span class="ty">IllegalArgumentException</span>.<span class="k">class</span>})
+<span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">String</span>&gt; handleMany(<span class="ty">Exception</span> ex) {  <span class="c">// parent type parameter</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="ty">ResponseEntity</span>&lt;&gt;(ex.getMessage(), <span class="ty">HttpStatus</span>.<span class="ty">BAD_REQUEST</span>);
+}
+</code></pre>
+<h3>Global Exception Handler — @ControllerAdvice</h3>
+<p>The problem with controller-level <code>@ExceptionHandler</code>: if <strong>multiple controllers</strong> throw the same type of exception, the same handling has to be repeated in every controller — which is nothing but <strong>code duplication</strong>.</p>
+<p>Solution — one <strong>global</strong> handler class:</p>
+<pre><code><span class="a">@ControllerAdvice</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">GlobalExceptionHandler</span> {
+
+    <span class="a">@ExceptionHandler</span>(<span class="ty">CustomException</span>.<span class="k">class</span>)     <span class="c">// exact match — checked first</span>
+    <span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">ErrorResponse</span>&gt; handleCustom(<span class="ty">CustomException</span> ex) {
+        <span class="ty">ErrorResponse</span> body = <span class="k">new</span> <span class="ty">ErrorResponse</span>(<span class="k">new</span> <span class="ty">Date</span>(),
+                ex.getMessage(), ex.getStatus().value());
+        <span class="k">return</span> <span class="k">new</span> <span class="ty">ResponseEntity</span>&lt;&gt;(body, ex.getStatus());
+    }
+
+    <span class="a">@ExceptionHandler</span>(<span class="ty">Exception</span>.<span class="k">class</span>)           <span class="c">// parent — the fallback</span>
+    <span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">String</span>&gt; handleAny(<span class="ty">Exception</span> ex) {
+        <span class="k">return</span> <span class="k">new</span> <span class="ty">ResponseEntity</span>&lt;&gt;(<span class="s">&quot;Something went wrong&quot;</span>,
+                <span class="ty">HttpStatus</span>.<span class="ty">INTERNAL_SERVER_ERROR</span>);
+    }
+}
+</code></pre>
+<p><strong>Priority rules:</strong></p>
+<ul>
+<li>Controller level + global level both present? → <strong>1st priority: controller level</strong>, then global level.</li>
+<li>Inside the global handler, more than one <code>@ExceptionHandler</code> could apply? → <strong>first the exact parameter match</strong>, then the <strong>parent exception</strong> handler.</li>
+</ul>
+<blockquote>
+<p>Added: for REST APIs prefer <code>@RestControllerAdvice</code> = <code>@ControllerAdvice</code> + <code>@ResponseBody</code>, so every handler's return value goes straight into the response body. Also, since Spring 6 / Boot 3 there is a standard error body class — <code>ProblemDetail</code> (RFC 7807: <code>type</code>, <code>title</code>, <code>status</code>, <code>detail</code>, <code>instance</code>) — return it from a handler instead of your own POJO.</p>
+</blockquote>
+<h3>ProblemDetail in code</h3>
+<blockquote>
+<p>Added: since it keeps coming up — this is what a <code>ProblemDetail</code> handler actually looks
+like. No custom POJO, standard <code>application/problem+json</code> content type:</p>
+</blockquote>
+<pre><code><span class="a">@RestControllerAdvice</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">GlobalExceptionHandler</span> {
+
+    <span class="a">@ExceptionHandler</span>(<span class="ty">CustomException</span>.<span class="k">class</span>)
+    <span class="k">public</span> <span class="ty">ProblemDetail</span> handleCustom(<span class="ty">CustomException</span> ex) {
+        <span class="ty">ProblemDetail</span> pd = <span class="ty">ProblemDetail</span>.forStatusAndDetail(ex.getStatus(), ex.getMessage());
+        pd.setTitle(<span class="s">&quot;User lookup failed&quot;</span>);
+        pd.setType(<span class="ty">URI</span>.create(<span class="s">&quot;https://api.example.com/errors/user-not-found&quot;</span>));
+        pd.setProperty(<span class="s">&quot;timestamp&quot;</span>, <span class="ty">Instant</span>.now());   <span class="c">// extra fields are allowed</span>
+        <span class="k">return</span> pd;
+    }
+}
+</code></pre>
+<pre><code>{ <span class="s">&quot;type&quot;</span>: <span class="s">&quot;https://api.example.com/errors/user-not-found&quot;</span>,
+  <span class="s">&quot;title&quot;</span>: <span class="s">&quot;User lookup failed&quot;</span>, <span class="s">&quot;status&quot;</span>: 404,
+  <span class="s">&quot;detail&quot;</span>: <span class="s">&quot;User 123 not found&quot;</span>, <span class="s">&quot;instance&quot;</span>: <span class="s">&quot;/users/123&quot;</span>,
+  <span class="s">&quot;timestamp&quot;</span>: <span class="s">&quot;2026-01-01T10:00:00Z&quot;</span> }
+</code></pre>
+<h3>Multiple @ControllerAdvice classes — ordering and scoping</h3>
+<blockquote>
+<p>Added: real projects have more than one advice class (one per module, one in a shared
+library...). Two rules interviewers expect you to know:</p>
+</blockquote>
+<p><strong>Ordering.</strong> When several advices could handle the same exception, Spring asks them in
+<code>@Order</code> order — <strong>lowest value wins first</strong>; an un-ordered advice has lowest precedence:</p>
+<pre><code><span class="a">@RestControllerAdvice</span>
+<span class="a">@Order</span>(<span class="n">1</span>)                                   <span class="c">// consulted BEFORE the order-2 advice</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">SecurityErrorAdvice</span> { ... }
+
+<span class="a">@RestControllerAdvice</span>
+<span class="a">@Order</span>(<span class="n">2</span>)                                   <span class="c">// the general fallback advice</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">GlobalExceptionHandler</span> { ... }
+</code></pre>
+<p>Careful: ordering is <strong>by advice class, not by best match</strong> — if the order-1 advice has an
+<code>@ExceptionHandler(Exception.class)</code>, it swallows everything before the order-2 advice
+ever sees the exception, even if order-2 has an exact-match handler.</p>
+<p><strong>Scoping.</strong> By default an advice applies to <strong>all</strong> controllers; it can be narrowed:</p>
+<pre><code><span class="a">@RestControllerAdvice</span>(basePackages = <span class="s">&quot;com.app.payments&quot;</span>)          <span class="c">// only that package</span>
+<span class="a">@RestControllerAdvice</span>(assignableTypes = {<span class="ty">PaymentController</span>.<span class="k">class</span>}) <span class="c">// only these classes</span>
+<span class="a">@RestControllerAdvice</span>(annotations = <span class="ty">InternalApi</span>.<span class="k">class</span>)             <span class="c">// only controllers</span>
+                                                                   <span class="c">// carrying @InternalApi</span>
+</code></pre>
+<h3>Handling validation errors — @Valid and MethodArgumentNotValidException</h3>
+<blockquote>
+<p>Added: the most common real-world exception to handle globally. When a
+<code>@Valid @RequestBody</code> fails Bean Validation, Spring throws
+<strong><code>MethodArgumentNotValidException</code></strong> <em>before</em> your controller method runs — and without
+a handler the client gets a bare 400 with no hint of which field was wrong.</p>
+</blockquote>
+<pre><code><span class="k">public</span> <span class="k">record</span> <span class="ty">CreateUserRequest</span>(
+        <span class="a">@NotBlank</span>(message = <span class="s">&quot;name must not be blank&quot;</span>) <span class="ty">String</span> name,
+        <span class="a">@Email</span>(message = <span class="s">&quot;email must be valid&quot;</span>) <span class="ty">String</span> email) { }
+
+<span class="a">@PostMapping</span>(<span class="s">&quot;/users&quot;</span>)
+<span class="k">public</span> <span class="ty">User</span> create(<span class="a">@Valid</span> <span class="a">@RequestBody</span> <span class="ty">CreateUserRequest</span> request) { ... }
+</code></pre>
+<p>The global handler that turns field errors into a useful body:</p>
+<pre><code><span class="a">@ExceptionHandler</span>(<span class="ty">MethodArgumentNotValidException</span>.<span class="k">class</span>)
+<span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">String</span>&gt;&gt; handleValidation(
+        <span class="ty">MethodArgumentNotValidException</span> ex) {
+    <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">String</span>&gt; errors = <span class="k">new</span> <span class="ty">HashMap</span>&lt;&gt;();
+    ex.getBindingResult().getFieldErrors()
+      .forEach(fe -&gt; errors.put(fe.getField(), fe.getDefaultMessage()));
+    <span class="k">return</span> <span class="ty">ResponseEntity</span>.badRequest().body(errors);
+    <span class="c">// { &quot;name&quot;: &quot;name must not be blank&quot;, &quot;email&quot;: &quot;email must be valid&quot; }</span>
+}
+</code></pre>
+<p>Related exceptions worth one handler each: <code>ConstraintViolationException</code> (validation on
+<code>@PathVariable</code>/<code>@RequestParam</code> with <code>@Validated</code> on the class) and
+<code>HttpMessageNotReadableException</code> (malformed/unparseable JSON body).</p>
+<p><strong><code>ResponseEntityExceptionHandler</code></strong> — Spring ships an advice base class with protected
+methods for ~20 built-in MVC exceptions (<code>MethodArgumentNotValidException</code>, 405, 415...).
+Extend it and override just what you need; everything else keeps sane defaults:</p>
+<pre><code><span class="a">@RestControllerAdvice</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">GlobalExceptionHandler</span> <span class="k">extends</span> <span class="ty">ResponseEntityExceptionHandler</span> {
+
+    <span class="a">@Override</span>
+    <span class="k">protected</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">Object</span>&gt; handleMethodArgumentNotValid(
+            <span class="ty">MethodArgumentNotValidException</span> ex, <span class="ty">HttpHeaders</span> headers,
+            <span class="ty">HttpStatusCode</span> status, <span class="ty">WebRequest</span> request) {
+        <span class="ty">ProblemDetail</span> pd = <span class="ty">ProblemDetail</span>.forStatus(status);
+        pd.setTitle(<span class="s">&quot;Validation failed&quot;</span>);
+        pd.setProperty(<span class="s">&quot;errors&quot;</span>, ex.getBindingResult().getFieldErrors().stream()
+                .map(fe -&gt; fe.getField() + <span class="s">&quot;: &quot;</span> + fe.getDefaultMessage()).toList());
+        <span class="k">return</span> <span class="k">new</span> <span class="ty">ResponseEntity</span>&lt;&gt;(pd, headers, status);
+    }
+}
+</code></pre>
+<h2>ResponseStatusExceptionResolver — @ResponseStatus</h2>
+<p>Resolver <strong>(2)</strong> handles <strong>uncaught exceptions annotated with <code>@ResponseStatus</code></strong>.</p>
+<h3>Two usage forms</h3>
+<p><strong>(i) status only</strong> — the exception's own message goes into the response:</p>
+<pre><code><span class="a">@ResponseStatus</span>(<span class="ty">HttpStatus</span>.<span class="ty">BAD_REQUEST</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">CustomException</span> <span class="k">extends</span> <span class="ty">RuntimeException</span> {
+    <span class="k">public</span> <span class="ty">CustomException</span>(<span class="ty">String</span> message) {
+        <span class="k">super</span>(message);
+    }
+}
+<span class="c">// thrown and not caught anywhere -&gt; response: status 400 + exception message</span>
+</code></pre>
+<p><strong>(ii) status + reason</strong> — and <code>reason</code> has <strong>high priority</strong> (it replaces the exception message):</p>
+<pre><code><span class="a">@ResponseStatus</span>(value = <span class="ty">HttpStatus</span>.<span class="ty">BAD_REQUEST</span>, reason = <span class="s">&quot;Invalid&quot;</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">CustomException</span> <span class="k">extends</span> <span class="ty">RuntimeException</span> { <span class="c">/* ... */</span> }
+<span class="c">// response: status 400, message &quot;Invalid&quot; — whatever super(message) said is ignored</span>
+</code></pre>
+<blockquote>
+<p>Added: <code>@ResponseStatus</code> is <strong>static</strong> — the status is fixed at compile time, and it only
+works on exception classes you own. The dynamic, no-annotation alternative is throwing
+<strong><code>ResponseStatusException</code></strong> from anywhere:</p>
+<p><code>java
+throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User " + id + " not found");</code></p>
+<p>Status is chosen at runtime, no custom exception class needed, and in Spring 6 it extends
+<code>ErrorResponseException</code>, so the body comes out as an RFC 7807 <code>ProblemDetail</code>
+automatically. Trade-off: sprinkling HTTP statuses through service code couples the
+domain layer to the web layer — many teams prefer domain exceptions + one
+<code>@RestControllerAdvice</code> doing the mapping.</p>
+</blockquote>
+<h3>VVI — what if @ResponseStatus is used above @ExceptionHandler?</h3>
+<pre><code><span class="a">@ExceptionHandler</span>(<span class="ty">CustomException</span>.<span class="k">class</span>)
+<span class="a">@ResponseStatus</span>(value = <span class="ty">HttpStatus</span>.<span class="ty">BAD_REQUEST</span>, reason = <span class="s">&quot;Invalid&quot;</span>)
+<span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">Object</span>&gt; handleCustomException(<span class="ty">CustomException</span> e) {
+    <span class="k">return</span> <span class="k">new</span> <span class="ty">ResponseEntity</span>&lt;&gt;(<span class="s">&quot;You are not authorized&quot;</span>,
+                                <span class="ty">HttpStatus</span>.<span class="ty">FORBIDDEN</span>);
+}
+</code></pre>
+<p>The handler <strong>is invoked</strong> and returns <code>403 FORBIDDEN</code> with body <code>"You are not authorized"</code> — but the client still receives:</p>
+<ul>
+<li>status — <strong>400</strong></li>
+<li>message — <strong>"Invalid"</strong></li>
+</ul>
+<p><strong>Why?</strong> This is handled by the Spring framework itself: right after your handler method returns, the framework <strong>immediately applies the <code>@ResponseStatus</code></strong> values on top. <code>ServletInvocableHandlerMethod.class</code> does this.</p>
+<h3>response.sendError inside the same combination — even worse</h3>
+<pre><code><span class="a">@ExceptionHandler</span>(<span class="ty">CustomException</span>.<span class="k">class</span>)
+<span class="a">@ResponseStatus</span>(value = <span class="ty">HttpStatus</span>.<span class="ty">BAD_REQUEST</span>, reason = <span class="s">&quot;Invalid&quot;</span>)
+<span class="k">public</span> <span class="k">void</span> handleCustomException(<span class="ty">HttpServletResponse</span> response,
+        <span class="ty">CustomException</span> ex) <span class="k">throws</span> <span class="ty">IOException</span> {
+    response.sendError(<span class="ty">HttpStatus</span>.<span class="ty">FORBIDDEN</span>.value(), <span class="s">&quot;Unauthorized&quot;</span>);
+}
+</code></pre>
+<p><strong>Why does this blow up?</strong> When you do <code>response.sendError</code>, it:</p>
+<ol>
+<li>sets the status,</li>
+<li>sets the message,</li>
+<li><strong>commits</strong> the response.</li>
+</ol>
+<p>Then the Spring framework applies <code>@ResponseStatus</code> and does exactly the same again — status, message, commit — but <strong>a second commit is not allowed</strong>, so the ExceptionResolver <strong>throws an exception itself</strong>.</p>
+<p><strong>Advice — never use both of them together.</strong> If you really want to use both annotations, keep the method body empty and let <code>@ResponseStatus</code> do all the work:</p>
+<pre><code><span class="a">@ExceptionHandler</span>(<span class="ty">CustomException</span>.<span class="k">class</span>)                              <span class="c">// 1st</span>
+<span class="a">@ResponseStatus</span>(value = <span class="ty">HttpStatus</span>.<span class="ty">BAD_REQUEST</span>, reason = <span class="s">&quot;Invalid&quot;</span>)   <span class="c">// 2nd</span>
+<span class="k">public</span> <span class="k">void</span> handleCustomException(<span class="ty">CustomException</span> ex) {
+    <span class="c">// do nothing.</span>
+}
+</code></pre>
+<h2>DefaultHandlerExceptionResolver — Spring's own exceptions</h2>
+<p>Resolver <strong>(3)</strong> handles <strong>Spring Framework related exceptions only</strong> — pre-defined Spring MVC exceptions like <em>MethodNotFound</em>, <em>NoResourceFound</em>, etc.</p>
+<blockquote>
+<p>Good to know: the real class names — <code>HttpRequestMethodNotSupportedException</code> → 405, <code>NoResourceFoundException</code> → 404, <code>HttpMediaTypeNotSupportedException</code> → 415, <code>MissingServletRequestParameterException</code> → 400. That is why hitting a GET endpoint with POST gives a clean 405 without you writing any handler.</p>
+</blockquote>
+<h2>DefaultErrorAttributes — the last stop</h2>
+<p>Class <strong>(5)</strong> is not one of the three sequenced resolvers — it is the safety net at the end of the flow. If no resolver understood the exception (<code>NullPointerException</code>, unannotated custom exceptions...), the status and message are still unset, so <code>DefaultErrorAttributes</code> fills the HTTP response with the default values (timestamp, status, error, path).</p>
+<h2>Architect's Corner</h2>
+<ul>
+<li><strong>Spring 6 way</strong>: return/throw <code>ProblemDetail</code> or <code>ErrorResponseException</code> — RFC-standard bodies with zero custom POJOs; <code>@RestControllerAdvice</code> (= @ControllerAdvice + @ResponseBody) is the modern global handler.</li>
+<li><strong>One error contract for the whole org</strong> — same JSON shape, machine-readable <code>code</code>, correlation ID included; clients should parse errors once, not per-service.</li>
+<li><strong>Never leak internals</strong>: stack traces, SQL, class names stay in logs (with the correlation ID); the response gets a generic message + ID to quote to support.</li>
+<li><strong>Log once, at the boundary</strong> — the global handler logs; inner layers throw. Double-logging is how you get 40GB of duplicate stack traces.</li>
+<li>Map exceptions deliberately: domain exception → 4xx with code; unknown exception → 500 generic. The notes' resolver-order diagram explains <em>why</em> your @ResponseStatus sometimes "wins" over your handler.</li>
+</ul>
+<h2>Quick Revision</h2>
+<ul>
+<li>5 important classes: <strong>ExceptionHandlerExceptionResolver (1)</strong>, <strong>ResponseStatusExceptionResolver (2)</strong>, <strong>DefaultHandlerExceptionResolver (3)</strong>, <strong>HandlerExceptionResolverComposite (4)</strong>, <strong>DefaultErrorAttributes (5)</strong>.</li>
+<li>Flow: DispatcherServlet → Composite tries <strong>1 → 2 → 3 in sequence</strong> → each resolver sets status/message for exceptions it understands → <code>DefaultErrorAttributes</code> fills defaults for the rest.</li>
+<li>Resolver 1 handles <code>@ExceptionHandler</code> (controller level) and <code>@ControllerAdvice</code> (global). Priority: <strong>controller level first</strong>, then global; inside global: <strong>exact match first</strong>, then parent exception.</li>
+<li><code>@ExceptionHandler</code> methods can take <code>HttpServletRequest</code>, <code>HttpServletResponse</code>, <code>Exception</code> — any order; for multiple exception types use the <strong>parent</strong> exception parameter.</li>
+<li>Resolver 2 handles <code>@ResponseStatus</code>; the <code>reason</code> attribute has high priority. <strong>VVI:</strong> combined with <code>@ExceptionHandler</code>, the framework (<code>ServletInvocableHandlerMethod</code>) overwrites your handler's status/message — and with <code>sendError</code> it even double-commits and throws. <strong>Never use both together</strong> (or keep the method body empty).</li>
+<li>Resolver 3 handles Spring MVC's own pre-defined exceptions only.</li>
+<li>Multiple advices: <strong><code>@Order</code> — lowest value consulted first, per advice class not per best match</strong>; scope an advice with <code>basePackages</code> / <code>assignableTypes</code> / <code>annotations</code>.</li>
+<li>Validation: <code>@Valid @RequestBody</code> failure → <strong><code>MethodArgumentNotValidException</code></strong> (before the controller runs); extract <code>getBindingResult().getFieldErrors()</code>; or extend <strong><code>ResponseEntityExceptionHandler</code></strong> and override its protected methods.</li>
+<li><code>ProblemDetail.forStatusAndDetail(...)</code> + <code>setProperty(...)</code> = RFC 7807 body with zero custom POJOs.</li>
+<li><strong><code>ResponseStatusException</code></strong> = runtime-chosen status without annotations or handlers — handy, but couples services to HTTP; prefer domain exceptions + one advice for the mapping.</li>
+</ul>
+<hr />
+<p>Next topic: <strong>JDBC and JdbcTemplate</strong> — where JDBC sits in the architecture, and how Spring Boot removes its boilerplate.</p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Exception_Handling_Explained_Part1.mp4; Part 2 = Exception_Handling_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

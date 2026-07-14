@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Configuration: @Value, @ConditionalOnProperty and @Profile</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#15803d22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #15803d40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#15803d0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #15803d33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#15803d;--a2:#22c55e">
+<header class="hero"><div class="in">
+  <span class="badge">🍃 SPRING BOOT</span>
+  <h1>Configuration: @Value, @ConditionalOnProperty and @Profile</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>${...} vs #{...} — property placeholder vs SpEL</em></p>
+<p class="chips">☕ 6 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> Dynamically initializing bean values with @Value — property file, environment variable, inline literal  ·  Creating beans conditionally with @ConditionalOnProperty (+ advantages &amp; disadvantages)  ·  Profiling: parent application.properties and child application-{profile}.properties files  ·  Three ways to activate a profile: property, Maven -D flag, pom.xml &lt;profiles&gt; block</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Value_ConditionalOnProperty_Profile_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>Dynamically initialize a bean: @Value</h2>
+<p><strong>@Value</strong> is used to inject a value from various sources like a <strong>property file</strong>, <strong>environment variables</strong>, or <strong>inline literals</strong>.</p>
+<figure><img alt="Configuration: @Value, @ConditionalOnProperty and @Profile — diagram" src="08-value-conditionalonproperty-profile.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<pre><code><span class="c"># application.properties</span>
+<span class="a">app.name</span>=order-service
+<span class="a">app.timeout.ms</span>=3000
+</code></pre>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">AppSettings</span> {
+
+    <span class="a">@Value</span>(<span class="s">&quot;${app.name}&quot;</span>)            <span class="c">// from application.properties</span>
+    <span class="k">private</span> <span class="ty">String</span> appName;
+
+    <span class="a">@Value</span>(<span class="s">&quot;${JAVA_HOME}&quot;</span>)           <span class="c">// from an environment variable</span>
+    <span class="k">private</span> <span class="ty">String</span> javaHome;
+
+    <span class="a">@Value</span>(<span class="s">&quot;${app.retry.count:3}&quot;</span>)   <span class="c">// default literal used if the key is missing</span>
+    <span class="k">private</span> <span class="k">int</span> retryCount;
+
+    <span class="a">@Value</span>(<span class="s">&quot;42&quot;</span>)                     <span class="c">// plain inline literal</span>
+    <span class="k">private</span> <span class="k">int</span> magicNumber;
+}
+</code></pre>
+<blockquote>
+<p>Added: when a class needs many <code>@Value</code> fields, the modern alternative is <strong><code>@ConfigurationProperties(prefix = "app")</code></strong> — it binds a whole group of keys onto one typed bean, supports relaxed binding (<code>app.timeout-ms</code> → <code>timeoutMs</code>) and validation, and IDEs auto-complete the keys.</p>
+<p>Added: a classic interview trap — the two syntaxes are different mechanisms:</p>
+<ul>
+<li><code>${...}</code> = <strong>property placeholder</strong>: looks up a key in the Environment (property files, env vars).</li>
+<li><code>#{...}</code> = <strong>SpEL (Spring Expression Language)</strong>: evaluated as an <em>expression</em> — math, method calls, other beans, statics.</li>
+</ul>
+</blockquote>
+<pre><code><span class="a">@Value</span>(<span class="s">&quot;${app.timeout.ms}&quot;</span>)                  <span class="c">// property lookup</span>
+<span class="k">private</span> <span class="k">int</span> timeout;
+
+<span class="a">@Value</span>(<span class="s">&quot;#{2 * 60 * 1000}&quot;</span>)                   <span class="c">// SpEL: computed value -&gt; 120000</span>
+<span class="k">private</span> <span class="k">int</span> twoMinutes;
+
+<span class="a">@Value</span>(<span class="s">&quot;#{systemProperties[&#x27;user.home&#x27;]}&quot;</span>)   <span class="c">// SpEL: JVM system property</span>
+<span class="k">private</span> <span class="ty">String</span> home;
+
+<span class="a">@Value</span>(<span class="s">&quot;#{appSettings.appName.toUpperCase()}&quot;</span>) <span class="c">// SpEL: call a method on another bean</span>
+<span class="k">private</span> <span class="ty">String</span> shoutName;
+
+<span class="c">// combine them: read the property, then split it into a List</span>
+<span class="a">@Value</span>(<span class="s">&quot;#{&#x27;${app.servers}&#x27;.split(&#x27;,&#x27;)}&quot;</span>)     <span class="c">// app.servers=a.com,b.com,c.com</span>
+<span class="k">private</span> <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; servers;
+</code></pre>
+<h3><code>@ConfigurationProperties</code> in code</h3>
+<blockquote>
+<p>Added: the typed alternative to many <code>@Value</code> fields — one class per config area:</p>
+</blockquote>
+<pre><code><span class="a">app.name</span>=order-service
+<span class="a">app.timeout-ms</span>=3000          <span class="c"># relaxed binding: timeout-ms -&gt; timeoutMs</span>
+<span class="a">app.servers</span>=a.com,b.com
+</code></pre>
+<pre><code><span class="a">@ConfigurationProperties</span>(prefix = <span class="s">&quot;app&quot;</span>)
+<span class="a">@Validated</span>
+<span class="k">public</span> <span class="k">record</span> <span class="ty">AppProps</span>(
+        <span class="a">@NotBlank</span> <span class="ty">String</span> name,
+        <span class="k">int</span> timeoutMs,
+        <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; servers) {     <span class="c">// lists bind without SpEL tricks</span>
+}
+</code></pre>
+<pre><code><span class="a">@SpringBootApplication</span>
+<span class="a">@ConfigurationPropertiesScan</span>        <span class="c">// picks up AppProps (or @EnableConfigurationProperties(AppProps.class))</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">App</span> { }
+</code></pre>
+<p>Inject <code>AppProps</code> like any bean. Wrong or missing values fail <strong>at startup</strong> (fail-fast), not deep in a request.</p>
+<h2>@ConditionalOnProperty</h2>
+<p>Bean is created <strong>conditionally</strong> (means the bean can be created — or not), driven by a property.</p>
+<pre><code><span class="a">@Component</span>
+<span class="a">@ConditionalOnProperty</span>(prefix = <span class="s">&quot;sqlConnection&quot;</span>,
+                       value = <span class="s">&quot;enabled&quot;</span>,
+                       havingValue = <span class="s">&quot;true&quot;</span>,
+                       matchIfMissing = <span class="k">false</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">SqlConnection</span> {
+    <span class="c">// created ONLY when sqlConnection.enabled=true</span>
+}
+</code></pre>
+<pre><code><span class="c"># application.properties — the toggle the annotation reads (true/false):</span>
+<span class="a">sqlConnection.enabled</span>=true
+</code></pre>
+<ul>
+<li><code>prefix</code> + <code>value</code> together form the property key: <code>sqlConnection.enabled</code>.</li>
+<li><code>havingValue = "true"</code> → the bean is created only when the property equals <code>true</code>.</li>
+<li><code>matchIfMissing = false</code> → if the key is not present in <code>application.properties</code>, then <strong>don't create the bean</strong>.</li>
+</ul>
+<p>Since the bean may legally not exist, don't hard-fail at the injection point:</p>
+<pre><code><span class="a">@Autowired</span>(required = <span class="k">false</span>)  <span class="c">// if you don&#x27;t find the bean it&#x27;s OK —</span>
+<span class="k">private</span> <span class="ty">SqlConnection</span> sql;    <span class="c">// make it null and go ahead / proceed</span>
+</code></pre>
+<p><strong>Advantages</strong></p>
+<ul>
+<li>Toggling of features</li>
+<li>Avoid cluttering the application context with unnecessary beans</li>
+<li>Save memory</li>
+<li>Reduce application startup time</li>
+</ul>
+<p><strong>Disadvantages</strong></p>
+<ul>
+<li>Misconfiguration can happen</li>
+<li>Code complexity when overused</li>
+<li>Multiple bean creation with the same configuration brings confusion</li>
+<li>Complexity in managing</li>
+</ul>
+<h2>@Profile — environment separation</h2>
+<p><code>@Profile</code> is technically intended for <strong>environment separation</strong> rather than application-specific bean creation. What actually differs between QA / dev / prod:</p>
+<ul>
+<li>Username and password</li>
+<li>URL and port number</li>
+<li>Connection timeout values</li>
+<li>Request timeout values</li>
+<li>Retry values</li>
+<li>Throttle values, etc.</li>
+</ul>
+<p><strong>How to do it?</strong> We put the configuration in <code>application.properties</code> — but how to handle different environment configuration? The answer is <strong>profiling</strong>.</p>
+<h3>Profiling — parent and child property files</h3>
+<p>Add this in the parent <code>application.properties</code> to pick the child:</p>
+<pre><code><span class="a">spring.profiles.active</span>=qa
+</code></pre>
+<p><strong>Fallback rule:</strong> if property <code>x</code> is in <code>application.properties</code> but <strong>not</strong> in <code>application-local.properties</code>, then the value of <code>x</code> will be picked from the <strong>parent</strong> properties. The child only overrides what it declares.</p>
+<h2>Activating a profile — three ways</h2>
+<p><strong>1) Property</strong> — <code>spring.profiles.active=qa</code> in <code>application.properties</code> (above).</p>
+<p><strong>2) Maven command line:</strong></p>
+<pre><code>mvn spring-boot:run -Dspring-boot.run.profiles=prod
+</code></pre>
+<p><code>prod</code> will be <strong>prioritized</strong> even though <code>application.properties</code> says <code>qa</code> — the command line wins over the file.</p>
+<p><strong>3) <code>pom.xml</code> <code>&lt;profiles&gt;</code> block</strong> — map a Maven profile to a Spring profile:</p>
+<pre><code><span class="k">&lt;profiles</span><span class="k">&gt;</span>
+    <span class="k">&lt;profile</span><span class="k">&gt;</span>
+        <span class="k">&lt;id</span><span class="k">&gt;</span>local<span class="k">&lt;/id</span><span class="k">&gt;</span>
+        <span class="k">&lt;properties</span><span class="k">&gt;</span>
+            <span class="k">&lt;spring-boot.run.profiles</span><span class="k">&gt;</span>dev<span class="k">&lt;/spring-boot.run.profiles</span><span class="k">&gt;</span>
+        <span class="k">&lt;/properties</span><span class="k">&gt;</span>
+    <span class="k">&lt;/profile</span><span class="k">&gt;</span>
+<span class="k">&lt;/profiles</span><span class="k">&gt;</span>
+</code></pre>
+<pre><code>mvn spring-boot:run -Plocal        <span class="c"># Maven profile &quot;local&quot; -&gt; Spring profile dev</span>
+mvn spring-boot:run -Pdev
+mvn spring-boot:run -Pproduction
+</code></pre>
+<blockquote>
+<p>Good to know: <code>-P</code> selects a <strong>Maven</strong> profile (build-time, from <code>pom.xml</code>), while <code>-Dspring-boot.run.profiles</code> sets the <strong>Spring</strong> profile directly (runtime). The <code>pom.xml</code> block above is the bridge between the two.</p>
+</blockquote>
+<h2>The @Profile annotation</h2>
+<p>Using <code>@Profile</code>, we can tell Spring Boot to create a bean <strong>only when a particular profile is set</strong>.</p>
+<pre><code><span class="a">@Component</span>
+<span class="a">@Profile</span>(<span class="s">&quot;prod&quot;</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">NosqlConnection</span> {
+    <span class="c">// .....</span>
+}
+</code></pre>
+<p>But if <code>application.properties</code> has <code>spring.profiles.active=qa</code>, then this bean will <strong>not</strong> be created, since it is marked <code>@Profile("prod")</code>.</p>
+<pre><code>mvn spring-boot:run -Dspring-boot.run.profiles=prod
+</code></pre>
+<p>→ now <code>prod</code> is prioritized even though <code>application.properties</code> has <code>qa</code>, so the bean IS created.</p>
+<h3>Multiple active profiles</h3>
+<p>We can also do:</p>
+<pre><code><span class="a">spring.profiles.active</span>=prod,qa
+</code></pre>
+<p>With classes <code>(1) @Profile("prod")</code> and <code>(2) @Profile("qa")</code>:</p>
+<ul>
+<li><strong>Both</strong> class beans will be created,</li>
+<li>but duplicate property values will be picked from <strong>qa</strong> — the <strong>last</strong> profile in the list wins.</li>
+</ul>
+<blockquote>
+<p>Even though we are able to achieve dynamic bean creation this way, it is <strong>not a good approach</strong> — <code>@Profile</code> is for environment-based configuration. For feature toggles, use <code>@ConditionalOnProperty</code> (section 2).</p>
+<p>Added: <strong>profile groups</strong> let one name activate a whole set — e.g. <code>spring.profiles.group.production=prod,prod-db,prod-mq</code> in <code>application.properties</code>; then <code>--spring.profiles.active=production</code> switches all three on together.</p>
+</blockquote>
+<h3>@Profile expressions, @Bean methods, and the default profile</h3>
+<blockquote>
+<p>Added: three details that round out <code>@Profile</code>:</p>
+</blockquote>
+<pre><code><span class="a">@Component</span>
+<span class="a">@Profile</span>(<span class="s">&quot;!prod&quot;</span>)                 <span class="c">// NOT prod: created in every profile except prod</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">FakePaymentGateway</span> { }
+
+<span class="a">@Component</span>
+<span class="a">@Profile</span>({<span class="s">&quot;dev&quot;</span>, <span class="s">&quot;qa&quot;</span>})           <span class="c">// OR: created when dev OR qa is active</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">DebugToolbar</span> { }
+
+<span class="a">@Configuration</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">DataSourceConfig</span> {
+
+    <span class="a">@Bean</span>
+    <span class="a">@Profile</span>(<span class="s">&quot;dev&quot;</span>)               <span class="c">// @Profile works on @Bean methods too —</span>
+    <span class="k">public</span> <span class="ty">DataSource</span> h2() {      <span class="c">// the usual way to swap infrastructure per env</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="ty">EmbeddedDatabaseBuilder</span>().setType(<span class="ty">H2</span>).build();
+    }
+
+    <span class="a">@Bean</span>
+    <span class="a">@Profile</span>(<span class="s">&quot;prod&quot;</span>)
+    <span class="k">public</span> <span class="ty">DataSource</span> postgres() {
+        <span class="k">return</span> <span class="ty">DataSourceBuilder</span>.create().url(<span class="s">&quot;jdbc:postgresql://...&quot;</span>).build();
+    }
+}
+</code></pre>
+<ul>
+<li>Expression operators: <code>!</code> (not), <code>&amp;</code> (and), <code>|</code> (or) — e.g. <code>@Profile("prod &amp; !cloud")</code>.</li>
+<li>When <strong>no</strong> profile is active, Spring uses the profile named <strong><code>default</code></strong> — beans marked <code>@Profile("default")</code> are created then (override the name with <code>spring.profiles.default=...</code>).</li>
+</ul>
+<h2>Architect's Corner</h2>
+<ul>
+<li><strong><code>@ConfigurationProperties(prefix="app")</code> on a record</strong> beats scattered <code>@Value</code> — typed, validated (<code>@Validated</code>), IDE-completable, one class per config area.</li>
+<li><strong>Config precedence</strong> (low → high): packaged <code>application.properties</code> → profile file → OS env vars → command line. Env vars map as <code>SPRING_DATASOURCE_URL</code>.</li>
+<li><strong>Secrets never live in property files</strong> — use Vault, AWS/GCP secret managers, or Kubernetes secrets mounted as env/files.</li>
+<li><strong>Profile discipline</strong>: profiles select <em>environment wiring</em>, never business behavior — the notes' warning about dynamic bean creation via @Profile is exactly right. Use feature flags (e.g. <code>@ConditionalOnProperty</code> or a flag service) for behavior toggles.</li>
+<li><strong>Profile groups</strong> (<code>spring.profiles.group.prod=prod-db,prod-mq</code>) keep activation clean.</li>
+</ul>
+<h2>Quick Revision</h2>
+<ul>
+<li><code>@Value</code> injects from <strong>property file</strong> (<code>${app.name}</code>), <strong>environment variables</strong> (<code>${JAVA_HOME}</code>), <strong>inline literals</strong> (<code>"42"</code>), with defaults via <code>${key:default}</code>.</li>
+<li><code>${...}</code> = property lookup; <code>#{...}</code> = <strong>SpEL</strong> expression (math, beans, statics; <code>#{'${key}'.split(',')}</code> → <code>List</code>). Many related keys → <strong><code>@ConfigurationProperties</code></strong> record with <code>@Validated</code> (fail-fast at startup).</li>
+<li><code>@ConditionalOnProperty(prefix, value, havingValue, matchIfMissing)</code> creates a bean only when <code>prefix.value</code> equals <code>havingValue</code>; <code>matchIfMissing=false</code> → key absent = no bean. Pair with <code>@Autowired(required = false)</code>.</li>
+<li>Pros: feature toggling, less clutter, memory, startup time. Cons: misconfiguration, complexity, confusing duplicates.</li>
+<li>Profiles: parent <code>application.properties</code> + child <code>application-{profile}.properties</code>; missing keys fall back to the parent.</li>
+<li>Activate via <code>spring.profiles.active</code>, <code>mvn -Dspring-boot.run.profiles=prod</code> (wins over the file), or a <code>pom.xml</code> <code>&lt;profiles&gt;</code> mapping used with <code>mvn -Plocal</code>.</li>
+<li><code>@Profile("prod")</code> bean is created only under the <code>prod</code> profile; with <code>active=prod,qa</code> both beans exist and <strong>qa</strong> (last) wins duplicate values. Don't misuse <code>@Profile</code> for feature toggles.</li>
+<li><code>@Profile</code> also works on <code>@Bean</code> methods and takes expressions: <code>!prod</code>, <code>{"dev","qa"}</code>, <code>"prod &amp; !cloud"</code>. No active profile → the <strong><code>default</code></strong> profile applies.</li>
+</ul>
+<hr />
+<p>Next topic: <strong>@Transactional</strong> — critical sections, ACID, and how Spring Boot manages transactions with AOP.</p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Value_ConditionalOnProperty_Profile_Explained_Part1.mp4; Part 2 = Value_ConditionalOnProperty_Profile_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

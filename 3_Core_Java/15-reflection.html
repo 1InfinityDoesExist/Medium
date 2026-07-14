@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reflection — Looking Inside a Class at Runtime</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#e8590c22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #e8590c40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#e8590c0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #e8590c33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#e8590c;--a2:#fd7e14">
+<header class="hero"><div class="in">
+  <span class="badge">☕ CORE JAVA</span>
+  <h1>Reflection — Looking Inside a Class at Runtime</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>Way 1 — Class.forName(&quot;...&quot;) (using the class name as a String)</em></p>
+<p class="chips">☕ 8 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> What reflection is and what kinds of questions it can answer about a class  ·  The special Class object — Java&#x27;s &quot;identity card&quot; for every loaded class  ·  Three ways to get the Class object  ·  Inspecting methods: getMethods() vs getDeclaredMethods(), and how to invoke a method by name</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Reflection_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>What is Reflection?</h2>
+<blockquote>
+<p><strong>Definition:</strong> Reflection is used to <strong>examine classes, methods, fields, and interfaces at runtime</strong>, and it is <strong>also possible to change the behaviour of the class</strong>.</p>
+<figure><img alt="Reflection — Looking Inside a Class at Runtime — diagram" src="15-reflection.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+</blockquote>
+<p><strong>Everyday analogy:</strong> normally your code is like a driver using a car — you press the pedals the manufacturer gave you. Reflection is like being a mechanic with an X-ray machine: while the car is running, you can look under the hood, list every part (even hidden ones), and even reach in and change things the manufacturer sealed away.</p>
+<p><strong>Examples of what reflection can tell you (from the notes):</strong></p>
+<ul>
+<li>What all methods are present in the class</li>
+<li>What all fields are present in the class</li>
+<li>What is the return type of a method</li>
+<li>What is the modifier of the class (public, final, ...)</li>
+<li>What all interfaces the class has implemented</li>
+<li>Change the value of a public <strong>or even private</strong> field of the class, etc.</li>
+</ul>
+<hr />
+<h2>The <code>Class</code> Object — Where Reflection Starts</h2>
+<p><strong>How do we do reflection of a class?</strong> To reflect a class, we first need to get an object of the special class named <strong><code>Class</code></strong>.</p>
+<p><strong>What is this class <code>Class</code>?</strong></p>
+<ul>
+<li>An <strong>instance of the class <code>Class</code> represents a class during runtime</strong>.</li>
+<li>The <strong>JVM creates exactly one <code>Class</code> object for each and every class that is loaded</strong> at runtime.</li>
+<li>This <code>Class</code> object holds the <strong>metadata</strong> (data about data) of that particular class: its <strong>methods, fields, constructors</strong>, modifiers, interfaces, etc.</li>
+</ul>
+<p><strong>Analogy:</strong> think of the <code>Class</code> object as the <strong>identity card + full CV</strong> of a class. There is one ID card per class, issued by the JVM the moment the class is first loaded, and it lists everything the class contains.</p>
+<hr />
+<h2>Three Ways to Get the <code>Class</code> Object</h2>
+<pre><code><span class="k">class</span> <span class="ty">Bird</span> {}
+</code></pre>
+<pre><code><span class="ty">Class</span> birdClass = <span class="ty">Class</span>.forName(<span class="s">&quot;Bird&quot;</span>);
+</code></pre>
+<p>Useful when you only know the class name as text (for example, read from a configuration file). This is exactly how JDBC drivers used to be loaded.</p>
+<h3>Way 2 — <code>.class</code> (compile-time literal)</h3>
+<pre><code><span class="ty">Class</span> birdClass = <span class="ty">Bird</span>.<span class="k">class</span>;
+</code></pre>
+<p>The simplest way when you already know the type while writing the code.</p>
+<h3>Way 3 — <code>getClass()</code> (from an existing object)</h3>
+<pre><code><span class="ty">Bird</span> birdObject = <span class="k">new</span> <span class="ty">Bird</span>();
+<span class="ty">Class</span> b = birdObject.getClass();
+</code></pre>
+<p>Ask any object "what class are you?" — every object inherits <code>getClass()</code> from <code>Object</code>.</p>
+<p><strong>All three together, proving there is only ONE <code>Class</code> object per class:</strong></p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) <span class="k">throws</span> <span class="ty">Exception</span> {
+        <span class="ty">Class</span> c1 = <span class="ty">Class</span>.forName(<span class="s">&quot;Bird&quot;</span>);   <span class="c">// way 1</span>
+        <span class="ty">Class</span> c2 = <span class="ty">Bird</span>.<span class="k">class</span>;              <span class="c">// way 2</span>
+        <span class="ty">Class</span> c3 = <span class="k">new</span> <span class="ty">Bird</span>().getClass();   <span class="c">// way 3</span>
+
+        <span class="ty">System</span>.out.println(c1 == c2);       <span class="c">// same object?</span>
+        <span class="ty">System</span>.out.println(c2 == c3);
+    }
+}
+
+<span class="k">class</span> <span class="ty">Bird</span> {}
+</code></pre>
+<pre><code>Output:
+true
+true
+</code></pre>
+<hr />
+<h2>First Look at Metadata: Name and Modifiers</h2>
+<p>We will use this <code>Eagle</code> class for the rest of the chapter:</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">Eagle</span> {
+    <span class="k">public</span> <span class="ty">String</span> breed;
+    <span class="k">private</span> <span class="k">boolean</span> canSwim;
+
+    <span class="k">public</span> <span class="k">void</span> fly() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;fly&quot;</span>);
+    }
+
+    <span class="k">public</span> <span class="k">void</span> eat() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;eat&quot;</span>);
+    }
+}
+</code></pre>
+<pre><code><span class="k">import</span> java.lang.reflect.<span class="ty">Modifier</span>;
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Class</span> eagleClass = <span class="ty">Eagle</span>.<span class="k">class</span>;
+        <span class="ty">System</span>.out.println(eagleClass.getName());                          <span class="c">// class name</span>
+        <span class="ty">System</span>.out.println(<span class="ty">Modifier</span>.toString(eagleClass.getModifiers()));  <span class="c">// class modifier</span>
+    }
+}
+</code></pre>
+<pre><code>Output:
+Eagle
+public
+</code></pre>
+<p>(<code>getModifiers()</code> returns a number; the helper <code>Modifier.toString(...)</code> turns it into readable text like "public".)</p>
+<hr />
+<h2>Reflection of Methods</h2>
+<p>All the reflection helper types (<code>Method</code>, <code>Field</code>, <code>Constructor</code>, <code>Modifier</code>) live in the package <strong><code>java.lang.reflect</code></strong>.</p>
+<h3><code>getMethods()</code> — public methods only, INCLUDING inherited ones</h3>
+<pre><code><span class="k">import</span> java.lang.reflect.<span class="ty">Method</span>;
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Class</span> eagleClass = <span class="ty">Eagle</span>.<span class="k">class</span>;
+        <span class="ty">Method</span>[] methods = eagleClass.getMethods();   <span class="c">// ONLY PUBLIC methods</span>
+
+        <span class="k">for</span> (<span class="ty">Method</span> method : methods) {
+            <span class="ty">System</span>.out.println(method.getName());            <span class="c">// method&#x27;s name</span>
+            <span class="ty">System</span>.out.println(method.getReturnType());      <span class="c">// what it returns</span>
+            <span class="ty">System</span>.out.println(method.getDeclaringClass());  <span class="c">// which class defined it</span>
+        }
+    }
+}
+</code></pre>
+<pre><code>Output (shortened):
+fly
+void
+class Eagle
+eat
+void
+class Eagle
+toString        &lt;-- note: Object&#x27;s methods appear too!
+class java.lang.String
+class java.lang.Object
+... (equals, hashCode, wait, notify, ...)
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> <code>getMethods()</code> returns only <strong>public</strong> methods, but it <strong>also prints the <code>Object</code> class methods</strong> (<code>toString</code>, <code>equals</code>, <code>hashCode</code>, ...) because every class inherits them.</p>
+</blockquote>
+<h3><code>getDeclaredMethods()</code> — ALL methods of this class only (public + private), NO inherited ones</h3>
+<p>How do we see a <strong>private</strong> method? Use <code>getDeclaredMethods()</code>:</p>
+<pre><code><span class="ty">Class</span> eagleClass = <span class="ty">Eagle</span>.<span class="k">class</span>;
+<span class="ty">Method</span>[] methods = eagleClass.getDeclaredMethods();
+<span class="c">// Returns ALL methods of the Eagle class only (public AND private),</span>
+<span class="c">// and NOT the Object class methods.</span>
+</code></pre>
+<ul class="cards"><li><b><code>getMethods()</code></b> — Only <strong>public</strong> — <strong>Yes</strong> — includes <code>Object</code>'s methods</li><li><b><code>getDeclaredMethods()</code></b> — <strong>All</strong> (public + private + protected + default) — <strong>No</strong> — this class only</li></ul>
+<h3>Invoking a Method Through Reflection</h3>
+<p>Reflection can not only <em>list</em> methods — it can <strong>call</strong> them, using just their name as a String.</p>
+<p>Suppose <code>Eagle</code> has this method:</p>
+<pre><code><span class="k">public</span> <span class="k">void</span> fly(<span class="k">int</span> param, <span class="k">boolean</span> b, <span class="ty">String</span> p) {
+    <span class="ty">System</span>.out.println(<span class="s">&quot;hi&quot;</span>);
+}
+</code></pre>
+<p>Then we can call it like this:</p>
+<pre><code><span class="k">import</span> java.lang.reflect.<span class="ty">Method</span>;
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) <span class="k">throws</span> <span class="ty">Exception</span> {
+        <span class="ty">Class</span> eagleClass = <span class="ty">Class</span>.forName(<span class="s">&quot;Eagle&quot;</span>);
+        <span class="ty">Object</span> eagleObject = eagleClass.newInstance();       <span class="c">// create an Eagle instance</span>
+
+        <span class="c">// find the method by NAME + PARAMETER TYPES:</span>
+        <span class="ty">Method</span> flyMethod = eagleClass.getMethod(<span class="s">&quot;fly&quot;</span>,
+                <span class="k">int</span>.<span class="k">class</span>, <span class="k">boolean</span>.<span class="k">class</span>, <span class="ty">String</span>.<span class="k">class</span>);
+
+        <span class="c">// invoke it: (which object to call it on, then the actual arguments)</span>
+        flyMethod.invoke(eagleObject, <span class="n">1</span>, <span class="k">true</span>, <span class="s">&quot;hello&quot;</span>);
+    }
+}
+</code></pre>
+<pre><code>Output:
+hi
+</code></pre>
+<p>Step by step:</p>
+<ol>
+<li>Get the <code>Class</code> object (<code>Class.forName("Eagle")</code>).</li>
+<li>Create an instance with <code>newInstance()</code> — we need a real object to call a non-static method on.</li>
+<li><code>getMethod("fly", int.class, boolean.class, String.class)</code> — find the exact method; the parameter types are needed because methods can be overloaded.</li>
+<li><code>invoke(object, arg1, arg2, arg3)</code> — actually run it.</li>
+</ol>
+<hr />
+<h2>Reflection of Fields</h2>
+<pre><code><span class="k">import</span> java.lang.reflect.<span class="ty">Field</span>;
+
+<span class="ty">Class</span> eagleClass = <span class="ty">Eagle</span>.<span class="k">class</span>;
+<span class="ty">Field</span>[] publicFields = eagleClass.getFields();          <span class="c">// public only</span>
+<span class="ty">Field</span>[] allFields    = eagleClass.getDeclaredFields();  <span class="c">// public + private</span>
+</code></pre>
+<ul class="cards"><li><b><code>getFields()</code></b> — Only <strong>public</strong> fields — Includes inherited public fields</li><li><b><code>getDeclaredFields()</code></b> — <strong>Public + private</strong> (everything in this class) — <strong>No</strong> inherited fields — this class only</li></ul>
+<h3>Setting the Value of a Public Field</h3>
+<pre><code><span class="k">import</span> java.lang.reflect.<span class="ty">Field</span>;
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) <span class="k">throws</span> <span class="ty">Exception</span> {
+        <span class="ty">Class</span> eagleClass = <span class="ty">Eagle</span>.<span class="k">class</span>;
+        <span class="ty">Eagle</span> eagleObject = <span class="k">new</span> <span class="ty">Eagle</span>();     <span class="c">// or: (Eagle) eagleClass.newInstance()</span>
+
+        <span class="ty">Field</span> field = eagleClass.getDeclaredField(<span class="s">&quot;breed&quot;</span>);   <span class="c">// &quot;breed&quot; = field name</span>
+        field.set(eagleObject, <span class="s">&quot;EagleBreed&quot;</span>);                 <span class="c">// (which object, new value)</span>
+
+        <span class="ty">System</span>.out.println(eagleObject.breed);
+    }
+}
+</code></pre>
+<pre><code>Output:
+EagleBreed
+</code></pre>
+<hr />
+<h2>Accessing PRIVATE Fields — <code>setAccessible(true)</code></h2>
+<p><strong>What about a private field (like <code>canSwim</code>)?</strong></p>
+<p>Normally: <strong>no</strong> — a private field cannot be accessed from another class. Even though <code>getDeclaredField(s)</code> <em>returns</em> both public and private fields, trying to <code>set</code> a private one throws an <code>IllegalAccessException</code>.</p>
+<p><strong>Then how do we achieve it?</strong> One extra line unlocks the door:</p>
+<pre><code><span class="k">import</span> java.lang.reflect.<span class="ty">Field</span>;
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) <span class="k">throws</span> <span class="ty">Exception</span> {
+        <span class="ty">Class</span> eagleClass = <span class="ty">Eagle</span>.<span class="k">class</span>;
+        <span class="ty">Eagle</span> eagleObject = <span class="k">new</span> <span class="ty">Eagle</span>();
+
+        <span class="ty">Field</span> field = eagleClass.getDeclaredField(<span class="s">&quot;canSwim&quot;</span>);  <span class="c">// a PRIVATE field</span>
+        field.setAccessible(<span class="k">true</span>);   <span class="c">// &lt;-- THE IMPORTANT LINE: switch off the access check</span>
+        field.set(eagleObject, <span class="k">true</span>);
+
+        <span class="ty">System</span>.out.println(field.get(eagleObject));
+    }
+}
+</code></pre>
+<pre><code>Output:
+true
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> <code>field.setAccessible(true)</code> is the key that opens private members to reflection. <strong>Drawback:</strong> via reflection you can change the value of a private field — the very thing <code>private</code> was supposed to prevent.</p>
+</blockquote>
+<hr />
+<h2>Reflection of Constructors — Even Private Ones</h2>
+<p>A class with a <strong>private constructor</strong> normally cannot be instantiated from outside (this is how the Singleton pattern protects itself). Reflection can bypass even that.</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">Eagle</span> {
+    <span class="k">private</span> <span class="ty">Eagle</span>() {}                 <span class="c">// private constructor — &quot;nobody can create me!&quot;</span>
+
+    <span class="k">public</span> <span class="k">void</span> fly() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;fly&quot;</span>);
+    }
+}
+</code></pre>
+<pre><code><span class="k">import</span> java.lang.reflect.<span class="ty">Constructor</span>;
+<span class="k">import</span> java.lang.reflect.<span class="ty">Modifier</span>;
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) <span class="k">throws</span> <span class="ty">Exception</span> {
+        <span class="ty">Class</span> eagleClass = <span class="ty">Eagle</span>.<span class="k">class</span>;
+
+        <span class="ty">Constructor</span>[] eagleConstructorList = eagleClass.getDeclaredConstructors();
+
+        <span class="k">for</span> (<span class="ty">Constructor</span> eagleConstructor : eagleConstructorList) {
+            <span class="c">// print the constructor&#x27;s modifier:</span>
+            <span class="ty">System</span>.out.println(<span class="ty">Modifier</span>.toString(eagleConstructor.getModifiers()));
+
+            eagleConstructor.setAccessible(<span class="k">true</span>);   <span class="c">// unlock the private constructor</span>
+            <span class="ty">Eagle</span> eagleObject = (<span class="ty">Eagle</span>) eagleConstructor.newInstance();
+            eagleObject.fly();
+        }
+    }
+}
+</code></pre>
+<pre><code>Output:
+private
+fly
+</code></pre>
+<p>Reflection just created an object of a class whose constructor is private — something normal Java code can never do.</p>
+<hr />
+<h2>The Big Warning — and When Reflection Is OK</h2>
+<blockquote>
+<p><strong>Remember:</strong> Reflection <strong>breaks the OOP principle of ENCAPSULATION.</strong> Encapsulation says: "keep the data private, expose only safe methods." Reflection walks straight past <code>private</code> and reads or changes whatever it wants.</p>
+</blockquote>
+<p><strong>Why this is dangerous:</strong></p>
+<ul>
+<li>Your class's internal rules (validation inside setters, singleton guarantees, immutability) can be silently bypassed.</li>
+<li>Code that depends on private internals can break whenever those internals change.</li>
+</ul>
+<p><strong>When is reflection appropriate?</strong> Reflection is a power tool for <strong>frameworks and tooling</strong>, not for everyday business code:</p>
+<ul>
+<li><strong>Frameworks</strong> like Spring (creating and wiring your objects), Hibernate (filling entity fields from database rows)</li>
+<li><strong>Unit-testing tools</strong> (e.g. injecting mock values into private fields)</li>
+<li><strong>Serialization/JSON libraries</strong> (e.g. Jackson reading your fields to build JSON)</li>
+<li><strong>IDEs and debuggers</strong> that must inspect arbitrary classes</li>
+</ul>
+<p>Rule of thumb: if you wrote the class yourself and can just call its public methods — do that. Reach for reflection only when you must work with classes <strong>whose names/structure you don't know until runtime</strong>.</p>
+<hr />
+<h2>Quick Revision</h2>
+<ul>
+<li><strong>Reflection</strong> = examining classes, methods, fields, and interfaces <strong>at runtime</strong>, and even changing their behaviour.</li>
+<li>The <strong>JVM creates one <code>Class</code> object per loaded class</strong>; it carries all the metadata (methods, fields, constructors).</li>
+<li>Three ways to get it: <code>Class.forName("Bird")</code>, <code>Bird.class</code>, <code>birdObject.getClass()</code>.</li>
+<li><code>getMethods()</code> = public only, <strong>includes</strong> <code>Object</code> methods. <code>getDeclaredMethods()</code> = all methods, <strong>this class only</strong>.</li>
+<li>Invoke a method: <code>getMethod(name, paramTypes...)</code> then <code>method.invoke(object, args...)</code>.</li>
+<li><code>getFields()</code> = public fields only; <code>getDeclaredFields()</code> = public + private, no inherited fields.</li>
+<li>Set a field: <code>field.set(object, value)</code>. For <strong>private</strong> members, call <strong><code>setAccessible(true)</code></strong> first — works for fields, methods, and constructors (even private constructors via <code>getDeclaredConstructors()</code> + <code>newInstance()</code>).</li>
+<li>Reflection <strong>breaks encapsulation</strong> — that is its main drawback. Leave it to frameworks (Spring, Hibernate, test tools); avoid it in normal application code.</li>
+</ul>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Reflection_Explained_Part1.mp4; Part 2 = Reflection_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

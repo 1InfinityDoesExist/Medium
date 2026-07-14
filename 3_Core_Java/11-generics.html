@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generics</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#e8590c22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #e8590c40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#e8590c0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #e8590c33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#e8590c;--a2:#fd7e14">
+<header class="hero"><div class="in">
+  <span class="badge">☕ CORE JAVA</span>
+  <h1>Generics</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>Why generics exist and what problem they solve  ·  Writing a generic class (Print&lt;T&gt;) with a getter and setter  · …</em></p>
+<p class="chips">☕ 8 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> Why generics exist and what problem they solve  ·  Writing a generic class (Print&lt;T&gt;) with a getter and setter  ·  Non-generic vs generic subclasses of a generic class  ·  Using more than one type parameter (Pair&lt;K, V&gt;)</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Generics_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>Why Generics?</h2>
+<p>Imagine a box that can hold <em>anything</em>. If you put a shoe in it but expect a phone, you get a nasty surprise when you open it. <strong>Generics put a label on the box</strong> — "this box holds only Integers" — so the compiler stops you from putting the wrong thing in, <em>before</em> the program even runs.</p>
+<figure><img alt="Generics — diagram" src="11-generics.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p>Generics give you:</p>
+<ul>
+<li><strong>Type safety</strong> — mistakes are caught at compile time, not with crashes at runtime.</li>
+<li><strong>No casting</strong> — you get out exactly the type you put in.</li>
+<li><strong>Reusability</strong> — one class works for many types (<code>Print&lt;Integer&gt;</code>, <code>Print&lt;String&gt;</code>, ...).</li>
+</ul>
+<hr />
+<h2>Generic Class</h2>
+<p>A generic class declares a <strong>type parameter</strong> (commonly named <code>T</code> for "Type") in angle brackets after the class name. <code>T</code> then acts as a placeholder for a real type that the user chooses later.</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">Print</span>&lt;<span class="ty">T</span>&gt; {          <span class="c">// T is the type placeholder</span>
+    <span class="ty">T</span> value;
+
+    <span class="k">public</span> <span class="ty">T</span> getPrintValue() {
+        <span class="k">return</span> value;
+    }
+
+    <span class="k">public</span> <span class="k">void</span> setPrintValue(<span class="ty">T</span> value) {
+        <span class="k">this</span>.value = value;
+    }
+}
+
+<span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="c">// Here we decide: T = Integer</span>
+        <span class="ty">Print</span>&lt;<span class="ty">Integer</span>&gt; printObj = <span class="k">new</span> <span class="ty">Print</span>&lt;<span class="ty">Integer</span>&gt;();
+        printObj.setPrintValue(<span class="n">10</span>);
+        <span class="ty">System</span>.out.println(printObj.getPrintValue());
+
+        <span class="c">// Same class, different type: T = String</span>
+        <span class="ty">Print</span>&lt;<span class="ty">String</span>&gt; textObj = <span class="k">new</span> <span class="ty">Print</span>&lt;&gt;();
+        textObj.setPrintValue(<span class="s">&quot;hello generics&quot;</span>);
+        <span class="ty">System</span>.out.println(textObj.getPrintValue());
+
+        <span class="c">// printObj.setPrintValue(&quot;oops&quot;);  // COMPILE ERROR — type safety!</span>
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+<span class="n">10</span>
+hello generics
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> <code>T</code> is decided by the <em>user</em> of the class at object-creation time. One generic class = many type-safe variations.</p>
+</blockquote>
+<hr />
+<h2>Subclassing a Generic Class</h2>
+<p>When you extend a generic class, you have <strong>two choices</strong>:</p>
+<p>The subclass is <em>not</em> generic itself, so it must <strong>fix the parent's type right there</strong> in the <code>extends</code> clause — you have to define it here:</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">ColorPrint</span> <span class="k">extends</span> <span class="ty">Print</span>&lt;<span class="ty">String</span>&gt; {
+    <span class="c">//                               ^^^^^^^^</span>
+    <span class="c">//            You have to define the type HERE (fixed forever)</span>
+}
+
+<span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">ColorPrint</span> cp = <span class="k">new</span> <span class="ty">ColorPrint</span>();   <span class="c">// no &lt;&gt; needed anymore</span>
+        cp.setPrintValue(<span class="s">&quot;red&quot;</span>);            <span class="c">// works with String only</span>
+        <span class="ty">System</span>.out.println(cp.getPrintValue());
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+red
+</code></pre>
+<h3>3.2 Generic Subclass</h3>
+<p>The subclass stays generic and simply <strong>passes the type parameter up</strong> to the parent. The final user still gets to choose the type:</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">ColorPrint</span>&lt;<span class="ty">T</span>&gt; <span class="k">extends</span> <span class="ty">Print</span>&lt;<span class="ty">T</span>&gt; {
+    <span class="c">// T is still open — the user decides later</span>
+}
+
+<span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">ColorPrint</span>&lt;<span class="ty">Integer</span>&gt; cp = <span class="k">new</span> <span class="ty">ColorPrint</span>&lt;&gt;();
+        cp.setPrintValue(<span class="n">42</span>);
+        <span class="ty">System</span>.out.println(cp.getPrintValue());
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+<span class="n">42</span>
+</code></pre>
+<hr />
+<h2>More Than One Generic Type</h2>
+<p>A class can have <strong>several</strong> type parameters, separated by commas. The classic example is a key–value pair (<code>K</code> = Key, <code>V</code> = Value) — exactly how <code>HashMap&lt;K, V&gt;</code> works:</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">Pair</span>&lt;<span class="ty">K</span>, <span class="ty">V</span>&gt; {
+    <span class="k">private</span> <span class="ty">K</span> key;
+    <span class="k">private</span> <span class="ty">V</span> value;
+
+    <span class="k">public</span> <span class="k">void</span> put(<span class="ty">K</span> key, <span class="ty">V</span> value) {
+        <span class="k">this</span>.key = key;
+        <span class="k">this</span>.value = value;
+    }
+
+    <span class="k">public</span> <span class="ty">K</span> getKey()   { <span class="k">return</span> key; }
+    <span class="k">public</span> <span class="ty">V</span> getValue() { <span class="k">return</span> value; }
+}
+
+<span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Pair</span>&lt;<span class="ty">String</span>, <span class="ty">Integer</span>&gt; pair = <span class="k">new</span> <span class="ty">Pair</span>&lt;&gt;();
+        pair.put(<span class="s">&quot;age&quot;</span>, <span class="n">25</span>);
+        <span class="ty">System</span>.out.println(pair.getKey() + <span class="s">&quot; = &quot;</span> + pair.getValue());
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+age = <span class="n">25</span>
+</code></pre>
+<hr />
+<h2>Generic Method</h2>
+<p>Sometimes only <strong>one method</strong> needs to be generic — not the whole class. Two rules from the notes:</p>
+<ul>
+<li>The <strong>type parameter must be written BEFORE the return type</strong> of the method declaration (e.g. <code>public &lt;K, V&gt; void ...</code>).</li>
+<li>The type parameter's <strong>scope is limited to that method only</strong> — it means nothing outside the method.</li>
+</ul>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">GenericMethod</span> {
+
+    <span class="c">// &lt;K, V&gt; comes BEFORE the return type &#x27;void&#x27;</span>
+    <span class="k">public</span> &lt;<span class="ty">K</span>, <span class="ty">V</span>&gt; <span class="k">void</span> printValue(<span class="ty">Pair</span>&lt;<span class="ty">K</span>, <span class="ty">V</span>&gt; pair1, <span class="ty">Pair</span>&lt;<span class="ty">K</span>, <span class="ty">V</span>&gt; pair2) {
+        <span class="k">if</span> (pair2.getKey().equals(pair1.getKey())) {
+            <span class="ty">System</span>.out.println(<span class="s">&quot;Keys match!&quot;</span>);
+        } <span class="k">else</span> {
+            <span class="ty">System</span>.out.println(<span class="s">&quot;Keys are different&quot;</span>);
+        }
+    }
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Pair</span>&lt;<span class="ty">String</span>, <span class="ty">Integer</span>&gt; p1 = <span class="k">new</span> <span class="ty">Pair</span>&lt;&gt;();
+        p1.put(<span class="s">&quot;id&quot;</span>, <span class="n">1</span>);
+        <span class="ty">Pair</span>&lt;<span class="ty">String</span>, <span class="ty">Integer</span>&gt; p2 = <span class="k">new</span> <span class="ty">Pair</span>&lt;&gt;();
+        p2.put(<span class="s">&quot;id&quot;</span>, <span class="n">2</span>);
+
+        <span class="k">new</span> <span class="ty">GenericMethod</span>().printValue(p1, p2);
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+<span class="ty">Keys</span> match!
+</code></pre>
+<hr />
+<h2>Raw Type</h2>
+<p>A <strong>raw type</strong> is what you get when you use a generic class <strong>without</strong> the angle brackets. Java allows it (for backward compatibility with pre-generics code), but you lose all type safety.</p>
+<pre><code><span class="ty">Print</span>&lt;<span class="ty">String</span>&gt; x = <span class="k">new</span> <span class="ty">Print</span>&lt;&gt;();   <span class="c">// proper, type-safe use</span>
+
+<span class="ty">Print</span> rawObj = <span class="k">new</span> <span class="ty">Print</span>();        <span class="c">// RAW TYPE — no &lt;&gt;!</span>
+
+<span class="c">// Internally, the compiler treats a raw type as:</span>
+<span class="ty">Print</span>&lt;<span class="ty">Object</span>&gt; rawObject = <span class="k">new</span> <span class="ty">Print</span>&lt;<span class="ty">Object</span>&gt;();
+</code></pre>
+<p>Because a raw type internally behaves like <code>Print&lt;Object&gt;</code>, you can put <strong>anything</strong> into it — and that is exactly the problem:</p>
+<pre><code><span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Print</span> rawObj = <span class="k">new</span> <span class="ty">Print</span>();       <span class="c">// raw type</span>
+        rawObj.setPrintValue(<span class="n">10</span>);         <span class="c">// fine</span>
+        rawObj.setPrintValue(<span class="s">&quot;surprise&quot;</span>); <span class="c">// ALSO fine — compiler can&#x27;t help!</span>
+
+        <span class="c">// This compiles but EXPLODES at runtime:</span>
+        <span class="c">// Integer i = (Integer) rawObj.getPrintValue();</span>
+        <span class="c">// -&gt; java.lang.ClassCastException</span>
+    }
+}
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> Raw type = generic class used without <code>&lt;&gt;</code>. Internally it becomes <code>&lt;Object&gt;</code>. Avoid it — you throw away the whole point of generics.</p>
+</blockquote>
+<hr />
+<h2>Bounded Generics</h2>
+<p>By default <code>T</code> can be <em>any</em> type. <strong>Bounded generics restrict</strong> which types are allowed. Bounds can be used on <strong>generic classes and generic methods</strong>.</p>
+<h3>7.1 Upper Bound — <code>&lt;T extends Number&gt;</code></h3>
+<p><code>&lt;T extends Number&gt;</code> means: <strong>T can be <code>Number</code> or a subclass of <code>Number</code> only</strong> (Integer, Double, Float, ...). Note: the word <code>extends</code> is used even if the upper bound is an <strong>interface</strong> — the bound type can be a class <em>or</em> an interface.</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">Print</span>&lt;<span class="ty">T</span> <span class="k">extends</span> <span class="ty">Number</span>&gt; {   <span class="c">// only Number and its children</span>
+    <span class="ty">T</span> value;
+
+    <span class="k">public</span> <span class="ty">T</span> getValue() {
+        <span class="k">return</span> value;
+    }
+
+    <span class="k">public</span> <span class="k">void</span> setValue(<span class="ty">T</span> value) {
+        <span class="k">this</span>.value = value;
+    }
+}
+
+<span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Print</span>&lt;<span class="ty">Integer</span>&gt; ok = <span class="k">new</span> <span class="ty">Print</span>&lt;&gt;();   <span class="c">// Integer IS a Number -&gt; OK</span>
+        ok.setValue(<span class="n">100</span>);
+        <span class="ty">System</span>.out.println(ok.getValue());
+
+        <span class="c">// Print&lt;String&gt; bad = new Print&lt;&gt;(); // COMPILE ERROR!</span>
+        <span class="c">// String is not a Number</span>
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+<span class="n">100</span>
+</code></pre>
+<p>Why is this useful? Because inside the class you can now safely call <code>Number</code> methods on <code>value</code> (like <code>value.intValue()</code>), since the compiler <em>knows</em> T is at least a <code>Number</code>.</p>
+<h3>7.2 Multi Bound — <code>&lt;T extends ClassName &amp; Interface1 &amp; InterfaceN&gt;</code></h3>
+<p>You can require T to satisfy <strong>several types at once</strong>:</p>
+<pre><code>&lt;<span class="ty">T</span> <span class="k">extends</span> <span class="ty">Superclass</span> &amp; <span class="ty">Interface1</span> &amp; <span class="ty">InterfaceN</span>&gt;
+</code></pre>
+<p><strong>The rule:</strong> the <strong>first</strong> bound must be the <strong>concrete class</strong>; from the <strong>2nd position onward</strong> you can have <strong>any number of interfaces</strong>. (Only one class is allowed — Java has single inheritance — but many interfaces are fine.)</p>
+<pre><code>   <span class="ty">ParentClass</span> { m1() }      <span class="ty">ParentClass2</span> { m1() }
+            \                  /
+      (<span class="ty">OK</span>)   \                /  (<span class="ty">X</span> — not allowed!)
+              v              v
+                 <span class="ty">SubClass</span>
+                 obj.m1()  -&gt; which m1() would it be? <span class="ty">Ambiguous</span>!
+</code></pre>
+<p>In plain words: if two <em>classes</em> were allowed as bounds and both had a method <code>m1()</code>, then calling <code>obj.m1()</code> would be ambiguous — Java would not know which one you mean. Interfaces do not have this problem (classically they carry no method bodies), so any number of them is fine after the one class.</p>
+<pre><code><span class="k">class</span> <span class="ty">ParentClass</span> {
+    <span class="k">public</span> <span class="k">void</span> m1() { <span class="ty">System</span>.out.println(<span class="s">&quot;m1 from ParentClass&quot;</span>); }
+}
+
+<span class="k">interface</span> <span class="ty">Interface1</span> { <span class="k">default</span> <span class="k">void</span> i1() { <span class="ty">System</span>.out.println(<span class="s">&quot;i1&quot;</span>); } }
+<span class="k">interface</span> <span class="ty">Interface2</span> { <span class="k">default</span> <span class="k">void</span> i2() { <span class="ty">System</span>.out.println(<span class="s">&quot;i2&quot;</span>); } }
+
+<span class="c">// A type that satisfies all three bounds:</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">A</span> <span class="k">extends</span> <span class="ty">ParentClass</span> <span class="k">implements</span> <span class="ty">Interface1</span>, <span class="ty">Interface2</span> {
+}
+
+<span class="c">// Multi-bound generic class:</span>
+<span class="c">//        class FIRST  ------v         then interfaces ----v</span>
+<span class="k">class</span> <span class="ty">Print</span>&lt;<span class="ty">T</span> <span class="k">extends</span> <span class="ty">ParentClass</span> &amp; <span class="ty">Interface1</span> &amp; <span class="ty">Interface2</span>&gt; {
+    <span class="c">//                ^^^^^^^^^^^ must be concrete (a class)</span>
+    <span class="c">//                              from the 2nd: any number of interfaces</span>
+    <span class="ty">T</span> value;
+    <span class="k">public</span> <span class="k">void</span> setValue(<span class="ty">T</span> value) { <span class="k">this</span>.value = value; }
+    <span class="k">public</span> <span class="ty">T</span> getValue() { <span class="k">return</span> value; }
+}
+
+<span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Print</span>&lt;<span class="ty">A</span>&gt; p = <span class="k">new</span> <span class="ty">Print</span>&lt;&gt;();   <span class="c">// A meets ALL three bounds -&gt; OK</span>
+        p.setValue(<span class="k">new</span> <span class="ty">A</span>());
+        p.getValue().m1();
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+m1 from <span class="ty">ParentClass</span>
+</code></pre>
+<hr />
+<h2>Wildcard Generics (<code>?</code>)</h2>
+<p>Wildcards solve the famous <strong>List problem</strong>: <code>List&lt;Integer&gt;</code> is <strong>not</strong> a subtype of <code>List&lt;Number&gt;</code>, so a method taking <code>List&lt;Number&gt;</code> rejects a <code>List&lt;Integer&gt;</code>. The wildcard <code>?</code> (meaning "some unknown type") fixes this.</p>
+<p>There are three kinds:</p>
+<ul class="cards"><li><b><code>&lt;? extends UpperBoundClassName&gt;</code></b> — Upper bound wildcard — That class <strong>and below</strong> (itself + its subclasses) — You want to <strong>read</strong> values safely (e.g. sum a list of any kind of Number)</li><li><b><code>&lt;? super LowerBoundsClassName&gt;</code></b> — Lower bound wildcard — That class <strong>and above</strong> (itself + its superclasses) — You want to <strong>write/add</strong> values safely into the collection</li><li><b><code>&lt;?&gt;</code></b> — Unbounded wildcard — Completely unknown type — <strong>you can only read</strong> — You only look at elements (e.g. print them), never add</li></ul>
+<pre><code><span class="k">import</span> java.util.<span class="ty">Arrays</span>;
+<span class="k">import</span> java.util.<span class="ty">List</span>;
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">WildcardDemo</span> {
+
+    <span class="c">// 1) UPPER BOUND: accepts List&lt;Number&gt;, List&lt;Integer&gt;, List&lt;Double&gt;...</span>
+    <span class="c">//    &quot;Number and below&quot; — safe for READING as Number.</span>
+    <span class="k">static</span> <span class="k">double</span> sum(<span class="ty">List</span>&lt;? <span class="k">extends</span> <span class="ty">Number</span>&gt; list) {
+        <span class="k">double</span> total = <span class="n">0</span>;
+        <span class="k">for</span> (<span class="ty">Number</span> n : list) {
+            total += n.doubleValue();
+        }
+        <span class="k">return</span> total;
+    }
+
+    <span class="c">// 2) LOWER BOUND: accepts List&lt;Integer&gt;, List&lt;Number&gt;, List&lt;Object&gt;...</span>
+    <span class="c">//    &quot;Integer and above&quot; — safe for WRITING Integers into it.</span>
+    <span class="k">static</span> <span class="k">void</span> addNumbers(<span class="ty">List</span>&lt;? <span class="k">super</span> <span class="ty">Integer</span>&gt; list) {
+        list.add(<span class="n">1</span>);
+        list.add(<span class="n">2</span>);
+    }
+
+    <span class="c">// 3) UNBOUNDED: any list at all — only READING is allowed.</span>
+    <span class="k">static</span> <span class="k">void</span> printAll(<span class="ty">List</span>&lt;?&gt; list) {
+        <span class="k">for</span> (<span class="ty">Object</span> o : list) {
+            <span class="ty">System</span>.out.println(o);
+        }
+        <span class="c">// list.add(5);  // COMPILE ERROR — cannot add to List&lt;?&gt;</span>
+    }
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; ints = <span class="ty">Arrays</span>.asList(<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>);
+        <span class="ty">System</span>.out.println(sum(ints));      <span class="c">// works even though it&#x27;s</span>
+                                            <span class="c">// List&lt;Integer&gt;, not List&lt;Number&gt;</span>
+
+        <span class="ty">List</span>&lt;<span class="ty">Number</span>&gt; numbers = <span class="k">new</span> java.util.<span class="ty">ArrayList</span>&lt;&gt;();
+        addNumbers(numbers);
+        <span class="ty">System</span>.out.println(numbers);
+
+        printAll(ints);
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+<span class="n">6.0</span>
+[<span class="n">1</span>, <span class="n">2</span>]
+<span class="n">1</span>
+<span class="n">2</span>
+<span class="n">3</span>
+</code></pre>
+<blockquote>
+<p><strong>Remember (PECS in simple words):</strong> if a method <strong>Produces</strong> values for you to read → use <code>? extends</code>. If it <strong>Consumes</strong> values you put in → use <code>? super</code>. If you only ever read and don't care about the type at all → plain <code>?</code>.</p>
+</blockquote>
+<hr />
+<h2>Quick Revision</h2>
+<ul>
+<li>Generics = <strong>labelled boxes</strong>: compile-time type safety, no casting, reusable code.</li>
+<li>Generic class: <code>class Print&lt;T&gt; { T value; ... }</code>; the user picks the type: <code>new Print&lt;Integer&gt;()</code>.</li>
+<li>Subclassing: <strong>non-generic subclass</strong> must fix the type (<code>extends Print&lt;String&gt;</code>); <strong>generic subclass</strong> passes it along (<code>ColorPrint&lt;T&gt; extends Print&lt;T&gt;</code>).</li>
+<li>Multiple parameters: <code>class Pair&lt;K, V&gt;</code> — like HashMap's key and value.</li>
+<li><strong>Generic method</strong>: type parameter goes <strong>before the return type</strong>, and its scope is <strong>that method only</strong>.</li>
+<li><strong>Raw type</strong> = generics without <code>&lt;&gt;</code>; internally treated as <code>&lt;Object&gt;</code>; avoid it.</li>
+<li><strong>Upper bound</strong>: <code>&lt;T extends Number&gt;</code> → Number or its subclasses only; the bound may also be an interface.</li>
+<li><strong>Multi bound</strong>: <code>&lt;T extends Class &amp; Interface1 &amp; InterfaceN&gt;</code> → the <strong>first bound must be the concrete class</strong>, interfaces from the 2nd onward (any number).</li>
+<li><strong>Wildcards</strong>: <code>? extends X</code> = X and below (read); <code>? super X</code> = X and above (write); <code>?</code> = unknown (read only).</li>
+</ul>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Generics_Explained_Part1.mp4; Part 2 = Generics_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Builder Design Pattern</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#0d948822;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #0d948840}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#0d94880d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #0d948833}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#0d948814,#14b8a622);border:1px solid #0d948833;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#0d948814,#14b8a622);border:1px solid #0d948833;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#0d9488;--a2:#14b8a6">
+<header class="hero"><div class="in">
+  <span class="badge">🧩 REAL-WORLD DESIGN PATTERN</span>
+  <h1>Builder Design Pattern</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>DataRetrievalRequest.java — the immutable product</em></p>
+<p class="chips">☕ 4 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> Separate the construction of a complex object from its final representation, so the same step-by-step construction process can produce a fully-formed, immutable object — no telescoping constructors, no half-initialized objects, no setters left accidentally uncalled.</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Builder_Short_Overview_EN.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<hr />
+<h2>Intent</h2>
+<p>Separate the construction of a complex object from its final representation, so the same step-by-step construction process can produce a fully-formed, <strong>immutable</strong> object — no telescoping constructors, no half-initialized objects, no setters left accidentally uncalled.</p>
+<p>Builder shines when an object has several optional parameters with sensible defaults: callers set only what they care about, in any order, and finish with one explicit <code>build()</code>.</p>
+<hr />
+<h2>How it mirrors production code</h2>
+<p>Data-retrieval APIs take requests with many optional knobs: which schema to read, which page, what page size, whether sensitive fields should be masked. Most callers only care about one or two of these. Without Builder you end up with either a dozen overloaded constructors (the <em>telescoping constructor</em> anti-pattern) or a mutable bean whose setters can be forgotten or called after use. This module models the production fix: an immutable <code>DataRetrievalRequest</code> that can only be created through its fluent <code>DataRetrievalRequestBuilder</code> — the same shape Lombok's <code>@Builder</code> generates on real Mobius request/DTO classes.</p>
+<hr />
+<h2>How the pattern works</h2>
+<ul>
+<li><code>DataRetrievalRequest</code> is the <strong>product</strong>: all fields <code>final</code>, constructor <code>private</code>, getters only. Once built, it can never change.</li>
+<li><code>DataRetrievalRequestBuilder</code> is a <strong>static nested builder</strong>: it holds the same fields <em>mutable</em>, pre-loaded with defaults (<code>pageNumber = 0</code>, <code>pageSize = 10</code>, <code>maskingEnabled = false</code>).</li>
+<li>Each fluent method sets one field and returns <code>this</code>, so calls chain naturally.</li>
+<li><code>build()</code> is the single point where the finished, immutable product is created — it hands the builder to the product's private constructor, which copies every value.</li>
+</ul>
+<hr />
+<h2>UML Class Diagram</h2>
+<figure><img alt="Builder Design Pattern — diagram" src="builder.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p><strong>Reading the diagram:</strong> the client only talks to the builder — it chains fluent setters and calls <code>build()</code>. The product's constructor is <code>private</code>, so the builder's <code>build()</code> is the <em>only</em> door into existence for a <code>DataRetrievalRequest</code>. The dashed arrow shows <code>build()</code> creating the product.</p>
+<hr />
+<h2>The players</h2>
+<ul class="cards"><li><b><code>DataRetrievalRequest</code></b> — The product — immutable (<code>final</code> fields, private constructor, getters only).</li><li><b><code>DataRetrievalRequestBuilder</code></b> — Static nested builder — mutable staging area with defaults, fluent setters, and <code>build()</code>.</li><li><b><code>BuilderDesignPattern</code></b> — The client — chains the fluent calls and receives the finished product.</li></ul>
+<hr />
+<h2>Code walkthrough — every line explained</h2>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">DataRetrievalRequest</span> {
+
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">String</span> schemaId;
+    <span class="k">private</span> <span class="k">final</span> <span class="k">int</span> pageNumber;
+    <span class="k">private</span> <span class="k">final</span> <span class="k">int</span> pageSize;
+    <span class="k">private</span> <span class="k">final</span> <span class="k">boolean</span> maskingEnabled;
+
+    <span class="k">private</span> <span class="ty">DataRetrievalRequest</span>(<span class="ty">DataRetrievalRequestBuilder</span> builder) {
+        <span class="k">this</span>.schemaId = builder.schemaId;
+        <span class="k">this</span>.pageNumber = builder.pageNumber;
+        <span class="k">this</span>.pageSize = builder.pageSize;
+        <span class="k">this</span>.maskingEnabled = builder.maskingEnabled;
+    }
+    ...
+}
+</code></pre>
+<ul>
+<li><strong>All four fields are <code>private final</code></strong> — they must be assigned exactly once, in the constructor, and can never change afterwards. This is what makes the product thread-safe to share and impossible to observe half-built.</li>
+<li><strong>The constructor is <code>private</code> and takes the builder itself</strong> — no outside code can call <code>new DataRetrievalRequest(...)</code>. The only path to an instance is <code>builder.build()</code>. Copying from the builder in one place keeps the mapping explicit and total.</li>
+<li><strong>Getters only, no setters</strong> — the object's API physically cannot mutate it.</li>
+</ul>
+<h3>The static nested builder</h3>
+<pre><code><span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="ty">DataRetrievalRequestBuilder</span> {
+    <span class="k">private</span> <span class="ty">String</span> schemaId;
+    <span class="k">private</span> <span class="k">int</span> pageNumber = <span class="n">0</span>;
+    <span class="k">private</span> <span class="k">int</span> pageSize = <span class="n">10</span>;
+    <span class="k">private</span> <span class="k">boolean</span> maskingEnabled = <span class="k">false</span>;
+
+    <span class="k">public</span> <span class="ty">DataRetrievalRequestBuilder</span> schemaId(<span class="ty">String</span> schemaId) {
+        <span class="k">this</span>.schemaId = schemaId;
+        <span class="k">return</span> <span class="k">this</span>;
+    }
+    ...
+    <span class="k">public</span> <span class="ty">DataRetrievalRequest</span> build() {
+        <span class="k">return</span> <span class="k">new</span> <span class="ty">DataRetrievalRequest</span>(<span class="k">this</span>);
+    }
+}
+</code></pre>
+<ul>
+<li><strong><code>static</code></strong> — the builder does not need an existing product to exist (there is none yet). It is addressed as <code>DataRetrievalRequest.DataRetrievalRequestBuilder</code>, keeping it namespaced under its product.</li>
+<li><strong>Defaults are declared at the field site</strong> (<code>pageNumber = 0</code>, <code>pageSize = 10</code>, <code>maskingEnabled = false</code>) — a caller who sets nothing still gets a valid, sensible request. This is the pattern's answer to optional parameters.</li>
+<li><strong>Each fluent method returns <code>this</code></strong> — that single design choice is what makes chained calls like <code>.schemaId("s").pageSize(50)</code> read like a sentence.</li>
+<li><strong><code>build()</code></strong> hands the completed builder to the product's private constructor — legal because a nested class can access its enclosing class's private members. This is the one and only place a product is ever created.</li>
+</ul>
+<h3><code>BuilderDesignPattern.java</code> — the client</h3>
+<pre><code><span class="ty">DataRetrievalRequest</span> request = <span class="k">new</span> <span class="ty">DataRetrievalRequest</span>.<span class="ty">DataRetrievalRequestBuilder</span>()
+        .schemaId(<span class="s">&quot;schema-1&quot;</span>).pageNumber(<span class="n">2</span>).pageSize(<span class="n">50</span>).maskingEnabled(<span class="k">true</span>).build();
+<span class="ty">System</span>.out.println(<span class="s">&quot;schemaId=&quot;</span> + request.getSchemaId() + <span class="s">&quot; page=&quot;</span> + request.getPageNumber()
+        + <span class="s">&quot; size=&quot;</span> + request.getPageSize() + <span class="s">&quot; masking=&quot;</span> + request.isMaskingEnabled());
+</code></pre>
+<ul>
+<li>One expression: construct the builder, chain four fluent setters in whatever order reads best, and finish with <code>build()</code>. The result is a finished, immutable request. The print line reads every field back through getters, confirming all values landed.</li>
+</ul>
+<hr />
+<h2>Why the design decisions</h2>
+<ul>
+<li><strong>Why not a telescoping constructor?</strong> Four parameters where most are optional would need up to 2⁴ overloads, and call sites like <code>new Request("s", 2, 50, true)</code> say nothing about which argument is which. The fluent builder names every value at the call site.</li>
+<li><strong>Why not a mutable bean with setters?</strong> A bean can be observed half-initialized, mutated after being handed off, and is not thread-safe. The builder confines mutability to the construction phase; the product itself is immutable.</li>
+<li><strong>Why a <em>static nested</em> class?</strong> It keeps the builder inseparable from its product, gives it access to the private constructor, and communicates "this is the way you make one of these" in the type system itself.</li>
+</ul>
+<hr />
+<h2>Expected output</h2>
+<pre><code>$ java -cp target/classes com.realusecase.patterns.<span class="ty">BuilderDesignPattern</span>
+
+schemaId=schema-<span class="n">1</span> page=<span class="n">2</span> size=<span class="n">50</span> masking=<span class="k">true</span>
+</code></pre>
+<hr />
+<h2>Where this pattern shows up in real systems</h2>
+<ul>
+<li>Lombok's <code>@Builder</code> — generates exactly this structure on production DTOs and request objects.</li>
+<li><code>StringBuilder</code>, <code>Stream.Builder</code>, <code>HttpRequest.newBuilder()</code> in the JDK.</li>
+<li><code>UriComponentsBuilder</code>, <code>WebClient.builder()</code> in Spring; <code>OkHttpClient.Builder</code>; protobuf message builders.</li>
+</ul>
+<hr />
+<p><em>Set only what you care about, in any order — then <code>build()</code> once, and the object can never change again.</em></p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload Builder_Design_Pattern_Explained_EN.mp4 to YouTube, then replace YOUTUBE_FULL_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK">YOUTUBE_FULL_LINK</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

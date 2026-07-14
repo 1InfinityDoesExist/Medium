@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Functional Interfaces and Lambda Expressions</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#e8590c22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #e8590c40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#e8590c0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #e8590c33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#e8590c;--a2:#fd7e14">
+<header class="hero"><div class="in">
+  <span class="badge">☕ CORE JAVA</span>
+  <h1>Functional Interfaces and Lambda Expressions</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>Why don&#x27;t Object-class methods count?</em></p>
+<p class="chips">☕ 7 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> What a functional interface is (the &quot;one abstract method&quot; rule)  ·  The @FunctionalInterface annotation and why it is optional but useful  ·  Which methods do NOT count against the one-abstract-method rule (default, static, and Object-class methods)  ·  Three ways to implement a functional interface: implements, anonymous class, and lambda expression</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Functional_Interfaces_and_Lambdas_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>What is a Functional Interface?</h2>
+<blockquote>
+<p><strong>Definition:</strong> If an interface contains <strong>only 1 abstract method</strong>, it is known as a <strong>functional interface</strong>.</p>
+<figure><img alt="Functional Interfaces and Lambda Expressions — diagram" src="14-functional-interfaces-and-lambdas.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+</blockquote>
+<p><strong>Everyday analogy:</strong> a functional interface is like a vending machine with <strong>exactly one button</strong>. There is no confusion about what you are asking for — press the button, get the job done. Because there is only one job, Java can let you describe that job with a very short piece of code (a lambda) instead of a whole class.</p>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">Bird</span> {
+    <span class="k">void</span> canFly(<span class="ty">String</span> val);   <span class="c">// exactly ONE abstract method -&gt; functional interface</span>
+}
+</code></pre>
+<p>A functional interface is also called a <strong>SAM interface</strong> (Single Abstract Method).</p>
+<hr />
+<h2>The <code>@FunctionalInterface</code> Annotation</h2>
+<ul>
+<li>You <strong>can</strong> put <code>@FunctionalInterface</code> at the top of the interface — <strong>but it is optional</strong>.</li>
+<li>Its job is safety: if someone later adds a <strong>second</strong> abstract method by mistake, the compiler immediately shows an <strong>error</strong> instead of silently breaking all your lambdas.</li>
+</ul>
+<pre><code><span class="a">@FunctionalInterface</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="ty">Bird</span> {
+    <span class="k">void</span> canFly(<span class="ty">String</span> val);
+    <span class="c">// void canSwim();   // adding this would cause a COMPILE ERROR thanks to the annotation</span>
+}
+</code></pre>
+<hr />
+<h2>What Still Counts as "Only One Abstract Method"?</h2>
+<p>The rule sounds strict, but a functional interface is still allowed to contain <strong>other kinds of methods</strong>. Only <em>abstract</em> methods are counted — and even then, methods that already exist on <code>Object</code> do not count!</p>
+<p>Alongside the single abstract method, you may have:</p>
+<ul>
+<li><strong><code>default</code> methods</strong> — e.g. <code>default void getHeight() { }</code> (they have a body, so they are not abstract)</li>
+<li><strong><code>static</code> methods</strong> — e.g. <code>static void canEat() { }</code> (they also have a body)</li>
+<li><strong>Methods inherited from the <code>Object</code> class</strong> — e.g. <code>String toString();</code></li>
+</ul>
+<p>Every class in Java automatically extends <code>Object</code>, so <strong>every object already has</strong> <code>toString()</code>, <code>equals()</code>, <code>hashCode()</code>, etc. Declaring them in the interface adds no new "work to do" — any implementing class already has an implementation inherited from <code>Object</code>.</p>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">TestInterface</span> {
+    <span class="ty">String</span> toString();   <span class="c">// looks abstract... but it is an Object-class method</span>
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">TestClassImplements</span> <span class="k">implements</span> <span class="ty">TestInterface</span> {
+    <span class="c">// Although we are NOT overriding toString(), this compiles perfectly.</span>
+    <span class="c">// The version inherited from Object already satisfies the contract.</span>
+}
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> In a functional interface, only <strong>1 abstract method</strong> is allowed — but you can freely add <code>default</code> methods, <code>static</code> methods, and methods inherited from the <code>Object</code> class.</p>
+</blockquote>
+<hr />
+<h2>Three Ways to Implement a Functional Interface</h2>
+<p>We will use this interface for all three styles:</p>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">Bird</span> {
+    <span class="k">void</span> canFly(<span class="ty">String</span> val);
+}
+</code></pre>
+<h3>Way 1 — A normal class using <code>implements</code></h3>
+<p>The classic, long way: write a full class.</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">Eagle</span> <span class="k">implements</span> <span class="ty">Bird</span> {
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">void</span> canFly(<span class="ty">String</span> val) {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Eagle flies &quot;</span> + val);
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Bird</span> eagle = <span class="k">new</span> <span class="ty">Eagle</span>();
+        eagle.canFly(<span class="s">&quot;Vertical&quot;</span>);
+    }
+}
+</code></pre>
+<pre><code>Output:
+Eagle flies Vertical
+</code></pre>
+<h3>Way 2 — An anonymous class</h3>
+<p>An <strong>anonymous class</strong> is a class with <strong>no name</strong>, created and used on the spot. Useful when you need the implementation only once and don't want to create a separate file.</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Bird</span> eagle = <span class="k">new</span> <span class="ty">Bird</span>() {                    <span class="c">// class with no name, defined inline</span>
+            <span class="a">@Override</span>
+            <span class="k">public</span> <span class="k">void</span> canFly(<span class="ty">String</span> val) {
+                <span class="ty">System</span>.out.println(<span class="s">&quot;Hi, flying &quot;</span> + val);
+            }
+        };
+        eagle.canFly(<span class="s">&quot;Vertical&quot;</span>);
+    }
+}
+</code></pre>
+<pre><code>Output:
+Hi, flying Vertical
+</code></pre>
+<h3>Way 3 — A Lambda Expression</h3>
+<p>A <strong>lambda expression is simply a shorter way of implementing a functional interface</strong>. Because the interface has only one abstract method, Java already knows <em>which</em> method you are implementing — so you only write the parameters and the body.</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Bird</span> eagle = (<span class="ty">String</span> value) -&gt; {
+            <span class="ty">System</span>.out.println(<span class="s">&quot;Hi, flying &quot;</span> + value);
+        };
+        eagle.canFly(<span class="s">&quot;Vertical&quot;</span>);
+    }
+}
+</code></pre>
+<pre><code>Output:
+Hi, flying Vertical
+</code></pre>
+<p><strong>Reading a lambda:</strong></p>
+<pre><code>(String value)   -&gt;     { System.out.println(...); }
+ ^parameters   ^arrow          ^method body
+              (<span class="s">&quot;lambda
+               operator&quot;</span>)
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> The <code>-&gt;</code> symbol is called the <strong>lambda operator (arrow operator)</strong>. Left side = the abstract method's parameters, right side = its body. Compare Way 2 and Way 3: the lambda removed all the ceremony (<code>new Bird()</code>, method name, <code>@Override</code>) and kept only what matters.</p>
+</blockquote>
+<hr />
+<h2>Built-in Functional Interfaces (package <code>java.util.function</code>)</h2>
+<p>Java ships with ready-made functional interfaces so you don't have to write your own for common jobs. The four most important ones:</p>
+<ul class="cards"><li><b><code>Consumer&lt;T&gt;</code></b> — <code>void accept(T t)</code> — Yes (1) — Nothing — "Eats a value"</li><li><b><code>Supplier&lt;T&gt;</code></b> — <code>T get()</code> — No — Yes — "Produces a value"</li><li><b><code>Function&lt;T, R&gt;</code></b> — <code>R apply(T t)</code> — Yes (1) — Yes — "Transforms T into R"</li><li><b><code>Predicate&lt;T&gt;</code></b> — <code>boolean test(T t)</code> — Yes (1) — boolean — "Answers yes/no"</li></ul>
+<h3>5.1 Consumer</h3>
+<ul>
+<li>Represents an operation that <strong>accepts a single input parameter and returns no result</strong>.</li>
+<li>It lives in the package <strong><code>java.util.function</code></strong>.</li>
+</ul>
+<pre><code><span class="c">// The interface itself (simplified):</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="ty">Consumer</span>&lt;<span class="ty">T</span>&gt; {
+    <span class="k">void</span> accept(<span class="ty">T</span> t);
+}
+</code></pre>
+<pre><code><span class="k">import</span> java.util.function.<span class="ty">Consumer</span>;
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Consumer</span>&lt;<span class="ty">Integer</span>&gt; loggingObject = (<span class="ty">Integer</span> val) -&gt; {
+            <span class="k">if</span> (val &gt; <span class="n">0</span>) {
+                <span class="ty">System</span>.out.println(<span class="s">&quot;Hi, positive number received&quot;</span>);
+            }
+        };
+        loggingObject.accept(<span class="n">1</span>);
+    }
+}
+</code></pre>
+<pre><code>Output:
+Hi, positive number received
+</code></pre>
+<h3>5.2 Supplier</h3>
+<ul>
+<li>Represents a <strong>supplier of a result</strong>: it <strong>accepts no input parameter but produces a result</strong>. (The exact opposite of a Consumer.)</li>
+</ul>
+<pre><code><span class="c">// The interface itself (simplified):</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="ty">Supplier</span>&lt;<span class="ty">T</span>&gt; {
+    <span class="ty">T</span> get();
+}
+</code></pre>
+<pre><code><span class="k">import</span> java.util.function.<span class="ty">Supplier</span>;
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Supplier</span>&lt;<span class="ty">String</span>&gt; isEvenNumber = () -&gt; <span class="s">&quot;Even&quot;</span>;
+        <span class="ty">System</span>.out.println(isEvenNumber.get());
+    }
+}
+</code></pre>
+<pre><code>Output:
+Even
+</code></pre>
+<h3>5.3 Function</h3>
+<ul>
+<li>Represents a function that <strong>accepts one argument, processes it, and produces a result</strong>. <code>T</code> is the input type, <code>R</code> is the result type.</li>
+</ul>
+<pre><code><span class="c">// The interface itself (simplified):</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="ty">Function</span>&lt;<span class="ty">T</span>, <span class="ty">R</span>&gt; {
+    <span class="ty">R</span> apply(<span class="ty">T</span> t);
+}
+</code></pre>
+<pre><code><span class="k">import</span> java.util.function.<span class="ty">Function</span>;
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Function</span>&lt;<span class="ty">Integer</span>, <span class="ty">String</span>&gt; integerToString = (<span class="ty">Integer</span> num) -&gt; {
+            <span class="ty">String</span> output = num.toString();
+            <span class="k">return</span> output;
+        };
+        <span class="ty">System</span>.out.println(integerToString.apply(<span class="n">64</span>));
+    }
+}
+</code></pre>
+<pre><code>Output:
+64
+</code></pre>
+<p>(Here the number <code>64</code> went in as an <code>Integer</code> and came out transformed into a <code>String</code>.)</p>
+<h3>5.4 Predicate</h3>
+<ul>
+<li>Represents a function that <strong>accepts one argument and returns a boolean</strong> (a yes/no answer).</li>
+</ul>
+<pre><code><span class="c">// The interface itself (simplified):</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="ty">Predicate</span>&lt;<span class="ty">T</span>&gt; {
+    <span class="k">boolean</span> test(<span class="ty">T</span> t);
+}
+</code></pre>
+<pre><code><span class="k">import</span> java.util.function.<span class="ty">Predicate</span>;
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Predicate</span>&lt;<span class="ty">Integer</span>&gt; isEven = (<span class="ty">Integer</span> val) -&gt; {
+            <span class="k">if</span> (val % <span class="n">2</span> == <span class="n">0</span>) {
+                <span class="k">return</span> <span class="k">true</span>;
+            }
+            <span class="k">return</span> <span class="k">false</span>;
+        };
+        <span class="ty">System</span>.out.println(isEven.test(<span class="n">4</span>));
+    }
+}
+</code></pre>
+<pre><code>Output:
+true
+</code></pre>
+<hr />
+<h2>Functional Interfaces Extending Other Interfaces — 3 Use Cases</h2>
+<p>What happens when inheritance mixes with the "only one abstract method" rule? The notes cover three situations.</p>
+<h3>Use Case 1 — Functional interface extending a NON-functional interface: NOT ALLOWED (usually)</h3>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">LivingThing</span> {          <span class="c">// non-functional (plain) interface</span>
+    <span class="k">public</span> <span class="k">void</span> canBreathe();           <span class="c">// abstract method #1</span>
+}
+
+<span class="a">@FunctionalInterface</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="ty">Bird</span> <span class="k">extends</span> <span class="ty">LivingThing</span> {   <span class="c">// COMPILE ERROR</span>
+    <span class="k">void</span> canFly(<span class="ty">String</span> val);            <span class="c">// abstract method #2</span>
+}
+</code></pre>
+<p><strong>Why the error?</strong> <code>Bird</code> inherits <code>canBreathe()</code> from its parent and adds <code>canFly()</code> — that is <strong>two</strong> abstract methods, which violates the <code>@FunctionalInterface</code> promise.</p>
+<blockquote>
+<p><strong>Remember:</strong> If <code>canBreathe()</code> in the parent had been a <strong><code>default</code> method</strong> (with a body), there would be <strong>no issue</strong> — <code>Bird</code> would then contain only one abstract method (<code>canFly</code>) and would be a valid functional interface.</p>
+</blockquote>
+<h3>Use Case 2 — A plain interface extending a FUNCTIONAL interface: VALID</h3>
+<pre><code><span class="a">@FunctionalInterface</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="ty">LivingThing</span> {
+    <span class="k">public</span> <span class="k">boolean</span> canBreathe();
+}
+
+<span class="k">public</span> <span class="k">interface</span> <span class="ty">Bird</span> <span class="k">extends</span> <span class="ty">LivingThing</span> {   <span class="c">// valid!</span>
+    <span class="k">void</span> canFly(<span class="ty">String</span> val);                  <span class="c">// second abstract method is fine here</span>
+}
+</code></pre>
+<p><strong>Why is this OK?</strong> <code>Bird</code> never claimed to be a functional interface — it has no <code>@FunctionalInterface</code> annotation. A normal interface may have as many abstract methods as it wants. Only <code>LivingThing</code> must keep its single-method promise, and it does.</p>
+<h3>Use Case 3 — Functional interface extending another FUNCTIONAL interface</h3>
+<pre><code><span class="a">@FunctionalInterface</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="ty">LivingThing</span> {
+    <span class="k">public</span> <span class="k">boolean</span> canBreathe();
+}
+
+<span class="a">@FunctionalInterface</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="ty">Bird</span> <span class="k">extends</span> <span class="ty">LivingThing</span> {   <span class="c">// COMPILE ERROR as written below</span>
+    <span class="k">void</span> canBreathe();                        <span class="c">// returns void — DIFFERENT signature!</span>
+}
+</code></pre>
+<p><strong>Why the error?</strong> The child declares <code>void canBreathe()</code> while the parent has <code>boolean canBreathe()</code>. Same name and parameters but different return types — Java cannot merge them into one method, so <code>Bird</code> ends up breaking the rules.</p>
+<p><strong>The fix:</strong> if the child re-declares the method with the <strong>exact same signature</strong>, it is <strong>allowed</strong>:</p>
+<pre><code><span class="a">@FunctionalInterface</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="ty">Bird</span> <span class="k">extends</span> <span class="ty">LivingThing</span> {
+    <span class="k">public</span> <span class="k">boolean</span> canBreathe();   <span class="c">// same signature as the parent -&gt; ALLOWED</span>
+}
+</code></pre>
+<p>Now parent and child are describing the <strong>same single abstract method</strong>, so both remain valid functional interfaces.</p>
+<hr />
+<h2>Quick Revision</h2>
+<ul>
+<li><strong>Functional interface = exactly 1 abstract method</strong> (also called a SAM interface).</li>
+<li><code>@FunctionalInterface</code> is <strong>optional</strong>, but it makes the compiler guard your interface against accidental extra abstract methods.</li>
+<li><code>default</code> methods, <code>static</code> methods, and <strong><code>Object</code>-class methods (like <code>toString()</code>) do NOT count</strong> toward the one-method limit.</li>
+<li>Three implementation styles: <strong><code>implements</code> class</strong> → <strong>anonymous class</strong> → <strong>lambda expression</strong> (shortest).</li>
+<li>Lambda syntax: <code>(parameters) -&gt; { body }</code>; the <code>-&gt;</code> is the lambda/arrow operator.</li>
+<li><strong>Consumer</strong> takes input, returns nothing (<code>accept</code>). <strong>Supplier</strong> takes nothing, returns a value (<code>get</code>). <strong>Function</strong> transforms input into output (<code>apply</code>). <strong>Predicate</strong> returns true/false (<code>test</code>). All live in <code>java.util.function</code>.</li>
+<li>Extending rules: functional extending non-functional with an extra abstract method = <strong>error</strong> (fine if the parent method is <code>default</code>); plain interface extending a functional one = <strong>fine</strong>; functional extending functional = fine <strong>only if the abstract method signature is exactly the same</strong>.</li>
+</ul>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Functional_Interfaces_and_Lambdas_Explained_Part1.mp4; Part 2 = Functional_Interfaces_and_Lambdas_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

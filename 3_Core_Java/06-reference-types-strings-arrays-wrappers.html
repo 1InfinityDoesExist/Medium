@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference Types, Strings, Arrays &amp; Wrapper Classes</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#e8590c22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #e8590c40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#e8590c0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #e8590c33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#e8590c;--a2:#fd7e14">
+<header class="hero"><div class="in">
+  <span class="badge">☕ CORE JAVA</span>
+  <h1>Reference Types, Strings, Arrays &amp; Wrapper Classes</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>Case 1: passing a primitive — the original never changes</em></p>
+<p class="chips">☕ 7 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> What a reference (non-primitive) data type is, and how it lives in heap memory  ·  Why Java is pass-by-value (never pass-by-reference) — with the modify(emp) example  ·  The String Constant Pool and why Strings are immutable  ·  Using an interface reference to point to a concrete class object</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Reference_Types_Strings_Arrays_Wrappers_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>Reference Data Types (Non-primitive Data Types)</h2>
+<p>Java variables come in two families. Primitives (<code>int</code>, <code>char</code>, ...) hold the <strong>value itself</strong>. Reference types hold something different: <strong>the address of an object</strong> that lives somewhere else, in <strong>heap memory</strong>.</p>
+<figure><img alt="Reference Types, Strings, Arrays &amp; Wrapper Classes — diagram" src="06-reference-types-strings-arrays-wrappers.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p>The reference data types are:</p>
+<ul>
+<li><strong>class</strong> (any object you create)</li>
+<li><strong>String</strong></li>
+<li><strong>Interface</strong></li>
+<li><strong>Array</strong></li>
+</ul>
+<blockquote>
+<p><strong>Remember:</strong> besides primitives and reference types, the notes also list <strong>constant variables</strong> (<code>static final</code>, written in CAPITALS, e.g. <code>static final int MAX_AGE = 100;</code>) as a variable category. They are explained in detail in the <em>Variables &amp; Data Types</em> and <em>Methods &amp; Access Specifiers</em> PDFs.</p>
+</blockquote>
+<p>Think of it like a home address written on a card. The card (<code>emp</code>) is not the house; it only <em>tells you where the house is</em>.</p>
+<pre><code><span class="ty">Employee</span> emp = <span class="k">new</span> <span class="ty">Employee</span>();
+emp.id = <span class="n">10</span>;
+</code></pre>
+<pre><code>   STACK                         HEAP MEMORY
+   +---------+                .-----------------.
+   |  emp  --+--------------&gt;(   +----------+    )
+   +---------+               (   | id = 10  |    )
+   holds a REFERENCE         (   | name=... |    )
+   (an address), not         (   +----------+    )
+   the object itself          &#x27;-----------------&#x27;
+</code></pre>
+<p><code>emp</code> <strong>holds a reference to the actual memory</strong> where the object lives. Two different variables can hold the <em>same</em> address and therefore point at the <em>same</em> object — this becomes important in the next section.</p>
+<hr />
+<h2>Java is Pass-by-Value (NOT Pass-by-Reference)</h2>
+<ul class="cards"><li><b>Pass by value</b> — Yes — always</li><li><b>Pass by reference</b> — No — never</li></ul>
+<p>When you call a method, Java always <strong>copies</strong> the variable and hands the copy to the method.</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">PassPrimitive</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> modify(<span class="k">int</span> x) {
+        x = <span class="n">20</span>;                    <span class="c">// changes only the COPY</span>
+    }
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="k">int</span> a = <span class="n">10</span>;
+        modify(a);
+        <span class="ty">System</span>.out.println(a);
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 10        &lt;- &#x27;a&#x27; is untouched; only the copy &#x27;x&#x27; became 20</span>
+</code></pre>
+<h3>Case 2: passing an object reference — the <code>modify(emp)</code> example</h3>
+<p>Here is the subtle part. The <strong>reference is also passed as a copy</strong> — but both the original and the copy point at the <strong>same object in the heap</strong>. So the method can change the object's insides.</p>
+<pre><code><span class="k">class</span> <span class="ty">Employee</span> {
+    <span class="k">int</span> id;
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">PassReference</span> {
+    <span class="k">private</span> <span class="k">static</span> <span class="k">void</span> modify(<span class="ty">Employee</span> em) {
+        em.id = <span class="n">50</span>;                <span class="c">// follows the address, edits the SAME object</span>
+    }
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Employee</span> emp = <span class="k">new</span> <span class="ty">Employee</span>();
+        emp.id = <span class="n">10</span>;
+        modify(emp);
+        <span class="ty">System</span>.out.println(emp.id);
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 50        &lt;- the one shared object was changed</span>
+</code></pre>
+<pre><code>   emp ----.                 HEAP
+            \        +------------------+
+             +-----&gt; |  id = 10 -&gt; 50   |   one object,
+            /        +------------------+   two arrows
+   em  ----&#x27;   (em is a COPY of the reference,
+                but it points to the SAME box)
+</code></pre>
+<p><strong>Why is this still pass-by-value?</strong> Because what was copied is the <em>address on the card</em>, not a magic link to the variable <code>emp</code>. If <code>modify</code> wrote <code>em = new Employee();</code>, the variable <code>emp</code> outside would be completely unaffected. Java copies values — it just so happens that for objects, the "value" is an address.</p>
+<blockquote>
+<p><strong>Remember:</strong> Java always passes a copy. For primitives, a copy of the number. For objects, a copy of the reference — which still leads to the same object.</p>
+</blockquote>
+<hr />
+<h2>String — Why is it a Reference Data Type?</h2>
+<p><code>String</code> is a class, so a String variable holds a reference to an object in the heap. But Strings get a special optimisation: the <strong>String Constant Pool</strong>.</p>
+<pre><code><span class="ty">String</span> s1 = <span class="s">&quot;Hello&quot;</span>;          <span class="c">// &quot;Hello&quot; is a literal</span>
+<span class="ty">String</span> s2 = <span class="s">&quot;Hello&quot;</span>;          <span class="c">// reuses the SAME pooled &quot;Hello&quot;</span>
+<span class="ty">String</span> s3 = <span class="k">new</span> <span class="ty">String</span>(<span class="s">&quot;Hi&quot;</span>); <span class="c">// &#x27;new&#x27; forces a separate object OUTSIDE the pool</span>
+</code></pre>
+<pre><code>                HEAP MEMORY
+   .------------------------------------------.
+  (    +--------------------------------+      )
+  (    |     String Constant Pool       |      )
+  (    |        +---------+             |      )
+  (    |  s1 -&gt; | <span class="s">&quot;Hello&quot;</span> | &lt;- s2       |      )
+  (    |        +---------+             |      )
+  (    +--------------------------------+      )
+  (                                            )
+  (        +------+                            )
+  (  s3 -&gt; | <span class="s">&quot;Hi&quot;</span> |   &lt;- created with &#x27;new&#x27;,   )
+  (        +------+      lives outside pool    )
+   &#x27;------------------------------------------&#x27;
+</code></pre>
+<p><strong>The rule:</strong> if <code>"Hello"</code> is <strong>already present in the String Constant Pool</strong>, then <code>s2</code> will simply <strong>point to the same "Hello"</strong> — no new object is created. This saves memory, because programs use the same text again and again.</p>
+<h3>Strings are Immutable</h3>
+<p>Immutable means: <strong>once a String object is created, it can never be changed.</strong> So what happens when you "change" s1?</p>
+<pre><code>s1 = <span class="s">&quot;Hello World&quot;</span>;
+</code></pre>
+<p>Java does <strong>not</strong> edit the old <code>"Hello"</code>. It creates a <strong>new literal</strong> <code>"Hello World"</code> in the pool and moves the s1 arrow to it:</p>
+<pre><code>   String Constant Pool (literals)
+   +------------------------+
+   |  <span class="s">&quot;Hello&quot;</span>               |   &lt;- old object, unchanged (s2 still uses it)
+   |  <span class="s">&quot;Hello World&quot;</span> &lt;- s1   |   &lt;- NEW object; s1 now points here
+   +------------------------+
+        +------+
+        | <span class="s">&quot;Hi&quot;</span> |  } object created with new
+        +------+
+</code></pre>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">StringPoolDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">String</span> s1 = <span class="s">&quot;Hello&quot;</span>;
+        <span class="ty">String</span> s2 = <span class="s">&quot;Hello&quot;</span>;
+        <span class="ty">System</span>.out.println(s1 == s2);        <span class="c">// same pooled object?</span>
+
+        <span class="ty">String</span> s3 = <span class="k">new</span> <span class="ty">String</span>(<span class="s">&quot;Hello&quot;</span>);
+        <span class="ty">System</span>.out.println(s1 == s3);        <span class="c">// pool vs &#x27;new&#x27; object</span>
+        <span class="ty">System</span>.out.println(s1.equals(s3));   <span class="c">// same characters?</span>
+
+        s1 = <span class="s">&quot;Hello World&quot;</span>;                  <span class="c">// s1 re-points; &quot;Hello&quot; not modified</span>
+        <span class="ty">System</span>.out.println(s1);
+        <span class="ty">System</span>.out.println(s2);
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// true      &lt;- s1 and s2 share ONE pooled &quot;Hello&quot;</span>
+<span class="c">// false     &lt;- s3 is a different object in the heap</span>
+<span class="c">// true      &lt;- but the text content is equal</span>
+<span class="c">// Hello World</span>
+<span class="c">// Hello     &lt;- the original literal is untouched: immutable!</span>
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> String literals live in the String Constant Pool. Assigning a "new value" to a String variable never edits the old text — it just moves the arrow to another object.</p>
+</blockquote>
+<hr />
+<h2>Interface References</h2>
+<p>An interface cannot be instantiated itself, but an <strong>interface-type variable can hold a reference to any concrete class that implements it</strong>.</p>
+<pre><code>              Person (Interface)
+               /            \
+          Teacher         Engineer      } Concrete classes
+</code></pre>
+<p>All four of these declarations are valid:</p>
+<pre><code><span class="k">interface</span> <span class="ty">Person</span> { <span class="k">void</span> work(); }
+
+<span class="k">class</span> <span class="ty">Teacher</span> <span class="k">implements</span> <span class="ty">Person</span> {
+    <span class="k">public</span> <span class="k">void</span> work() { <span class="ty">System</span>.out.println(<span class="s">&quot;Teaching students&quot;</span>); }
+}
+
+<span class="k">class</span> <span class="ty">Engineer</span> <span class="k">implements</span> <span class="ty">Person</span> {
+    <span class="k">public</span> <span class="k">void</span> work() { <span class="ty">System</span>.out.println(<span class="s">&quot;Writing software&quot;</span>); }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">InterfaceRefDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Person</span> softwareEngineer  = <span class="k">new</span> <span class="ty">Engineer</span>();  <span class="c">// 1) interface ref -&gt; Engineer object</span>
+        <span class="ty">Person</span> teacher           = <span class="k">new</span> <span class="ty">Teacher</span>();   <span class="c">// 2) interface ref -&gt; Teacher object</span>
+        <span class="ty">Teacher</span> teacher1         = <span class="k">new</span> <span class="ty">Teacher</span>();   <span class="c">// 3) class ref -&gt; its own object</span>
+        <span class="ty">Engineer</span> softwareEngineer1 = <span class="k">new</span> <span class="ty">Engineer</span>();<span class="c">// 4) class ref -&gt; its own object</span>
+
+        softwareEngineer.work();
+        teacher.work();
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// Writing software</span>
+<span class="c">// Teaching students</span>
+</code></pre>
+<pre><code>   REFERENCES                     HEAP MEMORY
+   +----------------------+    .------------------.
+   | softwareEngineer     |---(--&gt; [ Engineer obj ] )
+   |   (type: Person)     |   (                    )
+   | teacher (type:Person)|---(--&gt; [ Teacher obj  ] )
+   +----------------------+    &#x27;------------------&#x27;
+</code></pre>
+<p>In plain words: the variable's type (<code>Person</code>) decides <em>what you are allowed to call</em>; the actual object (<code>Engineer</code>) decides <em>what actually runs</em>. This is the foundation of polymorphism.</p>
+<hr />
+<h2>Array</h2>
+<p>An array is a <strong>sequence of memory which holds the same data type</strong> — a row of identical boxes sitting side by side in the heap.</p>
+<p>Three legal ways to declare (all mean the same):</p>
+<pre><code><span class="k">int</span>[] arr = <span class="k">new</span> <span class="k">int</span>[<span class="n">5</span>];   <span class="c">// declare + create a 5-slot array</span>
+<span class="k">int</span> [] arr2;              <span class="c">// declaration style 2</span>
+<span class="k">int</span> arr3[];               <span class="c">// declaration style 3 (C-style, allowed but less common)</span>
+</code></pre>
+<pre><code>   arr ---------.          HEAP MEMORY
+                 \    .---------------------------.
+                  &#x27;-&gt;(  +---+---+---+---+---+      )
+                     (  | 0 | 0 | 0 | 0 | 0 |      )
+                     (  +---+---+---+---+---+      )
+                     (  index:0   1   2   3   4    )
+                      &#x27;---------------------------&#x27;
+</code></pre>
+<p>The array object lives in the heap, and <code>arr</code> is just a reference to it. Each cell gets the type's default value (0 for int).</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">ArrayDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="k">int</span>[] arr = <span class="k">new</span> <span class="k">int</span>[<span class="n">5</span>];
+        arr[<span class="n">0</span>] = <span class="n">10</span>;
+        arr[<span class="n">4</span>] = <span class="n">50</span>;
+
+        <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; arr.length; i++) {
+            <span class="ty">System</span>.out.print(arr[i] + <span class="s">&quot; &quot;</span>);
+        }
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 10 0 0 0 50</span>
+</code></pre>
+<hr />
+<h2>Wrapper Classes</h2>
+<p>For <strong>every primitive type</strong> Java provides a matching class — a "wrapper" that wraps the little primitive value inside a real object.</p>
+<ul class="cards"><li><b><code>int</code></b> — <code>Integer</code></li><li><b><code>char</code></b> — <code>Character</code></li><li><b><code>short</code></b> — <code>Short</code></li><li><b><code>byte</code></b> — <code>Byte</code></li><li><b><code>long</code></b> — <code>Long</code></li><li><b><code>float</code></b> — <code>Float</code></li><li><b><code>double</code></b> — <code>Double</code></li><li><b><code>boolean</code></b> — <code>Boolean</code></li></ul>
+<h3>Why do wrappers exist?</h3>
+<p><strong>Reason 1 — Reference capability.</strong> A primitive is copied when passed to a method, so the method can never affect the caller's variable:</p>
+<pre><code><span class="k">int</span> a = <span class="n">10</span>;
+modify(a);                 <span class="c">// a copy of 10 is sent</span>
+<span class="ty">System</span>.out.println(a);     <span class="c">// prints 10 — unchanged</span>
+
+<span class="k">public</span> <span class="k">void</span> modify(<span class="k">int</span> x) {
+    x = <span class="n">20</span>;                <span class="c">// only the local copy changes</span>
+}
+</code></pre>
+<p>Sometimes you <em>want</em> object behaviour — the ability to have a reference, to be <code>null</code>, to carry methods. Wrappers give a primitive that power.</p>
+<p><strong>Reason 2 — Collections.</strong> Java's collections (<code>ArrayList</code>, <code>HashMap</code>, <code>HashSet</code>, ...) <strong>all work on reference data types only</strong>. You cannot write <code>ArrayList&lt;int&gt;</code> — you must write <code>ArrayList&lt;Integer&gt;</code>. Wrappers are the ticket that lets primitives enter the collections world.</p>
+<h3>Autoboxing and Unboxing</h3>
+<p>Java converts between primitive and wrapper <strong>automatically</strong>:</p>
+<ul>
+<li><strong>Autoboxing</strong> = primitive → wrapper class (Java puts the value <em>into a box</em>).</li>
+<li><strong>Unboxing</strong> = wrapper class → primitive (Java takes the value <em>out of the box</em>).</li>
+</ul>
+<pre><code><span class="k">import</span> java.util.<span class="ty">ArrayList</span>;
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">WrapperDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="k">int</span> a = <span class="n">10</span>;
+        <span class="ty">Integer</span> a1 = a;        <span class="c">// AUTOBOXING: primitive -&gt; wrapper (automatic)</span>
+
+        <span class="ty">Integer</span> x = <span class="n">20</span>;
+        <span class="k">int</span> x1 = x;            <span class="c">// UNBOXING: wrapper -&gt; primitive (automatic)</span>
+
+        <span class="ty">System</span>.out.println(a1 + <span class="s">&quot; &quot;</span> + x1);
+
+        <span class="ty">ArrayList</span>&lt;<span class="ty">Integer</span>&gt; list = <span class="k">new</span> <span class="ty">ArrayList</span>&lt;&gt;();  <span class="c">// &lt;int&gt; would NOT compile</span>
+        list.add(<span class="n">5</span>);           <span class="c">// autoboxing: int 5 becomes Integer</span>
+        <span class="k">int</span> first = list.get(<span class="n">0</span>);   <span class="c">// unboxing: Integer back to int</span>
+        <span class="ty">System</span>.out.println(first);
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 10 20</span>
+<span class="c">// 5</span>
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> Autoboxing = wrapping the gift (primitive → object). Unboxing = opening the gift (object → primitive). Java does both silently for you.</p>
+</blockquote>
+<hr />
+<h2>Quick Revision</h2>
+<ul>
+<li>Reference types (<strong>class, String, Interface, Array</strong>) store an <strong>address</strong>; the real object lives in <strong>heap memory</strong>.</li>
+<li>Java is <strong>always pass-by-value</strong>: primitives are copied as numbers; object references are copied as addresses — so a method can change the <em>object's fields</em> (<code>em.id = 50</code>) but never the caller's <em>variable</em>.</li>
+<li>String <strong>literals</strong> are stored once in the <strong>String Constant Pool</strong> and shared (<code>s1 == s2</code> is true); <code>new String()</code> creates a separate heap object.</li>
+<li>Strings are <strong>immutable</strong> — "changing" a String just points the variable to a <em>new</em> object.</li>
+<li>An <strong>interface reference</strong> (<code>Person p = new Engineer();</code>) can hold any implementing class's object.</li>
+<li>An <strong>array</strong> is one heap block of same-type cells, indexed from 0; the variable is just a reference to it.</li>
+<li>The <strong>8 wrappers</strong> (Integer, Character, Short, Byte, Long, Float, Double, Boolean) exist for <strong>reference capability</strong> and because <strong>collections only accept reference types</strong>.</li>
+<li><strong>Autoboxing</strong> = primitive → wrapper; <strong>Unboxing</strong> = wrapper → primitive; both automatic.</li>
+</ul>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Reference_Types_Strings_Arrays_Wrappers_Explained_Part1.mp4; Part 2 = Reference_Types_Strings_Arrays_Wrappers_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

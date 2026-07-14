@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Memory Management and Garbage Collection</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#e8590c22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #e8590c40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#e8590c0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #e8590c33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#e8590c;--a2:#fd7e14">
+<header class="hero"><div class="in">
+  <span class="badge">☕ CORE JAVA</span>
+  <h1>Memory Management and Garbage Collection</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>Example — how stack and heap work together</em></p>
+<p class="chips">☕ 10 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> The two kinds of memory the JVM uses: Stack and Heap  ·  What is stored in each one, and what happens when they get full  ·  Strong, Weak and Soft references  ·  How the Heap is divided into generations (Eden, Survivor S0/S1, Old, Metaspace)</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Memory_Management_and_Garbage_Collection_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>Memory Management — The Big Picture</h2>
+<p>When a Java program runs, the <strong>JVM (Java Virtual Machine)</strong> asks the computer's RAM for memory. The JVM splits this memory into <strong>two main areas</strong>:</p>
+<figure><img alt="Memory Management and Garbage Collection — diagram" src="09-memory-management-and-garbage-collection.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<ol>
+<li><strong>Stack memory</strong></li>
+<li><strong>Heap memory</strong></li>
+</ol>
+<p>Both are created by the JVM and stored in RAM.</p>
+<p>Simple analogy: think of the <strong>stack</strong> as your small <strong>work desk</strong> — you keep only the papers you are working on <em>right now</em>, and you clear them as soon as you finish. The <strong>heap</strong> is the big <strong>storeroom</strong> — everything big and long-living goes there, and a cleaner (the Garbage Collector) throws away things nobody uses anymore.</p>
+<hr />
+<h2>Stack Memory</h2>
+<p>The stack stores the <em>small, short-lived</em> things:</p>
+<ul>
+<li><strong>Temporary (local) variables</strong> — variables declared inside a method.</li>
+<li><strong>A separate memory block for each method call.</strong> Every time a method is called, a new "frame" (block) is pushed on top of the stack. When the method finishes, that frame is removed.</li>
+<li><strong>Primitive data types</strong> (<code>int</code>, <code>char</code>, <code>boolean</code>, <code>double</code>, …) declared inside methods live directly on the stack.</li>
+<li><strong>References to heap objects.</strong> The object itself lives in the heap, but the "address label" (reference) pointing to it lives on the stack.</li>
+</ul>
+<p>More important rules about the stack:</p>
+<ul>
+<li><strong>Each thread has its own stack memory.</strong> Threads never share stacks — this is why local variables are automatically thread-safe.</li>
+<li><strong>Scope rule:</strong> a variable is visible only inside its own scope (its block/method). As soon as the variable goes <em>out of scope</em>, it is <strong>deleted from the stack</strong> automatically. No garbage collector is needed for the stack.</li>
+<li><strong>When stack memory becomes full</strong>, Java throws <strong><code>java.lang.StackOverflowError</code></strong>.</li>
+</ul>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">MemoryDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="k">int</span> a = <span class="n">10</span>;                         <span class="c">// primitive -&gt; stored on STACK</span>
+        <span class="ty">String</span> s = <span class="k">new</span> <span class="ty">String</span>(<span class="s">&quot;hello&quot;</span>);     <span class="c">// reference &#x27;s&#x27; on STACK,</span>
+                                            <span class="c">// the String object on HEAP</span>
+        printMessage(s);                    <span class="c">// new stack frame is created</span>
+    }                                       <span class="c">// frames removed when methods end</span>
+
+    <span class="k">static</span> <span class="k">void</span> printMessage(<span class="ty">String</span> msg) { <span class="c">// &#x27;msg&#x27; is a reference on STACK</span>
+        <span class="ty">System</span>.out.println(msg);
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+hello
+</code></pre>
+<h3>Example — StackOverflowError</h3>
+<p>If a method keeps calling itself and never stops, frames keep piling up until the desk (stack) overflows:</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">StackOverflowDemo</span> {
+    <span class="k">static</span> <span class="k">void</span> callMyself() {
+        callMyself();   <span class="c">// no stopping condition -&gt; infinite recursion</span>
+    }
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        callMyself();
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span>:
+<span class="ty">Exception</span> in thread <span class="s">&quot;main&quot;</span> java.lang.<span class="ty">StackOverflowError</span>
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> Stack = small, fast, per-thread, cleans itself automatically. Full stack → <code>StackOverflowError</code>.</p>
+</blockquote>
+<hr />
+<h2>Three Kinds of References (Strong, Weak, Soft)</h2>
+<p>The stack holds <em>references</em> to heap objects. Java has different "strengths" of references, which tell the Garbage Collector how important the object is:</p>
+<ul class="cards"><li><b><strong>Strong Reference</strong></b> — The normal reference: <code>Person p = new Person();</code>. "I am using this — do NOT touch it." — Never, as long as the strong reference exists</li><li><b><strong>Weak Reference</strong></b> — "You may throw this away whenever you like." — As soon as the GC runs, it frees the space</li><li><b><strong>Soft Reference</strong></b> — "Throw it away only if you really need the space." — Only when memory is running low</li></ul>
+<pre><code><span class="k">import</span> java.lang.ref.<span class="ty">SoftReference</span>;
+<span class="k">import</span> java.lang.ref.<span class="ty">WeakReference</span>;
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">ReferenceDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="c">// 1. Strong reference — GC will never collect this while &#x27;strong&#x27; exists</span>
+        <span class="ty">String</span> strong = <span class="k">new</span> <span class="ty">String</span>(<span class="s">&quot;I am strong&quot;</span>);
+
+        <span class="c">// 2. Weak reference — collected as soon as GC runs</span>
+        <span class="ty">WeakReference</span>&lt;<span class="ty">String</span>&gt; weak =
+                <span class="k">new</span> <span class="ty">WeakReference</span>&lt;&gt;(<span class="k">new</span> <span class="ty">String</span>(<span class="s">&quot;I am weak&quot;</span>));
+
+        <span class="c">// 3. Soft reference — collected only when memory is low</span>
+        <span class="ty">SoftReference</span>&lt;<span class="ty">String</span>&gt; soft =
+                <span class="k">new</span> <span class="ty">SoftReference</span>&lt;&gt;(<span class="k">new</span> <span class="ty">String</span>(<span class="s">&quot;I am soft&quot;</span>));
+
+        <span class="ty">System</span>.out.println(weak.get());  <span class="c">// object still there (GC not run yet)</span>
+        <span class="ty">System</span>.gc();                     <span class="c">// politely ask GC to run</span>
+        <span class="ty">System</span>.out.println(weak.get());  <span class="c">// very likely null now</span>
+        <span class="ty">System</span>.out.println(soft.get());  <span class="c">// still alive (memory is not low)</span>
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span> (typical):
+<span class="ty">I</span> am weak
+<span class="k">null</span>
+<span class="ty">I</span> am soft
+</code></pre>
+<hr />
+<h2>Heap Memory</h2>
+<p>The heap stores the <em>big, long-lived</em> things:</p>
+<ul>
+<li><strong>All objects</strong> created with <code>new</code> live in the heap.</li>
+<li><strong>There is no fixed order</strong> for allocating heap memory — objects are placed wherever there is space (unlike the neat, ordered stack).</li>
+<li><strong>The Garbage Collector (GC)</strong> deletes objects from the heap that no one references anymore (unreferenced objects). It uses the <strong>Mark and Sweep algorithm</strong> (explained below).</li>
+<li><strong>Heap memory is shared by all threads</strong> (unlike the stack). That is why shared objects need synchronization.</li>
+<li>The heap also contains the <strong>String Pool</strong> — the special area where string literals like <code>"hello"</code> are kept and reused.</li>
+<li><strong>When heap memory becomes full</strong>, Java throws <strong><code>java.lang.OutOfMemoryError</code></strong>.</li>
+</ul>
+<blockquote>
+<p><strong>Remember:</strong> Stack full → <code>StackOverflowError</code>. Heap full → <code>OutOfMemoryError</code>. This is a very common interview question!</p>
+</blockquote>
+<h3>Stack vs Heap — quick comparison</h3>
+<ul class="cards"><li><b>Stores</b> — Local variables, primitives, references, method frames — Objects (and the String Pool)</li><li><b>Order</b> — Ordered (LIFO — last in, first out) — No particular order</li><li><b>Shared?</b> — No — each thread has its own stack — Yes — shared by all threads</li><li><b>Cleanup</b> — Automatic — variable deleted when it goes out of scope — Garbage Collector removes unreferenced objects</li><li><b>Error when full</b> — <code>java.lang.StackOverflowError</code> — <code>java.lang.OutOfMemoryError</code></li><li><b>Size</b> — Small — Large</li></ul>
+<hr />
+<h2>Heap Generations — How the Heap Is Organized</h2>
+<p>The heap is further divided into areas called <strong>generations</strong>:</p>
+<ul>
+<li><strong>Young Generation</strong> — where new objects are born. <strong>Minor GC</strong> happens here.</li>
+<li><strong>Eden</strong> — brand-new objects start here.</li>
+<li><strong>Survivor spaces: S0 and S1</strong> — objects that survive a GC round move here.</li>
+<li><strong>Old / Tenured Generation</strong> — long-living objects end up here. <strong>Major GC</strong> happens here.</li>
+</ul>
+<p>Beside the heap there is a <strong>non-heap</strong> area:</p>
+<ul>
+<li><strong>Metaspace</strong> (before Java 8 this was called <strong>PermGen</strong>). It stores:</li>
+<li><strong>constants</strong></li>
+<li><strong>class (static) variables</strong></li>
+<li><strong>class metadata</strong> (information about the classes themselves)</li>
+</ul>
+<pre><code> +---------------------------------------------+     +---------------+
+ |                <span class="ty">HEAP</span> <span class="ty">MEMORY</span>                  |     |   <span class="ty">METASPACE</span>   |
+ |  +--------------------+ +----------------+ |     |  (<span class="ty">Non</span>-<span class="ty">Heap</span>;   |
+ |  |  <span class="ty">YOUNG</span> <span class="ty">GENERATION</span>  | | <span class="ty">OLD</span> / <span class="ty">TENURED</span>  | |     |  was <span class="ty">PermGen</span>  |
+ |  |  +------+---+---+  | |  <span class="ty">GENERATION</span>    | |     |  before <span class="ty">Java8</span>)|
+ |  |  | <span class="ty">Eden</span> | <span class="ty">S0</span>| <span class="ty">S1</span>|  | |                | |     |  - constants  |
+ |  |  +------+---+---+  | |  (<span class="ty">Major</span> <span class="ty">GC</span>)    | |     |  - <span class="k">class</span> vars |
+ |  |     (<span class="ty">Minor</span> <span class="ty">GC</span>)     | |                | |     |  - <span class="k">class</span>      |
+ |  +--------------------+ +----------------+ |     |    metadata   |
+ +---------------------------------------------+     +---------------+
+</code></pre>
+<p>In plain words: the heap is one long box split into Young Generation and Old Generation. The Young Generation itself is split into Eden and two Survivor spaces (S0 and S1). Metaspace sits <em>outside</em> the heap.</p>
+<h3>School analogy</h3>
+<p>Think of objects as <strong>students</strong> and GC runs as <strong>exams</strong>:</p>
+<ul>
+<li><strong>Eden</strong> = the first grade. Every new student (object) starts here.</li>
+<li><strong>S0 / S1</strong> = higher grades. Each time a student passes an exam (survives a GC because someone still references it), it is promoted and its <strong>age</strong> goes up by 1.</li>
+<li><strong>Old Generation</strong> = college. After passing enough exams (reaching the <strong>age threshold</strong>), the student is promoted permanently.</li>
+<li>Students who fail (objects with <strong>no reference</strong>) are removed from school (deleted from memory).</li>
+</ul>
+<h3>How Minor GC and promotion actually work — step by step</h3>
+<p>The notes give a concrete example with 8 objects (01 … 08). The Minor GC in the Young Generation runs very frequently (in the notes' example: <strong>every ~6 seconds</strong>), while the Major GC in the Old Generation runs <strong>very rarely, periodically</strong>.</p>
+<pre><code> <span class="ty">Objects</span> created: <span class="n">01</span>, <span class="n">02</span>, <span class="n">03</span>, <span class="n">04</span>, <span class="n">05</span>, <span class="n">06</span>, <span class="n">07</span>, <span class="n">08</span>
+
+ <span class="ty">STEP</span> <span class="n">1</span>: <span class="n">01..05</span> are in <span class="ty">Eden</span>.  <span class="ty">GC</span> runs (<span class="ty">Mark</span> &amp; <span class="ty">Sweep</span>).
+         <span class="n">02</span> and <span class="n">05</span> have <span class="ty">NO</span> reference  -&gt; deleted.
+         <span class="n">01</span>, <span class="n">03</span>, <span class="n">04</span> survive           -&gt; moved to <span class="ty">S0</span> with age <span class="n">1</span>.
+
+ <span class="ty">STEP</span> <span class="n">2</span>: <span class="ty">New</span> objects <span class="n">06</span>, <span class="n">07</span>, <span class="n">08</span> fill <span class="ty">Eden</span>. <span class="ty">GC</span> runs again.
+         <span class="n">06</span>, <span class="n">07</span> have <span class="ty">NO</span> reference, and now <span class="n">04</span> has <span class="ty">NO</span> reference -&gt; deleted.
+         <span class="ty">Survivors</span> move to the *other* survivor space (<span class="ty">S1</span>),
+         and each survivor&#x27;s age +<span class="n">1</span>:  <span class="n">01</span>(age <span class="n">2</span>), <span class="n">08</span>(age <span class="n">1</span>), ...
+
+ <span class="ty">STEP</span> <span class="n">3</span>: <span class="ty">GC</span> runs again. <span class="n">08</span> and <span class="n">03</span> have <span class="ty">NO</span> reference -&gt; deleted.
+         <span class="n">01</span> survives again -&gt; age <span class="n">3</span>.
+
+ <span class="ty">STEP</span> <span class="n">4</span>: <span class="ty">Age</span> <span class="n">3</span> = <span class="ty">THRESHOLD</span>  -&gt;  <span class="ty">PROMOTION</span>!
+         <span class="n">01</span> is moved from the <span class="ty">Young</span> <span class="ty">Generation</span> to the <span class="ty">OLD</span> <span class="ty">GENERATION</span>.
+
+ +--------+------+------+     +------------------+
+ |  <span class="ty">Eden</span>  |  <span class="ty">S0</span>  |  <span class="ty">S1</span>  |     |  <span class="ty">Old</span> <span class="ty">Generation</span>  |
+ |        |      |      | --&gt; |       <span class="n">01</span>         |
+ +--------+------+------+     +------------------+
+        <span class="ty">Minor</span> <span class="ty">GC</span>                   <span class="ty">Major</span> <span class="ty">GC</span>
+</code></pre>
+<p>Key points to remember from this walk-through:</p>
+<ol>
+<li><strong>GC is invoked</strong> and runs the <strong>Mark &amp; Sweep algorithm</strong>.</li>
+<li>Objects with <strong>no reference</strong> are removed immediately (like 02 and 05 in step 1).</li>
+<li>Objects that survive are moved between the survivor spaces <strong>S0 ↔ S1</strong>, and their <strong>age increases by 1</strong> each time they survive.</li>
+<li>When an object's age reaches the <strong>threshold</strong> (age 3 in the notes' example), it gets <strong>promoted</strong> to the <strong>Old Generation</strong>.</li>
+<li>Cleaning the Young Generation = <strong>Minor GC</strong> (fast, frequent). Cleaning the Old Generation = <strong>Major GC</strong> (slower, rare).</li>
+</ol>
+<h3>Example — OutOfMemoryError</h3>
+<pre><code><span class="k">import</span> java.util.<span class="ty">ArrayList</span>;
+<span class="k">import</span> java.util.<span class="ty">List</span>;
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">OutOfMemoryDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">List</span>&lt;<span class="k">int</span>[]&gt; list = <span class="k">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+        <span class="k">while</span> (<span class="k">true</span>) {
+            list.add(<span class="k">new</span> <span class="k">int</span>[<span class="n">1_000_000</span>]);  <span class="c">// keep filling the heap forever</span>
+        }
+    }
+}
+</code></pre>
+<pre><code><span class="ty">Output</span> (after some time):
+<span class="ty">Exception</span> in thread <span class="s">&quot;main&quot;</span> java.lang.<span class="ty">OutOfMemoryError</span>: <span class="ty">Java</span> heap space
+</code></pre>
+<hr />
+<h2>Mark and Sweep with Compact Memory</h2>
+<p>This is the core algorithm the Garbage Collector uses. It has three simple steps:</p>
+<ol>
+<li><strong>Mark</strong> — the GC walks through memory and puts an "X" on every object that has <strong>no reference</strong> (nobody can reach it anymore). These are the objects to be removed.</li>
+<li><strong>Sweep</strong> — all the marked objects are deleted. This frees their memory, but it leaves <strong>gaps</strong> (holes) scattered around.</li>
+<li><strong>Compact</strong> — the remaining live objects are <strong>shifted together</strong> to the start of the memory, so all the free space becomes one big continuous block. This makes it fast to allocate new (even big) objects.</li>
+</ol>
+<pre><code> <span class="ty">Before</span>:    [<span class="ty">A</span>][<span class="ty">B</span>][<span class="ty">C</span>][<span class="ty">D</span>][<span class="ty">E</span>][<span class="ty">F</span>]        (<span class="ty">B</span>, <span class="ty">D</span>, <span class="ty">E</span> have no references)
+
+ <span class="n">1</span>) <span class="ty">MARK</span>:   [<span class="ty">A</span>][<span class="ty">X</span>][<span class="ty">C</span>][<span class="ty">X</span>][<span class="ty">X</span>][<span class="ty">F</span>]        mark which to be removed
+
+ <span class="n">2</span>) <span class="ty">SWEEP</span>:  [<span class="ty">A</span>][ ][<span class="ty">C</span>][ ][ ][<span class="ty">F</span>]        remove them -&gt; gaps appear
+
+ <span class="n">3</span>) <span class="ty">COMPACT</span>:[<span class="ty">A</span>][<span class="ty">C</span>][<span class="ty">F</span>][ ][ ][ ]        shift survivors together
+                                      -&gt; free space is now continuous
+</code></pre>
+<p>Analogy: imagine a bookshelf. First you put stickers on the books nobody reads (<strong>mark</strong>), then you throw those books away (<strong>sweep</strong>), and finally you slide the remaining books to one side so all the empty space is together (<strong>compact</strong>).</p>
+<hr />
+<h2>Types of Garbage Collectors</h2>
+<p>There are four classic types of Garbage Collectors:</p>
+<ol>
+<li><strong>Serial GC</strong></li>
+<li><strong>Parallel GC</strong> — <em>the default</em> (in classic JVM versions)</li>
+<li><strong>CMS</strong> (Concurrent Mark Sweep)</li>
+<li><strong>G1</strong> (Garbage First)</li>
+</ol>
+<p>An important term first: <strong>"Stop the World" pause</strong> — when the GC starts, <strong>all application threads are paused</strong> so the GC can clean safely. A long pause makes your app freeze, so newer GCs try to shorten or remove it.</p>
+<h3>1) Serial GC</h3>
+<ul>
+<li>Only <strong>1 thread</strong> does the garbage collection work (for both Minor and Major GC).</li>
+<li>When GC starts, <strong>all application threads are paused</strong> (full stop-the-world).</li>
+<li>Simple, but slow — like a school with <strong>one cleaner</strong> who locks all the classrooms while cleaning.</li>
+</ul>
+<h3>2) Parallel GC (the default)</h3>
+<ul>
+<li>Same idea as Serial, but <strong>multiple GC threads</strong> clean at the same time.</li>
+<li>Application threads are still paused, but the pause is <strong>shorter</strong> because many cleaners work together.</li>
+</ul>
+<h3>3) CMS — Concurrent Mark Sweep</h3>
+<ul>
+<li><strong>While the application threads are working, the GC thread also works</strong> at the same time (concurrently).</li>
+<li>But this is <strong>not 100% guaranteed</strong> — sometimes it still needs short pauses.</li>
+<li><strong>No memory compaction</strong> — after sweeping, the gaps stay, so memory can become fragmented.</li>
+</ul>
+<h3>4) G1 — Garbage First</h3>
+<ul>
+<li>Goal: application threads are (almost) <strong>100% never stopped</strong> — pauses are tiny and predictable.</li>
+<li><strong>Plus it does compaction</strong>, so memory does not get fragmented.</li>
+<li>The best of both worlds: concurrent like CMS <strong>and</strong> compacting like Serial/Parallel.</li>
+</ul>
+<h3>GC types — comparison table</h3>
+<ul class="cards"><li><b><strong>Serial</strong></b> — 1 — Yes — fully paused — Yes — One cleaner, everything stops</li><li><b><strong>Parallel</strong> (default)</b> — Many — Yes — but shorter pause — Yes — Many cleaners, everything still stops</li><li><b><strong>CMS</strong></b> — Runs alongside app — Mostly no (not 100% sure) — <strong>No</strong> — Cleans while app runs, but leaves gaps</li><li><b><strong>G1</strong></b> — Runs alongside app — ~100% no stopping — <strong>Yes</strong> — Cleans while app runs AND tidies memory</li></ul>
+<blockquote>
+<p><strong>Remember:</strong> Serial = 1 thread + full pause. Parallel = many threads + pause (default). CMS = concurrent but no compaction. G1 = concurrent + compaction.</p>
+</blockquote>
+<hr />
+<h2>Quick Revision</h2>
+<ul>
+<li>JVM memory = <strong>Stack</strong> + <strong>Heap</strong>, both created by the JVM in RAM.</li>
+<li><strong>Stack</strong>: local variables, primitives, references, one frame per method call; <strong>each thread has its own stack</strong>; variables die when they go out of scope; full stack → <strong><code>StackOverflowError</code></strong>.</li>
+<li>References come in three strengths: <strong>Strong</strong> (never collected while held), <strong>Weak</strong> (collected as soon as GC runs), <strong>Soft</strong> (collected only when memory is low).</li>
+<li><strong>Heap</strong>: all objects + the <strong>String Pool</strong>; shared by <strong>all threads</strong>; no allocation order; full heap → <strong><code>OutOfMemoryError</code></strong>.</li>
+<li>Heap generations: <strong>Eden → S0/S1 (Minor GC, age +1 each survival) → Old/Tenured Generation (Major GC)</strong> once age hits the threshold. <strong>Metaspace</strong> (non-heap, was PermGen before Java 8) stores constants, class variables and class metadata.</li>
+<li>GC algorithm = <strong>Mark</strong> (tag unreachable) → <strong>Sweep</strong> (delete) → <strong>Compact</strong> (shift survivors together).</li>
+<li>Four GC types: <strong>Serial</strong> (1 thread, stop-the-world), <strong>Parallel</strong> (many threads, default), <strong>CMS</strong> (concurrent, no compaction), <strong>G1</strong> (concurrent + compaction).</li>
+</ul>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Memory_Management_and_Garbage_Collection_Explained_Part1.mp4; Part 2 = Memory_Management_and_Garbage_Collection_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Composite Design Pattern</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#0d948822;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #0d948840}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#0d94880d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #0d948833}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#0d948814,#14b8a622);border:1px solid #0d948833;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#0d948814,#14b8a622);border:1px solid #0d948833;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#0d9488;--a2:#14b8a6">
+<header class="hero"><div class="in">
+  <span class="badge">🧩 REAL-WORLD DESIGN PATTERN</span>
+  <h1>Composite Design Pattern</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>AbstractUICondition.java — the Component</em></p>
+<p class="chips">☕ 4 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> Compose objects into tree structures representing part-whole hierarchies, and let clients treat individual objects and compositions of objects uniformly — one shared interface, one recursive operation, arbitrary nesting.</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Composite_Short_Overview_EN.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<hr />
+<h2>Intent</h2>
+<p>Compose objects into <strong>tree structures</strong> representing part-whole hierarchies, and let clients treat individual objects and compositions of objects <strong>uniformly</strong> — one shared interface, one recursive operation, arbitrary nesting.</p>
+<p>The client never asks "is this a leaf or a container?" — it just calls the operation, and the tree takes care of itself.</p>
+<hr />
+<h2>How it mirrors production code</h2>
+<p>Filter builders in UIs let users compose conditions visually: <em>age &gt; 18 AND (country = IN OR country = US)</em>. A single condition and a bracketed group of conditions must both render to SQL, and groups can nest inside groups without limit. This module models exactly that: <code>UICondition</code> is one atomic comparison; <code>UIComboCondition</code> is a bracketed AND/OR group holding <em>any</em> mix of atomic conditions and nested groups; and <code>toSql()</code> renders the whole tree with correct parentheses — the same structure query-builder libraries and rule engines use in production.</p>
+<hr />
+<h2>How the pattern works</h2>
+<ul>
+<li><code>AbstractUICondition</code> is the <strong>Component</strong>: the one shared contract, <code>toSql()</code>.</li>
+<li><code>UICondition</code> is the <strong>Leaf</strong>: an atomic <code>field operator 'value'</code> comparison — no children.</li>
+<li><code>UIComboCondition</code> is the <strong>Composite</strong>: it holds <code>List&lt;AbstractUICondition&gt;</code> — typed to the <em>component</em>, so children may be leaves or other composites — and implements <code>toSql()</code> by recursively delegating to every child and joining with its <code>AND</code>/<code>OR</code> operator inside parentheses.</li>
+<li>The <strong>client</strong> builds a nested tree and calls one method on the root; recursion does the rest.</li>
+</ul>
+<hr />
+<h2>UML Class Diagram</h2>
+<figure><img alt="Composite Design Pattern — diagram" src="composite.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p><strong>Reading the diagram:</strong> both the leaf and the composite extend the same component. The composite's child list is typed to the <em>component</em> — the dashed self-referencing arrow — which is exactly what makes unlimited nesting possible: a group can contain groups.</p>
+<hr />
+<h2>The players</h2>
+<ul class="cards"><li><b><code>AbstractUICondition</code></b> — Component — the shared <code>toSql()</code> contract.</li><li><b><code>UICondition</code></b> — Leaf — one atomic <code>field op 'value'</code> comparison.</li><li><b><code>UIComboCondition</code></b> — Composite — an AND/OR group of child components, recursively rendered.</li><li><b><code>Op</code></b> — The combinator enum (<code>AND</code>, <code>OR</code>).</li><li><b><code>CompositeDesignPattern</code></b> — Client — builds a nested tree, calls <code>toSql()</code> once on the root.</li></ul>
+<hr />
+<h2>Code walkthrough — every line explained</h2>
+<pre><code><span class="k">public</span> <span class="k">abstract</span> <span class="k">class</span> <span class="ty">AbstractUICondition</span> {
+    <span class="k">public</span> <span class="k">abstract</span> <span class="ty">String</span> toSql();
+}
+</code></pre>
+<ul>
+<li>The entire shared contract in one method. Everything in the tree — leaf or group — <em>is</em> an <code>AbstractUICondition</code> that can render itself to SQL. This is the uniformity the pattern promises.</li>
+</ul>
+<h3><code>UICondition.java</code> — the Leaf</h3>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">UICondition</span> <span class="k">extends</span> <span class="ty">AbstractUICondition</span> {
+
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">String</span> field;
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">String</span> operator;
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">String</span> value;
+
+    <span class="k">public</span> <span class="ty">UICondition</span>(<span class="ty">String</span> field, <span class="ty">String</span> operator, <span class="ty">String</span> value) { ... }
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="ty">String</span> toSql() {
+        <span class="k">return</span> field + <span class="s">&quot; &quot;</span> + operator + <span class="s">&quot; &#x27;&quot;</span> + value + <span class="s">&quot;&#x27;&quot;</span>;
+    }
+}
+</code></pre>
+<ul>
+<li>Three immutable parts — <code>field</code>, <code>operator</code>, <code>value</code> — and a <code>toSql()</code> that renders them as one atomic comparison like <code>age &gt; '18'</code>. No children, no recursion: this is where the tree bottoms out.</li>
+</ul>
+<h3><code>UIComboCondition.java</code> — the Composite</h3>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">UIComboCondition</span> <span class="k">extends</span> <span class="ty">AbstractUICondition</span> {
+
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">Op</span> comboOp;
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">List</span>&lt;<span class="ty">AbstractUICondition</span>&gt; conditions;
+
+    <span class="k">public</span> <span class="ty">UIComboCondition</span>(<span class="ty">Op</span> comboOp, <span class="ty">AbstractUICondition</span>... conditions) {
+        <span class="k">this</span>.comboOp = comboOp;
+        <span class="k">this</span>.conditions = <span class="k">new</span> <span class="ty">ArrayList</span>&lt;&gt;(<span class="ty">Arrays</span>.asList(conditions));
+    }
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="ty">String</span> toSql() {
+        <span class="k">return</span> <span class="s">&quot;(&quot;</span> + conditions.stream().map(<span class="ty">AbstractUICondition</span>::toSql)
+                .collect(<span class="ty">Collectors</span>.joining(<span class="s">&quot; &quot;</span> + comboOp.name() + <span class="s">&quot; &quot;</span>)) + <span class="s">&quot;)&quot;</span>;
+    }
+}
+</code></pre>
+<ul>
+<li><strong>The child list is typed <code>List&lt;AbstractUICondition&gt;</code></strong> — the component type, not a concrete type. That single decision is the whole pattern: a child can be a <code>UICondition</code> <em>or another <code>UIComboCondition</code></em>, so groups nest without limit.</li>
+<li>The varargs constructor makes tree-building read naturally at the call site.</li>
+<li><strong><code>toSql()</code> is the recursive heart</strong>: map every child to <em>its</em> <code>toSql()</code> (leaves render themselves; nested groups recurse again), join the results with <code>AND</code> / <code>OR</code>, and wrap in parentheses so nested groups keep correct precedence.</li>
+</ul>
+<h3><code>CompositeDesignPattern.java</code> — the client</h3>
+<pre><code><span class="ty">AbstractUICondition</span> tree = <span class="k">new</span> <span class="ty">UIComboCondition</span>(<span class="ty">Op</span>.<span class="ty">AND</span>,
+        <span class="k">new</span> <span class="ty">UICondition</span>(<span class="s">&quot;age&quot;</span>, <span class="s">&quot;&gt;&quot;</span>, <span class="s">&quot;18&quot;</span>),
+        <span class="k">new</span> <span class="ty">UIComboCondition</span>(<span class="ty">Op</span>.<span class="ty">OR</span>,
+                <span class="k">new</span> <span class="ty">UICondition</span>(<span class="s">&quot;country&quot;</span>, <span class="s">&quot;=&quot;</span>, <span class="s">&quot;IN&quot;</span>),
+                <span class="k">new</span> <span class="ty">UICondition</span>(<span class="s">&quot;country&quot;</span>, <span class="s">&quot;=&quot;</span>, <span class="s">&quot;US&quot;</span>)));
+<span class="ty">System</span>.out.println(tree.toSql());
+</code></pre>
+<ul>
+<li>The construction visually <em>is</em> the tree: an AND group containing one leaf and a nested OR group of two leaves. The root is declared as the abstract component type, and one <code>toSql()</code> call renders everything — the client never distinguishes leaf from group.</li>
+</ul>
+<hr />
+<h2>Why the design decisions</h2>
+<ul>
+<li><strong>Why type children as the component?</strong> So leaves and groups are interchangeable inside any group — that is what makes nesting unlimited and the client code uniform.</li>
+<li><strong>Why parentheses in the composite's <code>toSql()</code>?</strong> Correct boolean precedence when groups nest: <code>(age &gt; '18' AND (country = 'IN' OR country = 'US'))</code> means exactly what the tree shape says.</li>
+<li><strong>Why an enum for the combinator?</strong> <code>AND</code>/<code>OR</code> are the only legal group operators; an enum makes illegal combinators unrepresentable and renders itself via <code>name()</code>.</li>
+</ul>
+<hr />
+<h2>Expected output</h2>
+<pre><code>$ java -cp target/classes com.realusecase.patterns.<span class="ty">CompositeDesignPattern</span>
+
+(age &gt; <span class="s">&#x27;18&#x27;</span> <span class="ty">AND</span> (country = <span class="s">&#x27;IN&#x27;</span> <span class="ty">OR</span> country = <span class="s">&#x27;US&#x27;</span>))
+</code></pre>
+<hr />
+<h2>Where this pattern shows up in real systems</h2>
+<ul>
+<li>Visual filter/query builders rendering to SQL or Mongo filters (this example).</li>
+<li>File systems (files/directories), UI component trees, org charts.</li>
+<li>JSON/XML document models; Elasticsearch bool-query builders nesting <code>must</code>/<code>should</code> clauses.</li>
+</ul>
+<hr />
+<p><em>One interface, one recursive call — the tree renders itself, however deep it goes.</em></p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload Composite_Design_Pattern_Explained_EN.mp4 to YouTube, then replace YOUTUBE_FULL_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK">YOUTUBE_FULL_LINK</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

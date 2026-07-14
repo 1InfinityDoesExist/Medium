@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Template Method Design Pattern</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#0d948822;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #0d948840}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#0d94880d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #0d948833}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#0d948814,#14b8a622);border:1px solid #0d948833;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#0d948814,#14b8a622);border:1px solid #0d948833;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#0d9488;--a2:#14b8a6">
+<header class="hero"><div class="in">
+  <span class="badge">🧩 REAL-WORLD DESIGN PATTERN</span>
+  <h1>Template Method Design Pattern</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>AbstractPayloadProcessor.java</em></p>
+<p class="chips">☕ 4 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> Define the skeleton of an algorithm in a base-class method — with the step order fixed and non-overridable — while letting subclasses customize only specific hook steps.</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Template_Method_Short_Overview_EN.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<hr />
+<h2>Intent</h2>
+<p>Define the <strong>skeleton of an algorithm</strong> in a base-class method — with the step order fixed and non-overridable — while letting subclasses customize only specific <strong>hook steps</strong>. Shared logic is written once; variation is confined to exactly the steps meant to vary.</p>
+<hr />
+<h2>How it mirrors production code</h2>
+<p>Data-ingestion pipelines process record payloads for different destinations. Every destination needs the same normalization first — lower-casing all keys — but each destination then needs its own extra shaping: BigQuery, for example, requires column-safe names (<code>first name</code> → <code>first_name</code>), while an in-memory context store takes keys as-is. The production shape is a base processor whose <code>processPayload</code> runs normalize-then-transform in a fixed order, with <code>transform</code> as the per-destination hook.</p>
+<hr />
+<h2>How the pattern works</h2>
+<ul>
+<li><code>AbstractPayloadProcessor.processPayload(...)</code> is the <strong>template method</strong> — declared <code>final</code>, so the algorithm's order (normalize → transform) can never be changed by a subclass.</li>
+<li>Step 1 (shared): lower-case every key of every row — written once, inherited by all.</li>
+<li>Step 2 (hook): <code>transform(...)</code> — <code>protected</code>, with a sensible <strong>default</strong> (identity), so subclasses override it <em>only if</em> they need to.</li>
+<li><code>ContextPayloadProcessor</code> inherits the default hook; <code>BigQueryPayloadProcessor</code> overrides it to sanitize keys into <code>[a-z0-9_]</code>.</li>
+<li>The client calls the <em>same</em> <code>processPayload</code> on both processors and gets destination-appropriate output.</li>
+</ul>
+<hr />
+<h2>UML Class Diagram</h2>
+<figure><img alt="Template Method Design Pattern — diagram" src="template-method.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p><strong>Reading the diagram:</strong> the <code>final</code> skeleton lives in the abstract class; the hook is <code>protected</code> with a default. One subclass inherits the hook, the other overrides it — neither can touch the skeleton.</p>
+<hr />
+<h2>The players</h2>
+<ul class="cards"><li><b><code>AbstractPayloadProcessor</code></b> — Abstract class — owns the <code>final</code> template method + the <code>transform</code> hook (default: identity).</li><li><b><code>ContextPayloadProcessor</code></b> — Concrete subclass — inherits the identity hook untouched.</li><li><b><code>BigQueryPayloadProcessor</code></b> — Concrete subclass — overrides the hook to sanitize keys.</li><li><b><code>TemplateMethodDesignPattern</code></b> — Client — same call, two destinations, two shapes.</li></ul>
+<hr />
+<h2>Code walkthrough — every line explained</h2>
+<pre><code><span class="k">public</span> <span class="k">abstract</span> <span class="k">class</span> <span class="ty">AbstractPayloadProcessor</span> {
+
+    <span class="k">public</span> <span class="k">final</span> <span class="ty">List</span>&lt;<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Object</span>&gt;&gt; processPayload(<span class="ty">List</span>&lt;<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Object</span>&gt;&gt; data) {
+        <span class="ty">List</span>&lt;<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Object</span>&gt;&gt; lowered = <span class="k">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+        <span class="k">for</span> (<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Object</span>&gt; row : data) {
+            <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Object</span>&gt; out = <span class="k">new</span> <span class="ty">LinkedHashMap</span>&lt;&gt;();
+            <span class="k">for</span> (<span class="ty">Map</span>.<span class="ty">Entry</span>&lt;<span class="ty">String</span>, <span class="ty">Object</span>&gt; entry : row.entrySet()) {
+                out.put(entry.getKey().toLowerCase(), entry.getValue());
+            }
+            lowered.add(out);
+        }
+        <span class="k">return</span> transform(lowered);
+    }
+
+    <span class="k">protected</span> <span class="ty">List</span>&lt;<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Object</span>&gt;&gt; transform(<span class="ty">List</span>&lt;<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Object</span>&gt;&gt; data) {
+        <span class="k">return</span> data;
+    }
+
+    <span class="k">public</span> <span class="k">abstract</span> <span class="ty">String</span> resourceType();
+}
+</code></pre>
+<ul>
+<li><strong><code>public final</code> on <code>processPayload</code> is the pattern's signature move</strong>: the skeleton — normalize first, then transform — is law. No subclass can reorder or skip the normalization.</li>
+<li>The shared step copies each row into a <code>LinkedHashMap</code> with lower-cased keys (preserving column order, never mutating the input).</li>
+<li><strong><code>transform</code> is the hook</strong>: <code>protected</code> (an extension point for subclasses, not an API for callers) with an identity default — a subclass with no extra shaping needs <em>zero</em> code.</li>
+<li><code>resourceType()</code> is abstract metadata: each processor names its destination.</li>
+</ul>
+<h3><code>ContextPayloadProcessor.java</code> — inheriting the default</h3>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">ContextPayloadProcessor</span> <span class="k">extends</span> <span class="ty">AbstractPayloadProcessor</span> {
+    <span class="a">@Override</span> <span class="k">public</span> <span class="ty">String</span> resourceType() { <span class="k">return</span> <span class="s">&quot;CONTEXT&quot;</span>; }
+}
+</code></pre>
+<ul>
+<li>The minimal subclass: names itself and changes nothing else. It still gets the full normalize-then-transform pipeline — with the identity hook.</li>
+</ul>
+<h3><code>BigQueryPayloadProcessor.java</code> — overriding the hook</h3>
+<pre><code><span class="a">@Override</span>
+<span class="k">protected</span> <span class="ty">List</span>&lt;<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Object</span>&gt;&gt; transform(<span class="ty">List</span>&lt;<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Object</span>&gt;&gt; data) {
+    <span class="ty">List</span>&lt;<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Object</span>&gt;&gt; sanitized = <span class="k">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+    <span class="k">for</span> (<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Object</span>&gt; row : data) {
+        <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Object</span>&gt; out = <span class="k">new</span> <span class="ty">LinkedHashMap</span>&lt;&gt;();
+        <span class="k">for</span> (<span class="ty">Map</span>.<span class="ty">Entry</span>&lt;<span class="ty">String</span>, <span class="ty">Object</span>&gt; entry : row.entrySet()) {
+            out.put(entry.getKey().replaceAll(<span class="s">&quot;[^a-z0-9_]&quot;</span>, <span class="s">&quot;_&quot;</span>), entry.getValue());
+        }
+        sanitized.add(out);
+    }
+    <span class="k">return</span> sanitized;
+}
+</code></pre>
+<ul>
+<li>The one varying step: every character that isn't a lower-case letter, digit, or underscore becomes <code>_</code> — <code>first name</code> → <code>first_name</code>, a BigQuery-legal column. Note it can assume keys are <em>already lower-cased</em>: the <code>final</code> skeleton guarantees normalization ran first.</li>
+</ul>
+<h3>The client</h3>
+<pre><code>row.put(<span class="s">&quot;First Name&quot;</span>, <span class="s">&quot;avinash&quot;</span>);
+row.put(<span class="s">&quot;EMAIL&quot;</span>, <span class="s">&quot;a@b.com&quot;</span>);
+...
+<span class="ty">System</span>.out.println(context.resourceType() + <span class="s">&quot; -&gt; &quot;</span> + context.processPayload(data));
+<span class="ty">System</span>.out.println(bigquery.resourceType() + <span class="s">&quot; -&gt; &quot;</span> + bigquery.processPayload(data));
+</code></pre>
+<ul>
+<li>Deliberately messy input — mixed case, a space in a key. The <em>same</em> <code>processPayload</code> call yields <code>first name</code> (lower-cased only) for CONTEXT and <code>first_name</code> (lower-cased <em>and</em> sanitized) for BIGQUERY.</li>
+</ul>
+<hr />
+<h2>Why the design decisions</h2>
+<ul>
+<li><strong>Why <code>final</code> on the template method?</strong> The fixed order is the contract. If a subclass could override the skeleton, "normalize always happens first" would be a hope, not a guarantee.</li>
+<li><strong>Why give the hook a default instead of making it abstract?</strong> Optional variation: destinations that need nothing extra (CONTEXT) write nothing. Only genuinely varying steps burden subclasses.</li>
+<li><strong>Why can BigQuery's regex assume lower-case?</strong> Because the skeleton <em>guarantees</em> the normalize step already ran — hooks can rely on the steps before them. That's the power of a fixed order.</li>
+</ul>
+<hr />
+<h2>Expected output</h2>
+<pre><code>$ java -cp target/classes com.realusecase.patterns.<span class="ty">TemplateMethodDesignPattern</span>
+
+<span class="ty">CONTEXT</span> -&gt; [{first name=avinash, email=a<span class="a">@b</span>.com}]
+<span class="ty">BIGQUERY</span> -&gt; [{first_name=avinash, email=a<span class="a">@b</span>.com}]
+</code></pre>
+<hr />
+<h2>Where this pattern shows up in real systems</h2>
+<ul>
+<li>Per-destination payload shaping in ingestion pipelines (this example).</li>
+<li><code>HttpServlet.service()</code> calling your <code>doGet</code>/<code>doPost</code>; JUnit's setup → test → teardown.</li>
+<li>Spring's <code>JdbcTemplate</code>/<code>AbstractApplicationContext.refresh()</code>; build-tool lifecycles.</li>
+</ul>
+<hr />
+<p><em>The skeleton is law; the hooks are yours.</em></p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload Template_Method_Design_Pattern_Explained_EN.mp4 to YouTube, then replace YOUTUBE_FULL_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK">YOUTUBE_FULL_LINK</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

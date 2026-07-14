@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dependency Injection</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#15803d22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #15803d40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#15803d0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #15803d33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#15803d;--a2:#22c55e">
+<header class="hero"><div class="in">
+  <span class="badge">🍃 SPRING BOOT</span>
+  <h1>Dependency Injection</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>Why new inside a class means tight coupling — and which SOLID rule it breaks  ·  What dependency injection is, and how…</em></p>
+<p class="chips">☕ 9 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> Why new inside a class means tight coupling — and which SOLID rule it breaks  ·  What dependency injection is, and how @Autowired resolves a bean  ·  The 3 injection styles — field, setter, constructor — with advantages &amp; disadvantages  ·  Circular dependency: what it is and 3 ways to fix it</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Dependency_Injection_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>The problem: creating dependencies yourself</h2>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">User</span> {
+    <span class="ty">Order</span> order = <span class="k">new</span> <span class="ty">Order</span>();      <span class="c">// User creates its own dependency</span>
+
+    <span class="k">public</span> <span class="ty">User</span>() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Hi&quot;</span>);
+    }
+}
+</code></pre>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">Order</span> {
+    <span class="k">public</span> <span class="ty">Order</span>() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;order&quot;</span>);
+    }
+}
+</code></pre>
+<p>Two problems with this:</p>
+<figure><img alt="Dependency Injection — diagram" src="06-dependency-injection.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<ol>
+<li>Both <code>User</code> and <code>Order</code> classes are <strong>tightly coupled</strong>. Suppose the <code>Order</code> object creation logic gets changed (let's say in the future <code>Order</code> becomes an <em>interface</em> and it has many concrete classes) — then the <code>User</code> class has to be changed too.</li>
+<li>It <strong>breaks the Dependency Inversion rule</strong> in the SOLID principles. This principle says: <strong>DO NOT depend on concrete implementations — rather, depend on abstractions.</strong></li>
+</ol>
+<blockquote>
+<p>Added: the full SOLID "D" phrasing — <em>high-level modules should not depend on low-level modules; both should depend on abstractions, and abstractions should not depend on details.</em> <code>new Order()</code> hard-wires <code>User</code> (high-level) to one concrete detail, which is exactly what the rule forbids.</p>
+</blockquote>
+<h2>What is Dependency Injection?</h2>
+<ul>
+<li>Using dependency injection, we can make our class <strong>independent of its dependencies</strong>.</li>
+<li>It helps to remove the dependency on a concrete implementation, and <strong>inject the dependencies from an external source</strong> (the IOC container).</li>
+</ul>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">User</span> {
+    <span class="a">@Autowired</span>
+    <span class="ty">Order</span> order;        <span class="c">// Spring supplies it — User no longer builds it</span>
+}
+</code></pre>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Order</span> {
+}
+</code></pre>
+<p>How <code>@Autowired</code> works — it first looks for a bean of the required type:</p>
+<ul>
+<li>If the bean is found, Spring will inject it.</li>
+<li>If not, Spring will create it, then inject it.</li>
+</ul>
+<h2>Ways of Injection</h2>
+<ul>
+<li>The dependency is set directly into the fields of the class.</li>
+<li>Spring uses <strong>reflection</strong>: it iterates over the fields and resolves the dependency.</li>
+</ul>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">User</span> {
+    <span class="a">@Autowired</span>
+    <span class="ty">Order</span> order;
+
+    <span class="k">public</span> <span class="ty">User</span>() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;User&quot;</span>);
+    }
+}
+</code></pre>
+<pre><code><span class="a">@Component</span>
+<span class="a">@Lazy</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Order</span> {
+    <span class="k">public</span> <span class="ty">Order</span>() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;order&quot;</span>);
+    }
+}
+</code></pre>
+<pre><code>Run:
+User
+order
+</code></pre>
+<p><strong>Advantage</strong></p>
+<ul>
+<li>Simple and easy to use.</li>
+</ul>
+<p><strong>Disadvantage</strong></p>
+<ul>
+<li>Cannot be used with immutable fields:</li>
+</ul>
+<pre><code><span class="a">@Autowired</span>
+<span class="k">public</span> <span class="k">final</span> <span class="ty">Order</span> order;          <span class="c">// X — does not compile: final field</span>
+                                   <span class="c">//     must be initialized</span>
+</code></pre>
+<p>Note this curious case from the notes:</p>
+<pre><code><span class="a">@Autowired</span>
+<span class="k">public</span> <span class="k">final</span> <span class="ty">Order</span> order = <span class="k">null</span>;   <span class="c">// compiles...</span>
+</code></pre>
+<p>During reflection it ignores <code>final</code> and the object instance is injected into it — so <code>order</code> is no more <code>null</code>!</p>
+<blockquote>
+<p>Good to know: do not rely on that <code>final ... = null</code> trick — it depends on reflection being able to overwrite a <code>final</code> field, which is fragile across Java versions and defeats the whole point of <code>final</code>. If you want immutability, use <strong>constructor injection</strong>.</p>
+</blockquote>
+<ul>
+<li>Chances of <strong>NullPointerException</strong>:</li>
+</ul>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">User</span> {
+    <span class="a">@Autowired</span>
+    <span class="k">public</span> <span class="ty">Order</span> order;
+
+    <span class="k">public</span> <span class="k">void</span> process() {
+        order.process();
+    }
+}
+</code></pre>
+<pre><code><span class="ty">User</span> user = <span class="k">new</span> <span class="ty">User</span>();   <span class="c">// created by hand, NOT by Spring</span>
+user.process();           <span class="c">// NullPointerException!</span>
+                          <span class="c">// User was created using the default</span>
+                          <span class="c">// constructor -&gt; nothing was injected.</span>
+</code></pre>
+<blockquote>
+<p>Added: this is also why field injection <strong>hurts testing</strong> — in a plain unit test <em>you</em> are the one calling <code>new User()</code>, so the <code>@Autowired</code> field stays <code>null</code>. Your only options are booting a Spring context or using reflection utilities to stuff a mock in. With constructor injection you simply pass the mock as an argument: <code>new User(mockOrder)</code>.</p>
+</blockquote>
+<h3>2) Setter Injection</h3>
+<ul>
+<li>The dependency is set into the field <strong>using a setter method</strong>.</li>
+<li>We have to annotate the method with <code>@Autowired</code>.</li>
+</ul>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">User</span> {
+    <span class="k">public</span> <span class="ty">Order</span> order;
+
+    <span class="k">public</span> <span class="ty">User</span>() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Hi&quot;</span>);
+    }
+
+    <span class="a">@Autowired</span>
+    <span class="k">public</span> <span class="k">void</span> setOrderInjection(<span class="ty">Order</span> order) {
+        <span class="k">this</span>.order = order;
+    }
+}
+</code></pre>
+<p><strong>Advantage</strong></p>
+<ul>
+<li>The dependency <strong>can be changed any time</strong> after the object creation (as the object cannot be marked final).</li>
+<li><strong>Ease of testing</strong> — we can pass a mock object into the dependency easily (just call the setter).</li>
+</ul>
+<p><strong>Disadvantage</strong></p>
+<ul>
+<li>The field <strong>cannot be marked <code>final</code></strong> — we cannot make it immutable.</li>
+<li><strong>Difficult to read and maintain</strong>: as per standard, an object should be initialized during object creation, so this might create a code readability issue.</li>
+</ul>
+<h3>3) Constructor Injection</h3>
+<ul>
+<li>The dependency gets resolved <strong>at the time of initialization of the object itself</strong>.</li>
+<li>It is the <strong>recommended</strong> way to use.</li>
+<li>When only <strong>1 constructor</strong> is present, using <code>@Autowired</code> on the constructor is <strong>not mandatory</strong> (since Spring 4.3).</li>
+</ul>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">User</span> {
+
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">Order</span> order;          <span class="c">// final IS possible here</span>
+
+    <span class="c">// single constructor -&gt; @Autowired not needed (Spring 4.3+)</span>
+    <span class="k">public</span> <span class="ty">User</span>(<span class="ty">Order</span> order) {
+        <span class="k">this</span>.order = order;
+        <span class="ty">System</span>.out.println(<span class="s">&quot;User created with its Order&quot;</span>);
+    }
+}
+</code></pre>
+<p><strong>Why recommended?</strong></p>
+<ul>
+<li>All <strong>mandatory dependencies are created at the time of initialization itself</strong>. Makes it 100% sure that our object is fully initialized with its mandatory dependencies.</li>
+<li>Avoids <code>NullPointerException</code> during runtime.</li>
+<li>Unnecessary null checks can be avoided too.</li>
+<li>We can create <strong>immutable objects</strong> using constructor injection (<code>final</code> fields).</li>
+<li><strong>Fail fast</strong>: if there is any missing dependency, the application fails at startup — not later in production.</li>
+<li><strong>Unit testing is easy</strong> — just pass mocks to the constructor.</li>
+</ul>
+<h2>Common issue 1: Circular dependency</h2>
+<p><code>A</code> needs <code>B</code> and <code>B</code> needs <code>A</code> — neither bean can finish construction:</p>
+<p><strong>Fixes</strong></p>
+<p>1). First and foremost: <strong>refactor the code and remove the cycle</strong>. E.g. the common code on which both depend can be taken out to a separate class — this way we break the circular dependency.</p>
+<p>2). Use <strong><code>@Lazy</code> on the <code>@Autowired</code></strong> annotation (<code>@Lazy</code> on field injection). Spring will create a <strong>proxy bean</strong> instead of creating the real bean immediately during application startup:</p>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Order</span> {
+    <span class="a">@Lazy</span>
+    <span class="a">@Autowired</span>
+    <span class="ty">Invoice</span> invoice;    <span class="c">// proxy injected now, real bean created on first use</span>
+}
+
+<span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Invoice</span> {
+    <span class="a">@Autowired</span>
+    <span class="ty">Order</span> order;        <span class="c">// cycle broken: Order finished constructing already</span>
+}
+</code></pre>
+<p>3). Use <strong><code>@PostConstruct</code></strong> — let one side wire itself in <em>after</em> construction:</p>
+<pre><code><span class="c">// Order class</span>
+<span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Order</span> {
+    <span class="a">@Autowired</span>
+    <span class="ty">Invoice</span> invoice;                 <span class="c">// Invoice no longer autowires Order</span>
+
+    <span class="a">@PostConstruct</span>
+    <span class="k">public</span> <span class="k">void</span> initialized() {
+        invoice.setOrder(<span class="k">this</span>);      <span class="c">// wire the back-reference manually</span>
+    }
+}
+</code></pre>
+<pre><code><span class="c">// Invoice class</span>
+<span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Invoice</span> {
+    <span class="k">public</span> <span class="ty">Order</span> order;              <span class="c">// NOT @Autowired -&gt; no cycle</span>
+
+    <span class="k">public</span> <span class="k">void</span> setOrder(<span class="ty">Order</span> order) {
+        <span class="k">this</span>.order = order;
+    }
+}
+</code></pre>
+<blockquote>
+<p>Added: since Spring Boot 2.6, circular references are <strong>rejected at startup by default</strong>. There is an emergency escape hatch — <code>spring.main.allow-circular-references=true</code> in <code>application.properties</code> — but treat it as technical debt while you refactor, not as a fix. Also note: with <strong>constructor injection a cycle always fails</strong> (there is no partially-constructed bean to expose), which is one more way constructor injection "fails fast" and surfaces bad design early.</p>
+</blockquote>
+<h2>Common issue 2: Unsatisfied dependency</h2>
+<p>One interface, <strong>two</strong> <code>@Component</code> implementations — which one should Spring inject?</p>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">User</span> {
+    <span class="a">@Autowired</span>
+    <span class="ty">Order</span> order;
+
+    <span class="k">public</span> <span class="ty">User</span>() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Hi&quot;</span>);
+    }
+}
+</code></pre>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">Order</span> {
+}
+</code></pre>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">OnlineOrder</span> <span class="k">implements</span> <span class="ty">Order</span> {
+    <span class="k">public</span> <span class="ty">OnlineOrder</span>() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Online&quot;</span>);
+    }
+}
+</code></pre>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">OfflineOrder</span> <span class="k">implements</span> <span class="ty">Order</span> {
+    <span class="k">public</span> <span class="ty">OfflineOrder</span>() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Offline&quot;</span>);
+    }
+}
+</code></pre>
+<p>It will <strong>fail</strong> with an <code>UnsatisfiedDependencyException</code>:</p>
+<p><strong>Solution 1 — <code>@Primary</code></strong> on any one of the implementations (the default winner):</p>
+<pre><code><span class="a">@Primary</span>
+<span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">OnlineOrder</span> <span class="k">implements</span> <span class="ty">Order</span> {
+    <span class="c">// injected wherever a plain @Autowired Order is asked for</span>
+}
+</code></pre>
+<p><strong>Solution 2 — <code>@Qualifier</code></strong>: name each implementation, then say which one you want at the injection point:</p>
+<pre><code><span class="a">@Component</span>
+<span class="a">@Qualifier</span>(<span class="s">&quot;online&quot;</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">OnlineOrder</span> <span class="k">implements</span> <span class="ty">Order</span> { }
+</code></pre>
+<pre><code><span class="a">@Component</span>
+<span class="a">@Qualifier</span>(<span class="s">&quot;offline&quot;</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">OfflineOrder</span> <span class="k">implements</span> <span class="ty">Order</span> { }
+</code></pre>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">User</span> {
+    <span class="a">@Autowired</span>
+    <span class="a">@Qualifier</span>(<span class="s">&quot;online&quot;</span>)     <span class="c">// pick explicitly</span>
+    <span class="ty">Order</span> order;
+}
+</code></pre>
+<blockquote>
+<p>Good to know: <code>@Qualifier</code> beats <code>@Primary</code> when both are present — <code>@Primary</code> is the <em>default</em>, <code>@Qualifier</code> is the <em>explicit choice</em> for one injection point.</p>
+</blockquote>
+<h2>How <code>@Autowired</code> actually resolves a bean (match order)</h2>
+<blockquote>
+<p>Added: interviewers love this one — when several beans match, Spring does not fail immediately. The resolution order is:</p>
+</blockquote>
+<ol>
+<li><strong>By type</strong> — exactly one bean of the required type? Inject it, done.</li>
+<li><strong><code>@Qualifier</code></strong> — an explicit qualifier at the injection point wins over everything.</li>
+<li><strong><code>@Primary</code></strong> — several candidates and one is marked <code>@Primary</code>? That one wins.</li>
+<li><strong>By name (fallback)</strong> — still ambiguous? Spring matches the <strong>field / parameter name</strong> against the <strong>bean name</strong>. Only if that also fails do you get <code>NoUniqueBeanDefinitionException</code>.</li>
+</ol>
+<p>So this works <em>without</em> <code>@Primary</code> or <code>@Qualifier</code>:</p>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">User</span> {
+    <span class="a">@Autowired</span>
+    <span class="ty">Order</span> onlineOrder;   <span class="c">// field name &quot;onlineOrder&quot; == bean name of OnlineOrder</span>
+                         <span class="c">// -&gt; OnlineOrder is injected, no exception!</span>
+}
+</code></pre>
+<p>Default bean name = the class name with the first letter lower-cased (<code>OnlineOrder</code> → <code>onlineOrder</code>). You can override it: <code>@Component("fastOrder")</code>.</p>
+<h3>Optional dependencies</h3>
+<blockquote>
+<p>Added: three ways to say "inject it if it exists, but don't fail startup if it doesn't":</p>
+</blockquote>
+<pre><code><span class="a">@Autowired</span>(required = <span class="k">false</span>)
+<span class="ty">AuditService</span> audit;                  <span class="c">// stays null if no bean exists</span>
+
+<span class="a">@Autowired</span>
+<span class="ty">Optional</span>&lt;<span class="ty">AuditService</span>&gt; audit;        <span class="c">// Optional.empty() if no bean</span>
+
+<span class="a">@Autowired</span>
+<span class="ty">ObjectProvider</span>&lt;<span class="ty">AuditService</span>&gt; audit;  <span class="c">// resolve lazily &amp; safely:</span>
+                                     <span class="c">// audit.getIfAvailable()</span>
+</code></pre>
+<p><code>ObjectProvider</code> is the most flexible: <code>getIfAvailable()</code>, <code>getIfUnique()</code>, or <code>getObject()</code> on each call (handy for prototype beans too — see the Bean Scopes topic).</p>
+<h3>Injecting ALL implementations (collection injection)</h3>
+<blockquote>
+<p>Added: asking for a <code>List</code> or <code>Map</code> of an interface injects <strong>every</strong> matching bean — the idiomatic plugin pattern:</p>
+</blockquote>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">OrderRouter</span> {
+
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">List</span>&lt;<span class="ty">Order</span>&gt; allOrders;      <span class="c">// [OnlineOrder, OfflineOrder]</span>
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Order</span>&gt; byName;  <span class="c">// {&quot;onlineOrder&quot;: ..., &quot;offlineOrder&quot;: ...}</span>
+
+    <span class="k">public</span> <span class="ty">OrderRouter</span>(<span class="ty">List</span>&lt;<span class="ty">Order</span>&gt; allOrders, <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Order</span>&gt; byName) {
+        <span class="k">this</span>.allOrders = allOrders;
+        <span class="k">this</span>.byName = byName;
+    }
+
+    <span class="k">public</span> <span class="k">void</span> route(<span class="ty">String</span> type) {
+        byName.get(type + <span class="s">&quot;Order&quot;</span>).process();   <span class="c">// pick by bean name at runtime</span>
+    }
+}
+</code></pre>
+<p>Control the <code>List</code> order with <code>@Order(1)</code>, <code>@Order(2)</code> on the implementations.</p>
+<h3><code>@Autowired</code> vs <code>@Inject</code> vs <code>@Resource</code></h3>
+<blockquote>
+<p>Added: a classic comparison question:</p>
+</blockquote>
+<ul class="cards"><li><b><code>@Autowired</code></b> — Spring — <strong>type</strong> first, then qualifier / name — has <code>required</code> attribute</li><li><b><code>@Inject</code></b> — JSR-330 (<code>jakarta.inject</code>) — same as <code>@Autowired</code> — no <code>required</code> attribute; portable outside Spring</li><li><b><code>@Resource</code></b> — JSR-250 (<code>jakarta.annotation</code>) — <strong>name</strong> first, then type — <code>@Resource(name="offlineOrder")</code>; fields &amp; setters only (no constructors)</li></ul>
+<h2>Architect's Corner</h2>
+<ul>
+<li><strong>Team policy</strong>: constructor injection only, fields <code>final</code>, Lombok <code>@RequiredArgsConstructor</code> if you want brevity. Field injection appears only in legacy code and tests.</li>
+<li><strong>Circular dependency = design smell</strong>: <code>@Lazy</code> is a band-aid; the fix is extracting the shared concern into a third bean. Note Boot 2.6+ rejects cycles by default.</li>
+<li><strong>Optional/late resolution</strong>: inject <code>ObjectProvider&lt;T&gt;</code> for optional or prototype-per-call dependencies instead of <code>@Autowired(required=false)</code>.</li>
+<li><strong>Collections injection</strong>: <code>List&lt;PaymentValidator&gt;</code> injects ALL implementations — the idiomatic plugin pattern; order with <code>@Order</code>.</li>
+<li><strong>Testability is the point</strong>: constructor injection means unit tests do <code>new Service(mockRepo)</code> — no Spring context needed.</li>
+</ul>
+<h2>Quick Revision</h2>
+<ul>
+<li><code>new</code> inside a class = <strong>tight coupling</strong> and breaks <strong>Dependency Inversion</strong> (depend on abstractions, not concrete implementations).</li>
+<li><strong>DI</strong> = the container injects dependencies from outside; <code>@Autowired</code> finds a bean of the required type (creates it if missing) and injects it.</li>
+<li><strong>Field injection</strong>: simple, but no <code>final</code> fields, NPE risk when the object is built with <code>new</code>, hard to test.</li>
+<li><strong>Setter injection</strong>: dependency swappable later, mock-friendly, but mutable and less readable.</li>
+<li><strong>Constructor injection</strong>: <strong>recommended</strong> — fully initialized object, <code>final</code>/immutable, fail-fast, easy unit tests; <code>@Autowired</code> optional with a single constructor (Spring 4.3+).</li>
+<li><strong>Circular dependency</strong> fixes: refactor the cycle away, <code>@Lazy</code> (proxy), or wire manually in <code>@PostConstruct</code>. Boot 2.6+ rejects cycles by default (<code>spring.main.allow-circular-references=true</code> is the escape hatch, not a fix).</li>
+<li><strong>Unsatisfied dependency</strong> (2 implementations): mark one <code>@Primary</code>, or pick one with <code>@Qualifier("...")</code>.</li>
+<li><strong>Resolution order</strong>: type → <code>@Qualifier</code> → <code>@Primary</code> → field-name-matches-bean-name fallback → <code>NoUniqueBeanDefinitionException</code>.</li>
+<li><strong>Optional deps</strong>: <code>@Autowired(required=false)</code>, <code>Optional&lt;T&gt;</code>, or <code>ObjectProvider&lt;T&gt;</code> (most flexible).</li>
+<li><strong><code>List&lt;T&gt;</code> / <code>Map&lt;String,T&gt;</code> injection</strong> = all implementations (plugin pattern); <code>@Resource</code> resolves by <strong>name</strong> first — the opposite of <code>@Autowired</code>.</li>
+</ul>
+<hr />
+<p>Next topic: <strong>Bean Scopes</strong> — singleton, prototype, request, session, and when each one is created.</p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Dependency_Injection_Explained_Part1.mp4; Part 2 = Dependency_Injection_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

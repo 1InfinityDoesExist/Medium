@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flyweight Design Pattern</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#6366f122;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #6366f140}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#6366f10d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #6366f133}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#6366f114,#818cf822);border:1px solid #6366f133;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#6366f114,#818cf822);border:1px solid #6366f133;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#6366f1;--a2:#818cf8">
+<header class="hero"><div class="in">
+  <span class="badge">🏛️ GANG-OF-FOUR PATTERN</span>
+  <h1>Flyweight Design Pattern</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>ISeatClass.java — the Flyweight contract</em></p>
+<p class="chips">☕ 4 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> Serve huge numbers of logical uses with few shared objects.</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Flyweight_Short_Overview_EN.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<hr />
+<h2>Intent</h2>
+<p>Serve huge numbers of logical uses with <strong>few shared objects</strong>. Split state: <strong>intrinsic</strong> (shared, immutable, stored in the flyweight) vs <strong>extrinsic</strong> (per-use, passed as parameters, never stored). A pooling factory guarantees requests for the same intrinsic state return the <strong>same instance</strong>.</p>
+<hr />
+<h2>The example domain</h2>
+<p>An airline booking system reserves thousands of seats, but there are only a handful of <strong>seat classes</strong> — economy, business. The cabin-tier data is identical across every economy reservation; only the seat number and passenger vary per booking. One shared <code>EconomySeatClass</code> object serves every economy reservation; the varying details ride in as method parameters.</p>
+<hr />
+<h2>How the pattern works</h2>
+<ul>
+<li><code>ISeatClass</code> is the <strong>Flyweight</strong> interface: <code>reserve(seatNumber, passengerName)</code> — the two extrinsic values are <em>parameters</em>.</li>
+<li><code>EconomySeatClass</code> / <code>BusinessSeatClass</code> store only the immutable intrinsic <code>cabinTier</code>.</li>
+<li><code>SeatClassFactory</code> pools flyweights in an <code>EnumMap</code>; <code>getSeatClass</code> uses <code>computeIfAbsent</code> — construct on first request (with a visible <code>pool miss</code> log), return the cached instance ever after.</li>
+<li>The client makes 4 reservations and proves only 2 objects exist (<code>==</code> identity + pool size).</li>
+</ul>
+<hr />
+<h2>UML Class Diagram</h2>
+<figure><img alt="Flyweight Design Pattern — diagram" src="flyweight.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p><strong>Reading the diagram:</strong> the client asks the factory per booking; the factory pools by seat-class type (dashed arrow). Seat number and passenger flow only through <code>reserve(...)</code> — extrinsic state never becomes a field.</p>
+<hr />
+<h2>The players</h2>
+<ul class="cards"><li><b><code>ISeatClass</code></b> — Flyweight — intrinsic tier stored; extrinsic booking details as parameters.</li><li><b><code>EconomySeatClass</code> / <code>BusinessSeatClass</code></b> — Concrete flyweights — one shared instance per tier.</li><li><b><code>SeatClassType</code></b> — The pool key (<code>ECONOMY</code>, <code>BUSINESS</code>).</li><li><b><code>SeatClassFactory</code></b> — The pool — <code>computeIfAbsent</code> sharing + <code>poolSize()</code> for proof.</li><li><b><code>SeatBookingDesignPattern</code></b> — Client — 4 reservations, 2 objects, identity proven.</li></ul>
+<hr />
+<h2>Code walkthrough — every line explained</h2>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">ISeatClass</span> {
+    <span class="k">void</span> reserve(<span class="ty">String</span> seatNumber, <span class="ty">String</span> passengerName);
+}
+</code></pre>
+<ul>
+<li>The signature <em>is</em> the intrinsic/extrinsic split: seat number and passenger — the per-booking data — enter as parameters and are never stored.</li>
+</ul>
+<h3><code>EconomySeatClass.java</code> — a concrete flyweight</h3>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">EconomySeatClass</span> <span class="k">implements</span> <span class="ty">ISeatClass</span> {
+
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">String</span> cabinTier = <span class="s">&quot;ECONOMY&quot;</span>;
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">void</span> reserve(<span class="ty">String</span> seatNumber, <span class="ty">String</span> passengerName) {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;----Reserving &quot;</span> + cabinTier + <span class="s">&quot; seat &quot;</span> + seatNumber + <span class="s">&quot; for &quot;</span> + passengerName);
+    }
+}
+</code></pre>
+<ul>
+<li>One <code>final</code> intrinsic field — the tier. Immutable, hence safe to share across every economy booking, on any thread. <code>BusinessSeatClass</code> is identical with its own tier.</li>
+</ul>
+<h3><code>SeatClassFactory.java</code> — the pool</h3>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">SeatClassFactory</span> {
+
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">Map</span>&lt;<span class="ty">SeatClassType</span>, <span class="ty">ISeatClass</span>&gt; pool = <span class="k">new</span> <span class="ty">EnumMap</span>&lt;&gt;(<span class="ty">SeatClassType</span>.<span class="k">class</span>);
+
+    <span class="k">public</span> <span class="ty">ISeatClass</span> getSeatClass(<span class="ty">SeatClassType</span> type) {
+        <span class="k">return</span> pool.computeIfAbsent(type, <span class="ty">SeatClassFactory</span>::create);
+    }
+
+    <span class="k">private</span> <span class="k">static</span> <span class="ty">ISeatClass</span> create(<span class="ty">SeatClassType</span> type) {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;(pool miss) creating flyweight for &quot;</span> + type);
+        <span class="k">switch</span> (type) {
+        <span class="k">case</span> <span class="ty">ECONOMY</span>: <span class="k">return</span> <span class="k">new</span> <span class="ty">EconomySeatClass</span>();
+        <span class="k">case</span> <span class="ty">BUSINESS</span>: <span class="k">return</span> <span class="k">new</span> <span class="ty">BusinessSeatClass</span>();
+        <span class="k">default</span>: <span class="k">throw</span> <span class="k">new</span> <span class="ty">IllegalArgumentException</span>(<span class="s">&quot;No flyweight registered for &quot;</span> + type);
+        }
+    }
+
+    <span class="k">public</span> <span class="k">int</span> poolSize() { <span class="k">return</span> pool.size(); }
+}
+</code></pre>
+<ul>
+<li><strong><code>computeIfAbsent</code> is the entire sharing policy</strong>: first request for a tier constructs it (logging the miss — visible proof of when construction happens); every later request returns the cached instance. <code>create</code> is the only place <code>new</code> appears. <code>poolSize()</code> exists so the demo can prove the count.</li>
+</ul>
+<h3><code>SeatBookingDesignPattern.java</code> — the client</h3>
+<pre><code><span class="ty">ISeatClass</span> booking1 = seatClassFactory.getSeatClass(<span class="ty">SeatClassType</span>.<span class="ty">ECONOMY</span>);
+booking1.reserve(<span class="s">&quot;14A&quot;</span>, <span class="s">&quot;A. Menon&quot;</span>);
+<span class="ty">ISeatClass</span> booking2 = seatClassFactory.getSeatClass(<span class="ty">SeatClassType</span>.<span class="ty">ECONOMY</span>);
+booking2.reserve(<span class="s">&quot;22F&quot;</span>, <span class="s">&quot;R. Iyer&quot;</span>);
+seatClassFactory.getSeatClass(<span class="ty">SeatClassType</span>.<span class="ty">BUSINESS</span>).reserve(<span class="s">&quot;2C&quot;</span>, <span class="s">&quot;S. Kapoor&quot;</span>);
+seatClassFactory.getSeatClass(<span class="ty">SeatClassType</span>.<span class="ty">BUSINESS</span>).reserve(<span class="s">&quot;3A&quot;</span>, <span class="s">&quot;N. Verma&quot;</span>);
+
+<span class="ty">System</span>.out.println(<span class="s">&quot;ECONOMY flyweight reused (booking1 == booking2): &quot;</span> + (booking1 == booking2));
+<span class="ty">System</span>.out.println(<span class="s">&quot;Objects in pool for 4 reservations: &quot;</span> + seatClassFactory.poolSize());
+</code></pre>
+<ul>
+<li>Four reservations, two tiers. The output shows exactly two <code>pool miss</code> lines; <code>==</code> proves the two economy bookings share one object; <code>poolSize()</code> confirms: 4 reservations, 2 objects.</li>
+</ul>
+<hr />
+<h2>Why the design decisions</h2>
+<ul>
+<li><strong>Why must <code>cabinTier</code> be <code>final</code>?</strong> Shared objects must be immutable — one caller mutating it would corrupt every other booking.</li>
+<li><strong>Why are seat number and passenger parameters?</strong> Stored, they'd make the instance stateful and unshareable. Extrinsic state flows <em>through</em> the flyweight, never lives <em>in</em> it.</li>
+<li><strong>Why an <code>EnumMap</code> pool keyed by an enum?</strong> Legal tiers are a closed set; the map is tiny, fast, and type-safe.</li>
+</ul>
+<hr />
+<h2>Expected output</h2>
+<pre><code><span class="ty">Flyweight</span> <span class="ty">Design</span> <span class="ty">Pattern</span>
+(pool miss) creating flyweight <span class="k">for</span> <span class="ty">ECONOMY</span>
+----<span class="ty">Reserving</span> <span class="ty">ECONOMY</span> seat 14<span class="ty">A</span> <span class="k">for</span> <span class="ty">A</span>. <span class="ty">Menon</span>
+----<span class="ty">Reserving</span> <span class="ty">ECONOMY</span> seat <span class="n">22F</span> <span class="k">for</span> <span class="ty">R</span>. <span class="ty">Iyer</span>
+(pool miss) creating flyweight <span class="k">for</span> <span class="ty">BUSINESS</span>
+----<span class="ty">Reserving</span> <span class="ty">BUSINESS</span> seat 2<span class="ty">C</span> <span class="k">for</span> <span class="ty">S</span>. <span class="ty">Kapoor</span>
+----<span class="ty">Reserving</span> <span class="ty">BUSINESS</span> seat 3<span class="ty">A</span> <span class="k">for</span> <span class="ty">N</span>. <span class="ty">Verma</span>
+<span class="ty">ECONOMY</span> flyweight reused (booking1 == booking2): <span class="k">true</span>
+<span class="ty">Objects</span> in pool <span class="k">for</span> <span class="n">4</span> reservations: <span class="n">2</span>
+</code></pre>
+<hr />
+<h2>Where this pattern shows up in real systems</h2>
+<ul>
+<li>Shared seat-class/fare-class objects in booking systems (this example).</li>
+<li><code>Integer.valueOf()</code> — the JDK's flyweight cache; <code>String</code> interning; glyphs in text rendering; shared sprites in games.</li>
+</ul>
+<hr />
+<p><em>Store what never changes, pass in what does — two objects serve four bookings, or four million.</em></p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload Flyweight_Design_Pattern_Explained_EN.mp4 to YouTube, then replace YOUTUBE_FULL_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK">YOUTUBE_FULL_LINK</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

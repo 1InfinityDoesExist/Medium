@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JPA, EntityManager and Persistence Context</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#15803d22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #15803d40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#15803d0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #15803d33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#15803d;--a2:#22c55e">
+<header class="hero"><div class="in">
+  <span class="badge">🍃 SPRING BOOT</span>
+  <h1>JPA, EntityManager and Persistence Context</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>Custom Factory</em></p>
+<p class="chips">☕ 9 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> The full JPA architecture: Persistence Unit → EntityManagerFactory → EntityManager → Persistence Context → Entities  ·  What a Persistence Unit is and how EntityManagerFactory is created from it at startup  ·  Transaction manager types: RESOURCE_LOCAL (one DB) vs JTA (spans multiple DBs)  ·  The EntityManager interface and its CRUD methods</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload JPA_and_Persistence_Context_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>JPA Architecture — the big picture</h2>
+<p>This is the most important diagram of the topic. Everything in JPA hangs off this chain:</p>
+<figure><img alt="JPA, EntityManager and Persistence Context — diagram" src="17-jpa-and-persistence-context.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p>How the pieces nest into each other — an <code>EntityManager</code> <em>contains</em> a Persistence Context, which <em>contains</em> the entities it is working on:</p>
+<p>Two side notes from the diagram page:</p>
+<ul>
+<li><code>entityManager.getUser(1)</code> → when it returns the object, it is <strong>stored in the Persistence Context</strong>.</li>
+<li><strong>Dialect</strong> — converts ORM language to JDBC language (JQL/HQL → SQL).</li>
+</ul>
+<blockquote>
+<p>Added: an <em>entity</em> is a plain Java class marked with <code>@Entity</code> and <code>@Id</code> — JPA maps it to a table and its fields to columns. This is what the "Entity" boxes in the diagram are:</p>
+</blockquote>
+<pre><code><span class="a">@Entity</span>
+<span class="a">@Table</span>(name = <span class="s">&quot;user_details&quot;</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">UserDetails</span> {
+
+    <span class="a">@Id</span>
+    <span class="a">@GeneratedValue</span>(strategy = <span class="ty">GenerationType</span>.<span class="ty">IDENTITY</span>)
+    <span class="k">private</span> <span class="ty">Long</span> id;
+
+    <span class="k">private</span> <span class="ty">String</span> name;
+    <span class="k">private</span> <span class="ty">String</span> email;
+
+    <span class="c">// getters and setters</span>
+}
+</code></pre>
+<h2>Persistence Unit</h2>
+<ul>
+<li>Logical grouping of Entity classes, which <strong>share the same configuration</strong>.</li>
+<li>Configuration details like:</li>
+<li>Database connection properties</li>
+<li>JPA provider (Hibernate etc.)</li>
+</ul>
+<pre><code><span class="c"># which packages hold the entities of this persistence unit</span>
+<span class="a">spring.jpa.packages-to-scan</span>=com.x.entity
+
+<span class="c"># typical connection + provider configuration that forms the persistence unit</span>
+<span class="a">spring.datasource.url</span>=jdbc:mysql:<span class="c">//localhost:3306/mydb</span>
+<span class="a">spring.datasource.username</span>=root
+<span class="a">spring.datasource.password</span>=secret
+<span class="a">spring.jpa.database-platform</span>=org.hibernate.dialect.MySQLDialect
+</code></pre>
+<ul>
+<li><strong>dialect</strong> — converts JQL/HQL to SQL for the specific database.</li>
+</ul>
+<h2>EntityManagerFactory</h2>
+<ul>
+<li>Using the Persistence Unit configuration, the <code>EntityManagerFactory</code> object gets created <strong>during application startup</strong>.</li>
+<li>If any property is not provided, a <strong>default</strong> one is picked and set (convention over configuration again).</li>
+<li><strong>1 EntityManagerFactory for 1 Persistence Unit.</strong></li>
+<li>This class acts as a <strong>factory to create objects of <code>EntityManager</code></strong>.</li>
+</ul>
+<p>The notes list the 3 ingredients — datasource, <code>JpaVendorAdapter</code>, <code>LocalContainerEntityManagerFactoryBean</code> — and you can create <strong>many</strong> factories this way:</p>
+<pre><code><span class="a">@Configuration</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">JpaConfig</span> {
+
+    <span class="a">@Bean</span>
+    <span class="k">public</span> <span class="ty">DataSource</span> dataSource() {
+        <span class="ty">HikariDataSource</span> ds = <span class="k">new</span> <span class="ty">HikariDataSource</span>();
+        ds.setDriverClassName(<span class="s">&quot;com.mysql.cj.jdbc.Driver&quot;</span>);
+        ds.setJdbcUrl(<span class="s">&quot;jdbc:mysql://localhost:3306/mydb&quot;</span>);
+        ds.setUsername(<span class="s">&quot;root&quot;</span>);
+        ds.setPassword(<span class="s">&quot;secret&quot;</span>);
+        <span class="k">return</span> ds;
+    }
+
+    <span class="a">@Bean</span>
+    <span class="k">public</span> <span class="ty">LocalContainerEntityManagerFactoryBean</span> entityManagerFactory(
+            <span class="ty">DataSource</span> dataSource) {
+        <span class="ty">LocalContainerEntityManagerFactoryBean</span> emf =
+                <span class="k">new</span> <span class="ty">LocalContainerEntityManagerFactoryBean</span>();
+        emf.setDataSource(dataSource);                     <span class="c">// 1) datasource</span>
+        emf.setJpaVendorAdapter(<span class="k">new</span> <span class="ty">HibernateJpaVendorAdapter</span>()); <span class="c">// 2) vendor adapter</span>
+        emf.setPackagesToScan(<span class="s">&quot;com.x.entity&quot;</span>);             <span class="c">// entities of this unit</span>
+        <span class="k">return</span> emf;                                        <span class="c">// 3) the factory bean</span>
+    }
+}
+</code></pre>
+<blockquote>
+<p>Good to know: define <strong>two</strong> such factory beans (each with its own <code>DataSource</code>) and you have two persistence units in one application — the standard way to talk to two databases.</p>
+</blockquote>
+<h2>Transaction Manager association with EntityManagerFactory</h2>
+<p>During persistence unit setup, we specify the value for <strong><code>transaction-type</code></strong> — either:</p>
+<ul>
+<li><code>RESOURCE_LOCAL</code> (<strong>Default</strong>)</li>
+<li><code>JTA</code> (Java Transaction API)</li>
+</ul>
+<p>The transaction manager could be of two types:</p>
+<ul>
+<li>Manager which manages transactions for <strong>1 DB</strong> → <code>RESOURCE_LOCAL</code></li>
+<li>Manager which manages transactions that can <strong>span across multiple DBs</strong> — that's also possible, using <strong>JTA</strong></li>
+</ul>
+<p>During application startup, <em>after</em> the <code>EntityManagerFactory</code> object is created, a transaction manager object gets created based on <code>RESOURCE_LOCAL</code> or <code>JTA</code>.</p>
+<h3>Usecase 1: transaction manager for 1 DB</h3>
+<pre><code><span class="a">spring.jpa.properties.javax.persistence.transactionType</span>=RESOURCE_LOCAL
+</code></pre>
+<p>Spring uses <code>JpaTransactionManager.class</code> for this. You can also configure it manually:</p>
+<pre><code><span class="a">@Bean</span>
+<span class="k">public</span> <span class="ty">JpaTransactionManager</span> transactionManager(
+        <span class="ty">EntityManagerFactory</span> entityManagerFactory) {
+    <span class="k">return</span> <span class="k">new</span> <span class="ty">JpaTransactionManager</span>(entityManagerFactory);
+}
+</code></pre>
+<h3>Usecase 2: transaction spanning multiple DBs</h3>
+<p>Creating a transaction which can span across multiple DBs (JTA) — covered separately (the notes defer it to a dedicated video/topic on distributed transactions).</p>
+<h2>EntityManager</h2>
+<ul>
+<li>It's an <strong>interface in JPA</strong> that provides methods to perform CRUD operations on entities:</li>
+<li><code>persist()</code> — insert a new entity</li>
+<li><code>merge()</code> — update / re-attach an entity</li>
+<li><code>find()</code> — read by primary key</li>
+<li><code>remove()</code> — delete an entity</li>
+<li><code>createQuery()</code> — run JQL/HQL queries</li>
+<li><code>EntityManager</code> interface methods are <strong>implemented by JPA vendors</strong> like Hibernate etc.</li>
+<li><code>EntityManagerFactory</code> helps to create an object of <code>EntityManager</code>.</li>
+</ul>
+<blockquote>
+<p>Added: <code>JpaRepository</code> (Spring Data JPA) sits <strong>on top of</strong> <code>EntityManager</code>. Every <code>save()</code>, <code>findById()</code>, <code>delete()</code> you call on a repository is translated into these same <code>EntityManager</code> calls internally. Understanding this layer explains most JPA "magic".</p>
+</blockquote>
+<h2>Persistence Context — the 1st-level cache</h2>
+<ul>
+<li>Consider it a <strong>first-level cache</strong>.</li>
+<li>For each <code>EntityManager</code>, a <code>PersistenceContext</code> object is created, which <strong>holds the list of entities it's working on</strong>.</li>
+<li>It also <strong>manages the lifecycle</strong> of each entity (next section).</li>
+</ul>
+<h3>Write operations are transaction-bounded</h3>
+<p><code>EntityManager</code> Insert/Update/Delete operations are <strong>transaction bounded</strong>. Meaning: it first checks if a <em>transaction is open</em> — if not, it will <strong>throw an exception</strong>.</p>
+<p>But not all operations — <strong>READ operations are NOT transaction bounded.</strong></p>
+<p>Internally, all <code>JpaRepository</code> Insert/Update/Delete methods are annotated with <code>@Transactional</code>, so even if we do not write it, the Spring framework takes care of it.</p>
+<h3>What if you call EntityManager.persist() directly, instead of via Spring?</h3>
+<pre><code><span class="a">@Service</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">UserService</span> {
+
+    <span class="a">@PersistenceContext</span>
+    <span class="ty">EntityManager</span> entityManager;
+
+    <span class="k">public</span> <span class="k">void</span> saveUser(<span class="ty">UserDetails</span> user) {
+        entityManager.persist(user);   <span class="c">// no transaction open here!</span>
+    }
+}
+</code></pre>
+<p>Result → <strong><code>TransactionRequiredException</code></strong></p>
+<p>To fix it — open the transaction yourself with <code>@Transactional</code>:</p>
+<pre><code><span class="a">@Transactional</span>
+<span class="k">public</span> <span class="k">void</span> saveUser(<span class="ty">UserDetails</span> user) {
+    entityManager.persist(user);   <span class="c">// transaction open -&gt; it will work</span>
+}
+</code></pre>
+<blockquote>
+<p>Good to know: <code>@PersistenceContext</code> injects a <em>proxy</em> <code>EntityManager</code> that binds itself to the current request/transaction — that is why it is safe to inject one shared field even though real EntityManagers are not thread-safe.</p>
+</blockquote>
+<h2>Life cycle of an Entity in the Persistence Context</h2>
+<p>Reading the state machine:</p>
+<ul>
+<li><strong>New (Transient)</strong> — <code>UserEntity e = new UserEntity();</code> — a plain Java object; JPA doesn't know about it yet.</li>
+<li><code>persist()</code> → moves it to <strong>Managed (Persistent)</strong> — now the Persistence Context tracks every change.</li>
+<li><code>find()</code> / <code>get()</code> / query → an entity loaded <strong>from the DB</strong> also lands in the <strong>Managed</strong> state.</li>
+<li><code>detach(entity)</code> or <code>close()</code> → <strong>Detached</strong> — object still exists, but changes are no longer tracked.</li>
+<li><code>merge(entity)</code> → brings a Detached entity <strong>back to Managed</strong>.</li>
+<li><code>remove(entity)</code> → <strong>Removed</strong> — we want to delete it from the DB (delete happens at flush).</li>
+<li><code>persist()</code> on a Removed entity → cancels the delete, back to <strong>Managed</strong>.</li>
+<li><code>flush()</code> → synchronizes the Persistence Context with the <strong>DB</strong> (Managed → UPDATE/INSERT, Removed → DELETE).</li>
+</ul>
+<blockquote>
+<p>Added: <code>flush()</code> is also called automatically at transaction <strong>commit</strong> — you rarely call it by hand. Until flush happens, your changes live only in the Persistence Context, not in the database.</p>
+</blockquote>
+<h2>7b. Dirty checking — updates without calling save()</h2>
+<blockquote>
+<p>Added: the single most surprising Persistence Context behavior (and a favorite interview question): a <strong>Managed entity is auto-updated</strong> — you never have to call <code>save()</code> or <code>merge()</code> for it.</p>
+</blockquote>
+<p>When an entity is loaded, the Persistence Context keeps a <strong>snapshot</strong> of its original state. At flush/commit time it compares the current object against the snapshot — any field that changed produces an <code>UPDATE</code> automatically. This is called <strong>dirty checking</strong>:</p>
+<pre><code><span class="a">@Transactional</span>
+<span class="k">public</span> <span class="k">void</span> renameUser(<span class="ty">Long</span> id, <span class="ty">String</span> newName) {
+    <span class="ty">UserDetails</span> user = entityManager.find(<span class="ty">UserDetails</span>.<span class="k">class</span>, id); <span class="c">// Managed</span>
+    user.setName(newName);
+    <span class="c">// that&#x27;s it — NO persist(), NO merge(), NO save().</span>
+    <span class="c">// On commit, dirty checking sees name changed -&gt; UPDATE user_details SET name=...</span>
+}
+</code></pre>
+<p>Two consequences worth remembering:</p>
+<ul>
+<li>This only works for <strong>Managed</strong> entities inside a <strong>transaction</strong>. A Detached entity can be modified all day — nothing is written until you <code>merge()</code> it back.</li>
+<li>It cuts both ways: mutate a managed entity "just for the response" (e.g. masking an email before returning it) and JPA will happily <strong>write your masking to the database</strong> at commit. Map to a DTO instead.</li>
+</ul>
+<h2>7c. LAZY vs EAGER fetching — and LazyInitializationException</h2>
+<blockquote>
+<p>Added: how related entities are loaded is decided by the <strong>fetch type</strong>, and it interacts directly with the entity lifecycle above.</p>
+</blockquote>
+<pre><code><span class="a">@Entity</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">UserDetails</span> {
+
+    <span class="a">@Id</span> <span class="a">@GeneratedValue</span>(strategy = <span class="ty">GenerationType</span>.<span class="ty">IDENTITY</span>)
+    <span class="k">private</span> <span class="ty">Long</span> id;
+    <span class="k">private</span> <span class="ty">String</span> name;
+
+    <span class="a">@OneToMany</span>(mappedBy = <span class="s">&quot;user&quot;</span>, fetch = <span class="ty">FetchType</span>.<span class="ty">LAZY</span>)   <span class="c">// default for *ToMany</span>
+    <span class="k">private</span> <span class="ty">List</span>&lt;<span class="ty">Order</span>&gt; orders;                              <span class="c">// loaded only when accessed</span>
+}
+</code></pre>
+<ul>
+<li><strong><code>FetchType.LAZY</code></strong> — the relation is <em>not</em> loaded with the entity; a proxy/placeholder sits in the field, and the real query runs the first time you access it. Default for <code>@OneToMany</code> / <code>@ManyToMany</code>.</li>
+<li><strong><code>FetchType.EAGER</code></strong> — the relation is loaded immediately, together with the entity (usually via a join). Default for <code>@ManyToOne</code> / <code>@OneToOne</code>.</li>
+</ul>
+<p>The catch: a lazy field can only be loaded <strong>while the entity is still Managed</strong> — the proxy needs a live Persistence Context to run its query. Access it after the EntityManager closed (entity is <strong>Detached</strong>) and you get the infamous:</p>
+<pre><code><span class="ty">UserDetails</span> user = userService.getUser(<span class="n">1L</span>);  <span class="c">// transaction ended -&gt; user is Detached</span>
+user.getOrders().size();                     <span class="c">// -&gt; LazyInitializationException!</span>
+</code></pre>
+<p>Fixes (same toolbox as the N+1 problem): fetch the relation inside the transaction with <strong><code>JOIN FETCH</code></strong> JPQL, use <strong><code>@EntityGraph</code></strong>, or map what the caller needs into a <strong>DTO</strong> before the transaction ends. Do <em>not</em> "fix" it by switching everything to EAGER — that trades an exception for loading half the database on every find.</p>
+<h2>JPA 1st-level caching — per HTTP request</h2>
+<p><strong>For each HTTP request, one EntityManager is created.</strong> As a result, within one request:</p>
+<ul>
+<li><code>save</code> — hits the DB</li>
+<li><code>get</code> (same entity, same request) — returned <strong>from cache, i.e. the Persistence Context</strong> — no DB hit</li>
+</ul>
+<p>But if you make a <em>different</em> API call:</p>
+<ul>
+<li><code>get</code> — hits the DB (new request → new EntityManager → new, empty Persistence Context)</li>
+</ul>
+<p><strong>DispatcherServlet is the one which creates the EntityManager at the time of every HTTP request.</strong></p>
+<h3>Just for knowledge — creating sessions manually</h3>
+<p>You can bypass Spring and drive the factory yourself; each <code>createEntityManager()</code> opens a new session:</p>
+<pre><code><span class="a">@Autowired</span>
+<span class="ty">EntityManagerFactory</span> entityManagerFactory;
+
+<span class="k">public</span> <span class="ty">UserDetails</span> saveUser(<span class="ty">UserDetails</span> users) {
+    <span class="ty">EntityManager</span> entityManager =
+            entityManagerFactory.createEntityManager();   <span class="c">// &lt;- Session created</span>
+    entityManager.getTransaction().begin();
+    entityManager.persist(users);                         <span class="c">// INSERT -&gt; DB</span>
+    entityManager.find(<span class="ty">UserDetails</span>.<span class="k">class</span>, <span class="n">1L</span>);            <span class="c">// from 1st-level cache</span>
+    <span class="ty">UserDetails</span> userDetails =
+            entityManager.find(<span class="ty">UserDetails</span>.<span class="k">class</span>, <span class="n">1L</span>);    <span class="c">// cache again - no DB hit</span>
+    entityManager.getTransaction().commit();
+    entityManager.close();                                <span class="c">// &lt;- Session closed</span>
+
+    <span class="c">// create Session 2 and so on...</span>
+    <span class="k">return</span> userDetails;
+}
+</code></pre>
+<blockquote>
+<p>Good to know: both <code>find()</code> calls above return the <strong>same object instance</strong> without touching the DB again — that is the 1st-level cache in action. After <code>close()</code>, a new EntityManager starts with an empty Persistence Context, so the same <code>find()</code> would hit the DB.</p>
+</blockquote>
+<h2>Architect's Corner</h2>
+<ul>
+<li><strong>The N+1 problem</strong> is the #1 JPA production issue: lazy relations fetched in a loop = 1 query + N queries. Fixes: <code>JOIN FETCH</code> in JPQL, <code>@EntityGraph</code>, or DTO projections. Turn on SQL logging in dev and count.</li>
+<li><strong>Disable Open Session In View</strong>: <code>spring.jpa.open-in-view=false</code> — OSIV holds the EntityManager (and a connection) through view rendering and hides lazy-loading bugs until prod.</li>
+<li><strong>Spring Data JPA repositories</strong> sit exactly on top of this EntityManager machinery — <code>JpaRepository</code> gives you CRUD + derived queries; drop to the EntityManager for the exotic 5%.</li>
+<li><strong>Reads want DTO projections</strong> (constructor expressions/interfaces), not managed entities — no dirty checking, no accidental updates, less memory.</li>
+<li><strong><code>@Version</code> optimistic locking</strong> on mutable entities protects the persistence context's assumptions across concurrent requests.</li>
+</ul>
+<h2>Quick Revision</h2>
+<ul>
+<li><strong>Chain</strong>: Persistence Unit → creates → <code>EntityManagerFactory</code> (1:1, at startup) → creates → <code>EntityManager</code>s (1:many, = sessions) → each manages → a Persistence Context → which holds → Entities.</li>
+<li>Query path: Entity → <strong>JQL</strong> → <strong>Dialect</strong> (JQL/HQL → SQL) → <strong>JDBC driver</strong> → <strong>DB</strong>.</li>
+<li><strong>Persistence Unit</strong> = logical group of entities sharing configuration (DB props + JPA provider).</li>
+<li><strong>Custom factory</strong> = <code>DataSource</code> + <code>JpaVendorAdapter</code> + <code>LocalContainerEntityManagerFactoryBean</code>; you can create many.</li>
+<li><code>transaction-type</code>: <strong>RESOURCE_LOCAL</strong> (default, 1 DB, <code>JpaTransactionManager</code>) vs <strong>JTA</strong> (spans multiple DBs).</li>
+<li><code>EntityManager</code> = JPA <strong>interface</strong> (<code>persist</code>, <code>merge</code>, <code>find</code>, <code>remove</code>, <code>createQuery</code>); implemented by vendors (Hibernate).</li>
+<li><strong>Persistence Context = 1st-level cache</strong>; one per EntityManager; also manages entity lifecycle.</li>
+<li>Insert/Update/Delete are <strong>transaction bounded</strong> (→ <code>TransactionRequiredException</code> without one); reads are not. <code>JpaRepository</code> adds <code>@Transactional</code> for you; with a raw <code>EntityManager</code> add it yourself.</li>
+<li>Lifecycle: <strong>New</strong> –persist→ <strong>Managed</strong> –detach/close→ <strong>Detached</strong> –merge→ Managed; –remove→ <strong>Removed</strong> –flush→ DELETE in DB; <code>find()</code> loads straight into Managed.</li>
+<li><strong>Dirty checking</strong>: change a Managed entity inside a transaction → automatic <code>UPDATE</code> at commit, no <code>save()</code>/<code>merge()</code> needed (snapshot comparison at flush).</li>
+<li>Fetch types: <strong>LAZY</strong> (default <em>ToMany — loaded on first access, needs a live Persistence Context) vs </em><em>EAGER</em><em> (default </em>ToOne — loaded immediately). Touching a lazy field on a <strong>Detached</strong> entity → <code>LazyInitializationException</code>; fix with <code>JOIN FETCH</code> / <code>@EntityGraph</code> / DTOs.</li>
+<li>1 HTTP request = 1 EntityManager = 1 Persistence Context → repeated <code>get</code> in the same request is served from cache; a new request hits the DB.</li>
+</ul>
+<hr />
+<p>Next topic: <strong>Hibernate 2nd-Level Caching and ddl-auto</strong> — caching shared <em>across</em> EntityManagers, and how Hibernate manages your schema.</p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = JPA_and_Persistence_Context_Explained_Part1.mp4; Part 2 = JPA_and_Persistence_Context_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

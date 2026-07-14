@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Singleton Design Pattern</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#0d948822;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #0d948840}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#0d94880d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #0d948833}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#0d948814,#14b8a622);border:1px solid #0d948833;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#0d948814,#14b8a622);border:1px solid #0d948833;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#0d9488;--a2:#14b8a6">
+<header class="hero"><div class="in">
+  <span class="badge">🧩 REAL-WORLD DESIGN PATTERN</span>
+  <h1>Singleton Design Pattern</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>ObjectMapperSingleton.java</em></p>
+<p class="chips">☕ 7 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> Guarantee that a class has exactly one instance, and provide a global, thread-safe access point to it.</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Singleton_Short_Overview_EN.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<hr />
+<h2>Intent</h2>
+<p>Guarantee that a class has <strong>exactly one instance</strong>, and provide a <strong>global, thread-safe access point</strong> to it.</p>
+<p>Certain objects — loggers, configuration holders, connection pools, JSON mappers — are expensive to build, carry shared internal state, or must stay consistent everywhere they're used. Constructing a new instance every time a caller needs one wastes resources, risks inconsistent state, and can break correctness. Singleton solves this by making the class itself the sole authority over its own instantiation: at most one object is ever constructed, and every caller receives the same reference.</p>
+<hr />
+<h2>How it mirrors production code</h2>
+<p><code>ObjectMapper</code> from the Jackson library is one of the most common Singleton candidates in real Java microservices. Constructing an <code>ObjectMapper</code> is expensive — it scans the classpath for modules, registers serializers/deserializers, and builds internal caches. If every REST handler or service method created its own instance, the application would waste CPU and heap on every single request. Production codebases therefore keep <strong>one</strong> application-scoped <code>ObjectMapper</code> and reuse it everywhere — exactly what this example models. <code>ObjectMapperSingleton</code> is a simplified stand-in that demonstrates the structural pattern; this exact idiom appears in production Mobius code, in <code>datalake-java-common-lib : ObjectMapperSingleton</code>.</p>
+<hr />
+<h2>How the pattern works</h2>
+<p>The class hides its constructor (<code>private</code>) so no external code can call <code>new</code>. It creates and owns a single instance internally. A <code>static</code> factory method, <code>getInstance()</code>, returns that instance. Every caller — regardless of thread, package, or layer — gets back the identical object reference.</p>
+<p>This implementation uses the <strong>Initialization-on-Demand Holder idiom</strong> (also known as the <em>Bill Pugh Singleton</em>):</p>
+<ul>
+<li>A <code>private static final</code> nested class, <code>InstanceHolder</code>, holds the single instance as its own <code>static final</code> field.</li>
+<li>The JVM's class-loader guarantees a class is initialized <strong>exactly once</strong>, and only when it is <strong>first accessed</strong>.</li>
+<li>Because <code>InstanceHolder</code> is referenced only inside <code>getInstance()</code>, the instance is created lazily on the first call — with <strong>zero explicit synchronization</strong>, yet fully thread-safe by the Java Memory Model.</li>
+</ul>
+<p>This gets laziness, thread-safety, and zero locking overhead on the hot path — all for free, purely from how the JVM already loads classes.</p>
+<hr />
+<h2>UML Class Diagram</h2>
+<figure><img alt="Singleton Design Pattern — diagram" src="singleton.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p><strong>Reading the diagram:</strong> <code>SingletonDesignPattern</code> is the client — it never touches <code>InstanceHolder</code> or the private constructor directly. It only ever calls the two public members of <code>ObjectMapperSingleton</code>: the static factory <code>getInstance()</code> and the instance method <code>serialize(Object)</code>. The <code>«final»</code> stereotype on <code>ObjectMapperSingleton</code> marks that the class cannot be subclassed — closing off the one loophole that could break the single-instance guarantee.</p>
+<hr />
+<h2>The players</h2>
+<ul class="cards"><li><b><code>ObjectMapperSingleton</code></b> — The Singleton class. Private constructor, private static holder, one static factory method. Models a shared JSON-mapper utility.</li><li><b><code>InstanceHolder</code></b> — A private static nested class inside <code>ObjectMapperSingleton</code>. Its sole job is holding the one <code>static final</code> instance field; Java's class-loading semantics make this both lazy and thread-safe.</li><li><b><code>SingletonDesignPattern</code></b> — The client / driver class. Retrieves the singleton twice, proves both references point to the same object, then exercises <code>serialize</code>.</li></ul>
+<hr />
+<h2>Code walkthrough — every line explained</h2>
+<pre><code><span class="k">package</span> com.realusecase.patterns.singleton;
+
+<span class="k">public</span> <span class="k">final</span> <span class="k">class</span> <span class="ty">ObjectMapperSingleton</span> {
+
+    <span class="k">private</span> <span class="ty">ObjectMapperSingleton</span>() {
+    }
+
+    <span class="k">private</span> <span class="k">static</span> <span class="k">final</span> <span class="k">class</span> <span class="ty">InstanceHolder</span> {
+        <span class="k">private</span> <span class="k">static</span> <span class="k">final</span> <span class="ty">ObjectMapperSingleton</span> <span class="ty">INSTANCE</span> = <span class="k">new</span> <span class="ty">ObjectMapperSingleton</span>();
+    }
+
+    <span class="k">public</span> <span class="k">static</span> <span class="ty">ObjectMapperSingleton</span> getInstance() {
+        <span class="k">return</span> <span class="ty">InstanceHolder</span>.<span class="ty">INSTANCE</span>;
+    }
+
+    <span class="k">public</span> <span class="ty">String</span> serialize(<span class="ty">Object</span> value) {
+        <span class="k">return</span> <span class="ty">String</span>.valueOf(value);
+    }
+}
+</code></pre>
+<ul>
+<li>
+<p><strong><code>package com.realusecase.patterns.singleton;</code></strong> — Places the class in its own dedicated sub-package, separate from the rest of the demo code, so the implementation is easy to locate and import independently.</p>
+</li>
+<li>
+<p><strong><code>public final class ObjectMapperSingleton {</code></strong> — <code>public</code> means any code, in any package, can use it. <code>final</code> is the important part: it blocks subclassing. If this class could be extended, a subclass could add its own public constructor and create more than one instance — breaking the entire guarantee the pattern is built on.</p>
+</li>
+<li>
+<p><strong><code>private ObjectMapperSingleton() {}</code></strong> — The cornerstone of the pattern. By hiding the constructor, the class becomes the only thing allowed to create an instance of itself. No outside code, and no subclass, can ever call <code>new ObjectMapperSingleton()</code> directly. In a real Jackson wrapper, this is exactly where you'd register modules and configure serialization features.</p>
+</li>
+<li>
+<p><strong><code>private static final class InstanceHolder { ... }</code></strong> — This nested class exists for one reason: to exploit how the Java class loader behaves. The JVM loads and initializes a class exactly once, and only the first time it's actually referenced. Because nothing touches <code>InstanceHolder</code> until <code>getInstance()</code> runs, this gives the pattern free, built-in laziness — with no explicit locking anywhere in this code.</p>
+</li>
+<li>
+<p><strong><code>private static final ObjectMapperSingleton INSTANCE = new ObjectMapperSingleton();</code></strong> — The single line where the one and only instance is ever created. <code>private static final</code> means the field belongs to the class, has exactly one copy, and can never be reassigned once set. Calling <code>new ObjectMapperSingleton()</code> here is legal because a nested class shares access to its outer class's private members. The JVM's own class-initialization lock guarantees this line runs exactly once, even if many threads call <code>getInstance()</code> at the same moment — with zero <code>synchronized</code> blocks written by hand.</p>
+</li>
+<li>
+<p><strong><code>public static ObjectMapperSingleton getInstance() {</code></strong> — The public entry point. It must be <code>static</code>, because when it's first called there may be no instance in existence yet — you can't call an instance method on an object that doesn't exist. This method is the single, global door every caller walks through to reach the shared object.</p>
+</li>
+<li>
+<p><strong><code>return InstanceHolder.INSTANCE;</code></strong> — This is what actually triggers everything. Reading <code>InstanceHolder.INSTANCE</code> forces the JVM to load the <code>InstanceHolder</code> class right here, on this first call — which runs the constructor and creates the object. Every call after that just hands back the exact same reference, because the class is already loaded and Java never initializes it twice.</p>
+</li>
+<li>
+<p><strong><code>public String serialize(Object value) { return String.valueOf(value); }</code></strong> — The method that makes this singleton actually useful. It converts any object to a string using the JDK's <code>String.valueOf</code>, a simplified stand-in for Jackson's <code>writeValueAsString</code>. This proves the singleton isn't just a structural shell — every caller performs real work through the exact same shared instance.</p>
+</li>
+</ul>
+<h3><code>SingletonDesignPattern.java</code></h3>
+<pre><code><span class="k">package</span> com.realusecase.patterns;
+
+<span class="k">import</span> com.realusecase.patterns.singleton.<span class="ty">ObjectMapperSingleton</span>;
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">SingletonDesignPattern</span> {
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">ObjectMapperSingleton</span> first = <span class="ty">ObjectMapperSingleton</span>.getInstance();
+        <span class="ty">ObjectMapperSingleton</span> second = <span class="ty">ObjectMapperSingleton</span>.getInstance();
+        <span class="ty">System</span>.out.println(<span class="s">&quot;same instance: &quot;</span> + (first == second));
+        <span class="ty">System</span>.out.println(first.serialize(<span class="s">&quot;realusecase&quot;</span>));
+    }
+}
+</code></pre>
+<ul>
+<li>
+<p><strong><code>import com.realusecase.patterns.singleton.ObjectMapperSingleton;</code></strong> — Brings the singleton into scope by its simple name, so the rest of the file doesn't need the full package path written out every time.</p>
+</li>
+<li>
+<p><strong><code>ObjectMapperSingleton first = ObjectMapperSingleton.getInstance();</code></strong> — The very first call to <code>getInstance()</code> in the whole program. It triggers everything described above: the JVM loads <code>InstanceHolder</code>, runs the private constructor exactly once, and <code>first</code> ends up holding a reference to that brand-new object.</p>
+</li>
+<li>
+<p><strong><code>ObjectMapperSingleton second = ObjectMapperSingleton.getInstance();</code></strong> — A second call. This time <code>InstanceHolder</code> is already loaded, so no new object is built — the JVM just hands back the exact same reference it returned a moment ago.</p>
+</li>
+<li>
+<p><strong><code>System.out.println("same instance: " + (first == second));</code></strong> — The proof. <code>==</code> compares object references, not field values — true only if both variables point at the exact same spot in memory. Because <code>first</code> and <code>second</code> both received the identical <code>InstanceHolder.INSTANCE</code> reference, this prints <code>same instance: true</code>, empirically confirming the Singleton guarantee at runtime.</p>
+</li>
+<li>
+<p><strong><code>System.out.println(first.serialize("realusecase"));</code></strong> — Calls <code>serialize</code> through <code>first</code> (calling it through <code>second</code> would give the identical result, since they're the same object). <code>String.valueOf</code> on the string <code>"realusecase"</code> returns it unchanged, proving the shared instance genuinely performs useful work.</p>
+</li>
+</ul>
+<hr />
+<h2>Why the Initialization-on-Demand Holder idiom?</h2>
+<ul class="cards"><li><b>Eager initialization (<code>static final</code> field on outer class)</b> — No — built at class-load, even if never used — Yes — Yes</li><li><b>Double-checked locking (<code>volatile</code> + <code>synchronized</code>)</b> — Yes — Yes (Java 5+) — No — clutters the code</li><li><b><strong>Initialization-on-Demand Holder</strong></b> — <strong>Yes</strong> — <strong>Yes</strong> — <strong>Yes — zero locking primitives</strong></li></ul>
+<p>The holder idiom gets laziness, full thread safety, and zero locking on the fast path — all for free, purely from how the JVM already loads classes.</p>
+<hr />
+<h2>Trade-offs to know about</h2>
+<ul>
+<li><strong>Reflection</strong> can still reach the private constructor via <code>setAccessible(true)</code>. <em>Mitigation:</em> throw an exception in the constructor if <code>InstanceHolder.INSTANCE</code> is already set.</li>
+<li><strong>Java serialization</strong> creates a brand-new object on deserialize. <em>Mitigation:</em> implement <code>readResolve()</code> to return <code>getInstance()</code>.</li>
+<li><strong>Global state</strong> can make unit tests harder to isolate. <em>Mitigation:</em> inject the singleton behind an interface so tests can substitute a mock.</li>
+</ul>
+<hr />
+<h2>Expected output</h2>
+<pre><code>$ java -cp target/classes com.realusecase.patterns.<span class="ty">SingletonDesignPattern</span>
+
+same instance: <span class="k">true</span>
+realusecase
+</code></pre>
+<hr />
+<h2>Where this pattern shows up in real systems</h2>
+<ul>
+<li>Application configuration — loaded once, shared everywhere.</li>
+<li>Database connection pools — one <code>HikariPool</code> per application.</li>
+<li>Logger factories — Logback and Log4j2 route every log line through one pipeline.</li>
+<li>Thread pools, cache managers, HTTP clients, metrics registries — all recommended by their own vendor documentation to be a single shared instance.</li>
+<li>This exact <code>ObjectMapperSingleton</code> structure already exists in production Mobius code, in <code>datalake-java-common-lib</code>.</li>
+</ul>
+<hr />
+<p><em>One class. One instance. One access point for everyone.</em></p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload Singleton_Design_Pattern_Explained_EN.mp4 to YouTube, then replace YOUTUBE_FULL_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK">YOUTUBE_FULL_LINK</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

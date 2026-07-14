@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Object Relationships in Java</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#e8590c22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #e8590c40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#e8590c0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #e8590c33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#e8590c;--a2:#fd7e14">
+<header class="hero"><div class="in">
+  <span class="badge">☕ CORE JAVA</span>
+  <h1>Object Relationships in Java</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>Examples from real life</em></p>
+<p class="chips">☕ 4 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> The Is-a relationship (built with inheritance)  ·  The Has-a relationship (one object used inside another)  ·  Association, and its two flavors: Aggregation (weak) and Composition (strong)</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Object_Relationships_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<p>Objects in a program rarely live alone — they are connected to each other, just like things in the real world. Java describes these connections with a few simple relationship names.</p>
+<figure><img alt="Object Relationships in Java — diagram" src="03-object-relationships.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<hr />
+<h2>Is-a Relationship</h2>
+<ul>
+<li>The <strong>Is-a</strong> relationship is <strong>achieved through inheritance</strong>.</li>
+<li><strong>Example: a Dog <em>is an</em> Animal.</strong></li>
+<li>Inheritance forms an <strong>is-a relation between the parent class and the child class</strong>.</li>
+</ul>
+<p>The easy test: say the sentence out loud — <em>"X is a Y"</em>. If it sounds true (a Dog <strong>is an</strong> Animal, a Car <strong>is a</strong> Vehicle), then X should be a <strong>child class</strong> of Y.</p>
+<pre><code><span class="k">class</span> <span class="ty">Animal</span> {                 <span class="c">// parent</span>
+    <span class="k">public</span> <span class="k">void</span> eat() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;This animal is eating.&quot;</span>);
+    }
+}
+
+<span class="k">class</span> <span class="ty">Dog</span> <span class="k">extends</span> <span class="ty">Animal</span> {     <span class="c">// Dog IS-A Animal</span>
+    <span class="k">public</span> <span class="k">void</span> bark() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Woof! Woof!&quot;</span>);
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Dog</span> d = <span class="k">new</span> <span class="ty">Dog</span>();
+        d.eat();    <span class="c">// inherited from Animal, because Dog IS-A Animal</span>
+        d.bark();
+    }
+}
+</code></pre>
+<p><strong>Output:</strong></p>
+<pre><code><span class="ty">This</span> animal is eating.
+<span class="ty">Woof</span>! <span class="ty">Woof</span>!
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> Is-a = inheritance (<code>extends</code>). If "X is a Y" sounds natural, X extends Y.</p>
+</blockquote>
+<hr />
+<h2>Has-a Relationship</h2>
+<ul>
+<li><strong>Whenever an object is used inside another class, it is called a HAS-A relationship.</strong></li>
+<li>The relationship could be <strong>one-to-one, one-to-many, or many-to-many</strong>.</li>
+</ul>
+<p>Instead of inheriting, the class simply <strong>keeps the other object as a field</strong> — like a school keeping a list of its students.</p>
+<ul>
+<li>A <strong>School has Students</strong> (one-to-many: one school, many students).</li>
+<li>A <strong>Bike has an Engine</strong> (one-to-one: one bike, one engine).</li>
+<li>A <strong>School has Classes</strong> (one-to-many).</li>
+</ul>
+<p>The easy test: say <em>"X has a Y"</em>. If it sounds true (a Bike <strong>has an</strong> Engine), then class X should contain a Y object inside it.</p>
+<pre><code><span class="k">class</span> <span class="ty">Engine</span> {
+    <span class="k">public</span> <span class="k">void</span> start() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Engine started.&quot;</span>);
+    }
+}
+
+<span class="k">class</span> <span class="ty">Bike</span> {
+    <span class="ty">Engine</span> engine = <span class="k">new</span> <span class="ty">Engine</span>();   <span class="c">// Bike HAS-A Engine (one-to-one)</span>
+
+    <span class="k">public</span> <span class="k">void</span> ride() {
+        engine.start();             <span class="c">// Bike uses the Engine object it holds</span>
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Bike is moving.&quot;</span>);
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Bike</span> bike = <span class="k">new</span> <span class="ty">Bike</span>();
+        bike.ride();
+    }
+}
+</code></pre>
+<p><strong>Output:</strong></p>
+<pre><code><span class="ty">Engine</span> started.
+<span class="ty">Bike</span> is moving.
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> Is-a = "Dog is an Animal" → inheritance. Has-a = "Bike has an Engine" → one object kept as a field inside another class.</p>
+</blockquote>
+<hr />
+<h2>Association</h2>
+<p><strong>Association is a relationship between 2 different objects.</strong> It tells us that the objects are connected. Association comes in two flavors, depending on how tightly their lives are tied together:</p>
+<ol>
+<li><strong>Aggregation</strong> — the loose connection</li>
+<li><strong>Composition</strong> — the tight connection</li>
+</ol>
+<h3>3a. Aggregation (weak relation)</h3>
+<ul>
+<li><strong>Both objects can survive individually</strong> — the ending of one object will <strong>not</strong> end the other object.</li>
+<li>Aggregation is also known as a <strong>weak relation</strong>.</li>
+</ul>
+<p><strong>Everyday picture:</strong> a School and its Students. If the school shuts down, the students still exist — they simply join another school. Their lives are independent.</p>
+<pre><code><span class="k">class</span> <span class="ty">Student</span> {
+    <span class="ty">String</span> name;
+
+    <span class="ty">Student</span>(<span class="ty">String</span> name) {
+        <span class="k">this</span>.name = name;
+    }
+}
+
+<span class="k">class</span> <span class="ty">School</span> {
+    <span class="ty">String</span> schoolName;
+    <span class="ty">Student</span> student;                       <span class="c">// Aggregation: student is created OUTSIDE</span>
+
+    <span class="ty">School</span>(<span class="ty">String</span> schoolName, <span class="ty">Student</span> student) {
+        <span class="k">this</span>.schoolName = schoolName;
+        <span class="k">this</span>.student = student;            <span class="c">// school only &quot;uses&quot; an existing student</span>
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Student</span> s = <span class="k">new</span> <span class="ty">Student</span>(<span class="s">&quot;Ravi&quot;</span>);   <span class="c">// student exists on his own</span>
+        <span class="ty">School</span> school = <span class="k">new</span> <span class="ty">School</span>(<span class="s">&quot;City School&quot;</span>, s);
+
+        school = <span class="k">null</span>;                     <span class="c">// the school &quot;ends&quot;...</span>
+        <span class="ty">System</span>.out.println(s.name + <span class="s">&quot; still exists!&quot;</span>);   <span class="c">// ...but the student survives</span>
+    }
+}
+</code></pre>
+<p><strong>Output:</strong></p>
+<pre><code><span class="ty">Ravi</span> still exists!
+</code></pre>
+<h3>3b. Composition (strong relation)</h3>
+<ul>
+<li><strong>The ending of one object will end the other object.</strong></li>
+<li>Composition is also known as a <strong>strong relation</strong>.</li>
+</ul>
+<p><strong>Everyday picture:</strong> a House and its Rooms. A room cannot exist without its house — if the house is demolished, its rooms are gone too. Their lives are tied together.</p>
+<pre><code><span class="k">class</span> <span class="ty">Room</span> {
+    <span class="ty">String</span> type;
+
+    <span class="ty">Room</span>(<span class="ty">String</span> type) {
+        <span class="k">this</span>.type = type;
+    }
+}
+
+<span class="k">class</span> <span class="ty">House</span> {
+    <span class="c">// Composition: the Room is created INSIDE the House.</span>
+    <span class="c">// Nobody outside holds it, so when the House ends, the Room ends too.</span>
+    <span class="k">private</span> <span class="ty">Room</span> bedroom = <span class="k">new</span> <span class="ty">Room</span>(<span class="s">&quot;Bedroom&quot;</span>);
+
+    <span class="k">public</span> <span class="k">void</span> show() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;This house has a &quot;</span> + bedroom.type + <span class="s">&quot;.&quot;</span>);
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">House</span> house = <span class="k">new</span> <span class="ty">House</span>();
+        house.show();
+
+        house = <span class="k">null</span>;   <span class="c">// the house ends -&gt; its bedroom is gone with it</span>
+        <span class="ty">System</span>.out.println(<span class="s">&quot;House destroyed, and its rooms are destroyed with it.&quot;</span>);
+    }
+}
+</code></pre>
+<p><strong>Output:</strong></p>
+<pre><code><span class="ty">This</span> house has a <span class="ty">Bedroom</span>.
+<span class="ty">House</span> destroyed, and its rooms are destroyed with it.
+</code></pre>
+<h3>Aggregation vs Composition — Quick Comparison</h3>
+<ul class="cards"><li><b>Strength</b> — <strong>Weak</strong> relation — <strong>Strong</strong> relation</li><li><b>Can both objects survive individually?</b> — <strong>Yes</strong> — ending one does not end the other — <strong>No</strong> — ending one ends the other</li><li><b>Everyday example</b> — School and Students — House and Rooms</li><li><b>Who creates the inner object?</b> — Created outside, passed in — Created inside the owner class</li></ul>
+<blockquote>
+<p><strong>Remember:</strong> Aggregation = weak = both survive alone. Composition = strong = they live and die together.</p>
+</blockquote>
+<hr />
+<h2>Quick Revision</h2>
+<ul>
+<li><strong>Is-a</strong> relationship → achieved through <strong>inheritance</strong> (Dog is an Animal); it connects parent and child classes.</li>
+<li><strong>Has-a</strong> relationship → an <strong>object used inside another class</strong> (School has Students, Bike has Engine, School has Classes); can be one-to-one, one-to-many, or many-to-many.</li>
+<li><strong>Association</strong> → a relationship between <strong>2 different objects</strong>, with two flavors:</li>
+<li><strong>Aggregation</strong> → <strong>weak</strong> relation; both objects can survive individually — ending one does not end the other.</li>
+<li><strong>Composition</strong> → <strong>strong</strong> relation; ending one object ends the other.</li>
+<li>Inheritance itself (<code>extends</code>) is explained in detail in the Four Pillars of OOPs PDF.</li>
+</ul>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload Object_Relationships_Explained.mp4 to YouTube, then replace YOUTUBE_FULL_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK">YOUTUBE_FULL_LINK</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

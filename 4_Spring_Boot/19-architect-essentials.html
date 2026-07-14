@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architect Essentials — Beyond These Notes</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#15803d22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #15803d40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#15803d0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #15803d33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#15803d;--a2:#22c55e">
+<header class="hero"><div class="in">
+  <span class="badge">🍃 SPRING BOOT</span>
+  <h1>Architect Essentials — Beyond These Notes</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>Spring Security — the filter chain and a JWT resource server in one page  ·  Actuator and observability — health…</em></p>
+<p class="chips">☕ 8 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> Spring Security — the filter chain and a JWT resource server in one page  ·  Actuator and observability — health probes, metrics, tracing  ·  Spring Data JPA repositories — the layer above the EntityManager  ·  Calling other services — RestClient, timeouts, retries, circuit breakers</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Architect_Essentials_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>Spring Security in one page</h2>
+<p>Security in Spring is a <strong>chain of servlet filters</strong> in front of DispatcherServlet (see Topic 13's pipeline diagram — <code>SecurityFilterChain</code> slots in there).</p>
+<figure><img alt="Architect Essentials — Beyond These Notes — diagram" src="19-architect-essentials.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p>The modern stateless setup — your API validates JWTs issued by an identity provider (Keycloak, Auth0, Cognito):</p>
+<pre><code><span class="a">@Configuration</span>
+<span class="a">@EnableWebSecurity</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">SecurityConfig</span> {
+
+    <span class="a">@Bean</span>
+    <span class="ty">SecurityFilterChain</span> api(<span class="ty">HttpSecurity</span> http) <span class="k">throws</span> <span class="ty">Exception</span> {
+        http.csrf(csrf -&gt; csrf.disable())                       <span class="c">// stateless API</span>
+            .sessionManagement(s -&gt; s.sessionCreationPolicy(<span class="ty">SessionCreationPolicy</span>.<span class="ty">STATELESS</span>))
+            .authorizeHttpRequests(auth -&gt; auth
+                .requestMatchers(<span class="s">&quot;/actuator/health/**&quot;</span>).permitAll()
+                .requestMatchers(<span class="s">&quot;/admin/**&quot;</span>).hasRole(<span class="s">&quot;ADMIN&quot;</span>)
+                .anyRequest().authenticated())
+            .oauth2ResourceServer(o -&gt; o.jwt(<span class="ty">Customizer</span>.withDefaults()));
+        <span class="k">return</span> http.build();
+    }
+}
+</code></pre>
+<pre><code><span class="a">spring.security.oauth2.resourceserver.jwt.issuer-uri</span>=https:<span class="c">//idp.example.com/realms/app</span>
+</code></pre>
+<blockquote>
+<p>Good to know: method-level rules with <code>@PreAuthorize("hasRole('ADMIN')")</code> (enable via <code>@EnableMethodSecurity</code>) — implemented with the same AOP machinery as Topic 09.</p>
+</blockquote>
+<h2>Actuator and Observability</h2>
+<p>Add <code>spring-boot-starter-actuator</code> and you get production endpoints for free:</p>
+<ul class="cards"><li><b><code>/actuator/health/liveness</code></b> — Kubernetes liveness probe — restart me if failing</li><li><b><code>/actuator/health/readiness</code></b> — Readiness probe — stop sending traffic, don't restart</li><li><b><code>/actuator/metrics</code></b> — Micrometer metrics (JVM, HTTP, Hikari pool, caches)</li><li><b><code>/actuator/prometheus</code></b> — Scrape endpoint for Prometheus</li><li><b><code>/actuator/info</code>, <code>/actuator/env</code></b> — Build info, resolved config (lock these down)</li></ul>
+<ul>
+<li><strong>Observability = logs + metrics + traces.</strong> Micrometer is the metrics/tracing facade in Boot 3; OpenTelemetry export gives you distributed traces across services (who called whom, where the 800ms went).</li>
+<li>Timing any method is one annotation: <code>@Observed</code> / <code>@Timed</code> — AOP again.</li>
+<li>Pair with the correlation-ID filter (Topic 13) so every log line joins a trace.</li>
+</ul>
+<pre><code><span class="a">management.endpoints.web.exposure.include</span>=health,info,metrics,prometheus
+<span class="a">management.endpoint.health.probes.enabled</span>=true
+</code></pre>
+<h2>Spring Data JPA repositories</h2>
+<p>The notes stop at the EntityManager (Topic 17). In real projects you mostly use the layer above it:</p>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">UserRepository</span> <span class="k">extends</span> <span class="ty">JpaRepository</span>&lt;<span class="ty">User</span>, <span class="ty">Long</span>&gt; {
+
+    <span class="ty">Optional</span>&lt;<span class="ty">User</span>&gt; findByEmail(<span class="ty">String</span> email);                  <span class="c">// derived query</span>
+
+    <span class="ty">List</span>&lt;<span class="ty">User</span>&gt; findByAgeGreaterThanOrderByNameAsc(<span class="k">int</span> age);    <span class="c">// parsed from the name</span>
+
+    <span class="a">@Query</span>(<span class="s">&quot;select new com.app.dto.UserView(u.id, u.name) from User u where u.active = true&quot;</span>)
+    <span class="ty">List</span>&lt;<span class="ty">UserView</span>&gt; findActiveViews();                          <span class="c">// DTO projection</span>
+}
+</code></pre>
+<ul>
+<li><code>JpaRepository</code> gives you <code>save/findById/findAll/delete</code>, paging (<code>findAll(Pageable)</code>) and sorting for free — all internally <code>@Transactional</code> on the EntityManager you already understand.</li>
+<li>Derived query names are parsed at startup — a typo fails fast, at boot, not in production.</li>
+<li>For the exotic 5% (bulk updates, window functions), drop to <code>@Query(native = true)</code> or the EntityManager.</li>
+</ul>
+<h2>3b. Distributed caching — the @Cacheable abstraction</h2>
+<blockquote>
+<p>Added: Topic 18's Architect's Corner says "prefer a distributed cache (Redis) via <code>@Cacheable</code>" — here is what that actually looks like. Spring's cache abstraction is provider-agnostic (Redis, Caffeine, Hazelcast...) and works on <em>any</em> bean method, not just JPA entities.</p>
+</blockquote>
+<pre><code><span class="a">@SpringBootApplication</span>
+<span class="a">@EnableCaching</span>                       <span class="c">// switch the abstraction on</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Application</span> { ... }
+
+<span class="a">@Service</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">ProductService</span> {
+
+    <span class="a">@Cacheable</span>(value = <span class="s">&quot;products&quot;</span>, key = <span class="s">&quot;#id&quot;</span>)        <span class="c">// read-through</span>
+    <span class="k">public</span> <span class="ty">Product</span> getProduct(<span class="k">long</span> id) {
+        <span class="k">return</span> repository.findById(id).orElseThrow();   <span class="c">// runs only on cache miss</span>
+    }
+
+    <span class="a">@CachePut</span>(value = <span class="s">&quot;products&quot;</span>, key = <span class="s">&quot;#product.id&quot;</span>) <span class="c">// update cache after write</span>
+    <span class="k">public</span> <span class="ty">Product</span> updateProduct(<span class="ty">Product</span> product) {
+        <span class="k">return</span> repository.save(product);
+    }
+
+    <span class="a">@CacheEvict</span>(value = <span class="s">&quot;products&quot;</span>, key = <span class="s">&quot;#id&quot;</span>)       <span class="c">// invalidate on delete</span>
+    <span class="k">public</span> <span class="k">void</span> deleteProduct(<span class="k">long</span> id) {
+        repository.deleteById(id);
+    }
+}
+</code></pre>
+<pre><code><span class="c"># with spring-boot-starter-data-redis on the classpath:</span>
+<span class="a">spring.cache.type</span>=redis
+<span class="a">spring.data.redis.host</span>=redis.internal
+<span class="a">spring.cache.redis.time-to-live</span>=10m     <span class="c"># ALWAYS set a TTL</span>
+</code></pre>
+<ul>
+<li>How it works: <strong>AOP again</strong> (Topic 09) — a proxy checks the cache before entering the method. Same corollary as <code>@Transactional</code>/<code>@Async</code>: <strong>self-invocation bypasses it</strong>.</li>
+<li>Why Redis over Hibernate's 2nd-level cache in microservices: with N replicas, pod-local caches diverge; one shared Redis means one invalidation, all pods consistent.</li>
+<li>Architect rules: every cache entry gets a <strong>TTL</strong>, keys include the <strong>tenant/version</strong>, and cache failures should <strong>degrade to the DB</strong>, not take the request down.</li>
+</ul>
+<h2>Calling other services — and surviving their failures</h2>
+<pre><code><span class="a">@Bean</span>
+<span class="ty">RestClient</span> paymentClient(<span class="ty">RestClient</span>.<span class="ty">Builder</span> builder) {
+    <span class="k">return</span> builder.baseUrl(<span class="s">&quot;https://payments.internal&quot;</span>)
+                  .requestFactory(<span class="ty">ClientHttpRequestFactories</span>.get(
+                      <span class="ty">ClientHttpRequestFactorySettings</span>.<span class="ty">DEFAULTS</span>
+                          .withConnectTimeout(<span class="ty">Duration</span>.ofSeconds(<span class="n">2</span>))
+                          .withReadTimeout(<span class="ty">Duration</span>.ofSeconds(<span class="n">5</span>))))
+                  .build();
+}
+
+<span class="ty">PaymentResponse</span> pay(<span class="ty">PaymentRequest</span> req) {
+    <span class="k">return</span> paymentClient.post().uri(<span class="s">&quot;/v1/payments&quot;</span>)
+                        .body(req).retrieve().body(<span class="ty">PaymentResponse</span>.<span class="k">class</span>);
+}
+</code></pre>
+<p>Resilience rules every architect enforces:</p>
+<ol>
+<li><strong>Timeouts on every remote call</strong> — no exceptions. A missing timeout turns a slow dependency into your outage.</li>
+<li><strong>Retries only on idempotent operations</strong>, with exponential backoff + jitter.</li>
+<li><strong>Circuit breakers</strong> (Resilience4j: <code>@CircuitBreaker</code>, <code>@RateLimiter</code>, <code>@Bulkhead</code> — annotation + AOP, like Topic 13) stop hammering a dying dependency and fail fast.</li>
+<li><strong>Never call remote services inside a DB transaction</strong> (Topic 10's lesson).</li>
+</ol>
+<h2>4b. The microservice edge — gateway, discovery, central config</h2>
+<blockquote>
+<p>Added: three infrastructure pieces every microservice architect is asked about — where requests enter, how services find each other, and where configuration lives.</p>
+</blockquote>
+<ul>
+<li><strong>API Gateway</strong> (Spring Cloud Gateway, or the cloud LB/ingress) — the single entry point. Cross-cutting concerns live here <em>once</em>: JWT validation, rate limiting, request logging, path routing (<code>/users/** → user-service</code>) — instead of copy-pasted into every service.</li>
+<li><strong>Service discovery</strong> — services find each other by <em>name</em>, not hard-coded IPs. Classic Spring Cloud: a <strong>Eureka</strong> registry + client-side load balancing. On Kubernetes you usually get this for free: <code>http://user-service</code> resolves via cluster DNS to a Service that load-balances across pods.</li>
+<li><strong>Centralized config</strong> — one place for all environments' config: <strong>Spring Cloud Config Server</strong> (git-backed, refreshable via <code>@RefreshScope</code>) or Kubernetes <strong>ConfigMaps/Secrets</strong> injected as env vars (which slot into Topic 08's property precedence). Secrets belong in a secret manager (Vault, AWS Secrets Manager), never in git.</li>
+</ul>
+<blockquote>
+<p>Good to know: on Kubernetes, prefer the platform's primitives (Ingress, DNS, ConfigMaps) over running Eureka/Config Server yourself — Spring Cloud's versions matter most on VMs or plain Docker where no platform provides them.</p>
+</blockquote>
+<h2>Messaging and the Transactional Outbox</h2>
+<p>Some work shouldn't be a blocking HTTP call or a lost-on-crash <code>@Async</code> task (Topic 12). Queues (Kafka, RabbitMQ) give durability, retries and decoupling:</p>
+<pre><code>kafkaTemplate.send(<span class="s">&quot;user-events&quot;</span>, userId, <span class="k">new</span> <span class="ty">UserCreatedEvent</span>(userId));
+</code></pre>
+<ul>
+<li><strong>The outbox pattern</strong> solves "save to DB AND publish event atomically": write the event into an <code>outbox</code> table in the same transaction; a relay process publishes rows and marks them sent. No 2PC needed.</li>
+<li>Consumers must be <strong>idempotent</strong> — at-least-once delivery means duplicates will happen.</li>
+</ul>
+<h2>5b. Distributed transactions — the Saga pattern</h2>
+<blockquote>
+<p>Added: Topic 17 deferred "transactions spanning multiple DBs". In microservices the answer is usually <strong>not</strong> JTA/2PC (blocking, fragile, unsupported by most brokers) — it's a <strong>Saga</strong>: one business transaction becomes a chain of <em>local</em> transactions, each with a <strong>compensating action</strong> to undo it if a later step fails.</p>
+</blockquote>
+<p>Example — placing an order across three services:</p>
+<pre><code>Order Service        Payment Service       Inventory Service
+CREATE order   --&gt;   CHARGE card     --&gt;   RESERVE stock
+(local txn)          (local txn)           (local txn)
+                                            |
+                          stock unavailable ✗
+                                            v
+CANCEL order   &lt;--   REFUND card      &lt;-- compensate backwards
+</code></pre>
+<p>Two coordination styles:</p>
+<ul>
+<li><strong>Choreography</strong> — no coordinator: each service reacts to the previous service's event (<code>OrderCreated</code> → Payment listens → emits <code>PaymentCompleted</code> → Inventory listens...). Simple for 2–3 steps; beyond that, "who reacts to what" becomes untraceable.</li>
+<li><strong>Orchestration</strong> — a saga orchestrator (the Order service, or a workflow engine like Temporal/Camunda) explicitly commands each step and runs the compensations on failure. More moving parts, but the flow is readable in one place — prefer it for anything nontrivial.</li>
+</ul>
+<p>Design rules:</p>
+<ol>
+<li>Every step needs a <strong>compensating transaction</strong> (refund, release, cancel) — design it <em>with</em> the step, not after.</li>
+<li>Steps and compensations must be <strong>idempotent</strong> (retries + at-least-once delivery, again).</li>
+<li>Between steps the system is <strong>eventually consistent</strong> — model the intermediate states explicitly (<code>PENDING_PAYMENT</code>, <code>AWAITING_STOCK</code>) instead of pretending atomicity.</li>
+<li>Pair each local transaction with the <strong>outbox pattern</strong> above so "commit + publish next event" is itself atomic.</li>
+</ol>
+<h2>Testing strategy</h2>
+<ul class="cards"><li><b>Unit</b> — none (plain JUnit + mocks) — ms — business logic — most of your tests</li><li><b>Web slice</b> — <code>@WebMvcTest</code> + MockMvc — fast — controller mapping, validation, error shape</li><li><b>Data slice</b> — <code>@DataJpaTest</code> — fast — repositories, queries, mappings</li><li><b>Integration</b> — <code>@SpringBootTest</code> + Testcontainers — slow — the whole app against a REAL database</li></ul>
+<ul>
+<li><strong>Testcontainers</strong> spins up real Postgres/Kafka in Docker for tests — kills "works on H2, fails on Postgres" bugs.</li>
+<li>Constructor injection (Topic 06) is what makes the unit layer possible without Spring.</li>
+</ul>
+<h2>Deployment notes</h2>
+<pre><code>FROM eclipse-temurin:21-jre AS runtime
+COPY target/app.jar app.jar
+ENTRYPOINT [<span class="s">&quot;java&quot;</span>,<span class="s">&quot;-jar&quot;</span>,<span class="s">&quot;/app.jar&quot;</span>]
+</code></pre>
+<ul>
+<li><strong>Graceful shutdown</strong>: <code>server.shutdown=graceful</code> + <code>spring.lifecycle.timeout-per-shutdown-phase=30s</code> — finish in-flight requests before the pod dies; pairs with the readiness probe.</li>
+<li><strong>Config from environment</strong> (12-factor): the same image runs in every environment; only env vars change (Topic 08's precedence rules).</li>
+<li><strong>Schema migrations</strong>: Flyway (<code>V1__init.sql</code>, <code>V2__add_index.sql</code>) runs at startup; <code>ddl-auto=validate</code> confirms entities match (Topic 18).</li>
+<li><strong>Layered JAR + multi-stage builds</strong> keep images small and rebuilds cached.</li>
+</ul>
+<h2>Where to go deeper — study checklist</h2>
+<ul class="cards"><li><b>Spring Security</b> — filter chain order; JWT resource server; <code>@PreAuthorize</code></li><li><b>Observability</b> — Micrometer + OpenTelemetry tracing across two services</li><li><b>Spring Data JPA</b> — derived queries, projections, <code>@EntityGraph</code> vs N+1</li><li><b>Resilience</b> — Resilience4j circuit breaker + timeout budget per request</li><li><b>Messaging</b> — Kafka consumer groups; outbox pattern; idempotent consumers</li><li><b>Kubernetes</b> — liveness vs readiness; resource limits; HPA on custom metrics</li><li><b>Performance</b> — virtual threads (Boot 3.2+); Hikari pool metrics; N+1 hunting</li></ul>
+<h2>Quick Revision</h2>
+<ul>
+<li><strong>Security</strong> = a filter chain before DispatcherServlet; stateless JWT resource server is the default microservice setup.</li>
+<li><strong>Actuator</strong> gives health probes (liveness/readiness), Micrometer metrics and Prometheus scraping; observability = logs + metrics + traces with correlation IDs.</li>
+<li><strong>JpaRepository</strong> = CRUD + derived queries + paging on top of the EntityManager; DTO projections for reads.</li>
+<li><strong>Caching</strong>: <code>@EnableCaching</code> + <code>@Cacheable</code>/<code>@CachePut</code>/<code>@CacheEvict</code> (AOP proxy — self-invocation bypasses it); Redis for shared cache across replicas; always TTL, degrade to DB on cache failure.</li>
+<li><strong>Edge</strong>: API Gateway for cross-cutting concerns at one entry point; service discovery by name (Eureka or Kubernetes DNS); centralized config (Config Server or ConfigMaps/Secrets, secrets in a vault).</li>
+<li><strong>Remote calls</strong>: RestClient + timeouts always, retries only when idempotent, circuit breakers for failing dependencies, never inside a transaction.</li>
+<li><strong>Durable async</strong> = message queue + outbox pattern + idempotent consumers; <code>@Async</code> is for fire-and-forget only.</li>
+<li><strong>Saga</strong> replaces 2PC across services: chain of local transactions + compensating actions; choreography (events, small flows) vs orchestration (coordinator, readable flows); intermediate states are explicit and eventually consistent.</li>
+<li><strong>Test pyramid</strong>: unit (most) → slices (<code>@WebMvcTest</code>, <code>@DataJpaTest</code>) → few <code>@SpringBootTest</code> with Testcontainers.</li>
+<li><strong>Deploy</strong>: graceful shutdown, env-driven config, Flyway migrations with <code>ddl-auto=validate</code>, layered Docker images.</li>
+</ul>
+<hr />
+<p>This completes the spring-boot notes series. Topics 01–18 come from the handwritten notes; this topic fills the gaps between those notes and what a software architect is expected to know.</p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Architect_Essentials_Explained_Part1.mp4; Part 2 = Architect_Essentials_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

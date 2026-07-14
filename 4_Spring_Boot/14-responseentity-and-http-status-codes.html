@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ResponseEntity and HTTP Status Codes</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#15803d22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #15803d40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#15803d0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #15803d33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#15803d;--a2:#22c55e">
+<header class="hero"><div class="in">
+  <span class="badge">🍃 SPRING BOOT</span>
+  <h1>ResponseEntity and HTTP Status Codes</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>@ResponseStatus — setting the status without ResponseEntity</em></p>
+<p class="chips">☕ 11 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> The three parts of every HTTP response — status code, headers, body  ·  ResponseEntity&lt;T&gt; and its builder pattern (status → headers → body)  ·  @ResponseBody vs @RestController vs @Controller  ·  The five status-code families 1XX–5XX and every code from the notes</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload ResponseEntity_and_HTTP_Status_Codes_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>Response = Status Code + Header + Body</h2>
+<p>The notes open the <em>Exception Handling</em> chapter with this foundation: whatever a controller returns, the actual HTTP <strong>Response</strong> always has three parts —</p>
+<figure><img alt="ResponseEntity and HTTP Status Codes — diagram" src="14-responseentity-and-http-status-codes.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<ul>
+<li><strong>Status Code</strong></li>
+<li><strong>Header</strong></li>
+<li><strong>Body</strong></li>
+</ul>
+<p><code>ResponseEntity&lt;T&gt;</code> is Spring's class to create the response with full control over all three:</p>
+<pre><code><span class="k">return</span> <span class="ty">ResponseEntity</span>.status(<span class="ty">HttpStatus</span>.<span class="ty">OK</span>).headers(headers).body(<span class="s">&quot;Hi&quot;</span>);
+</code></pre>
+<p><strong>Body should be last.</strong> It is actually kind of using the <strong>Builder design pattern</strong>: <code>status(...)</code> and <code>headers(...)</code> all return a <strong>builder object</strong>, and the <code>body(...)</code> method call returns the actual <code>ResponseEntity</code> object.</p>
+<pre><code><span class="c">// the builder&#x27;s terminal methods:</span>
+&lt;<span class="ty">T</span>&gt; <span class="ty">ResponseEntity</span>&lt;<span class="ty">T</span>&gt; body(<span class="ty">T</span> body);       <span class="c">// sets the body and builds</span>
+&lt;<span class="ty">T</span>&gt; <span class="ty">ResponseEntity</span>&lt;<span class="ty">T</span>&gt; build();            <span class="c">// builds with NO body</span>
+</code></pre>
+<p>For a response without a body, use <code>ResponseEntity&lt;Void&gt;</code> and finish with <code>build()</code>:</p>
+<pre><code><span class="k">return</span> <span class="ty">ResponseEntity</span>.status(<span class="ty">HttpStatus</span>.<span class="ty">OK</span>).build();
+</code></pre>
+<p>By default, <strong>200 is the status code set</strong> when you do not specify one.</p>
+<pre><code><span class="a">@RestController</span>
+<span class="a">@RequestMapping</span>(<span class="s">&quot;/api/users&quot;</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">UserController</span> {
+
+    <span class="c">// 1) full form — status + headers + body (body MUST be last)</span>
+    <span class="a">@GetMapping</span>(<span class="s">&quot;/{id}&quot;</span>)
+    <span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">String</span>&gt; getUser(<span class="a">@PathVariable</span> <span class="ty">String</span> id) {
+        <span class="ty">HttpHeaders</span> headers = <span class="k">new</span> <span class="ty">HttpHeaders</span>();
+        headers.add(<span class="s">&quot;X-Request-Handled-By&quot;</span>, <span class="s">&quot;user-service&quot;</span>);
+        <span class="k">return</span> <span class="ty">ResponseEntity</span>.status(<span class="ty">HttpStatus</span>.<span class="ty">OK</span>).headers(headers).body(<span class="s">&quot;Hi&quot;</span>);
+    }
+
+    <span class="c">// 2) shortcut — 200 OK with a body</span>
+    <span class="a">@GetMapping</span>
+    <span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">List</span>&lt;<span class="ty">String</span>&gt;&gt; allUsers() {
+        <span class="k">return</span> <span class="ty">ResponseEntity</span>.ok(<span class="ty">List</span>.of(<span class="s">&quot;alex&quot;</span>, <span class="s">&quot;maria&quot;</span>));
+    }
+
+    <span class="c">// 3) 201 Created + Location header, after creating a resource</span>
+    <span class="a">@PostMapping</span>
+    <span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">String</span>&gt; createUser(<span class="a">@RequestBody</span> <span class="ty">String</span> user) {
+        <span class="k">return</span> <span class="ty">ResponseEntity</span>.status(<span class="ty">HttpStatus</span>.<span class="ty">CREATED</span>)
+                .header(<span class="s">&quot;Location&quot;</span>, <span class="s">&quot;/api/users/123&quot;</span>)
+                .body(<span class="s">&quot;created&quot;</span>);
+    }
+
+    <span class="c">// 4) no body at all — ResponseEntity&lt;Void&gt; + build()</span>
+    <span class="a">@DeleteMapping</span>(<span class="s">&quot;/{id}&quot;</span>)
+    <span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">Void</span>&gt; deleteUser(<span class="a">@PathVariable</span> <span class="ty">String</span> id) {
+        <span class="k">return</span> <span class="ty">ResponseEntity</span>.status(<span class="ty">HttpStatus</span>.<span class="ty">NO_CONTENT</span>).build();
+    }
+}
+</code></pre>
+<blockquote>
+<p>Added: besides <code>ok(...)</code>, the builder has a <strong>static shortcut for every common status</strong> —
+know these, they read much better than <code>status(HttpStatus.X)</code>:</p>
+</blockquote>
+<pre><code><span class="ty">ResponseEntity</span>.ok(body);                  <span class="c">// 200</span>
+<span class="ty">ResponseEntity</span>.created(location);         <span class="c">// 201 + sets the Location header for you</span>
+<span class="ty">ResponseEntity</span>.accepted().build();        <span class="c">// 202</span>
+<span class="ty">ResponseEntity</span>.noContent().build();       <span class="c">// 204</span>
+<span class="ty">ResponseEntity</span>.badRequest().body(err);    <span class="c">// 400</span>
+<span class="ty">ResponseEntity</span>.notFound().build();        <span class="c">// 404</span>
+<span class="ty">ResponseEntity</span>.unprocessableEntity().body(err); <span class="c">// 422</span>
+</code></pre>
+<p>The canonical <strong>POST → 201</strong> pattern builds the <code>Location</code> URI from the current request
+instead of hard-coding it:</p>
+<pre><code><span class="a">@PostMapping</span>
+<span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">User</span>&gt; createUser(<span class="a">@RequestBody</span> <span class="ty">User</span> user) {
+    <span class="ty">User</span> saved = userService.save(user);
+    <span class="ty">URI</span> location = <span class="ty">ServletUriComponentsBuilder</span>.fromCurrentRequest()
+            .path(<span class="s">&quot;/{id}&quot;</span>)                       <span class="c">// /api/users + /123</span>
+            .buildAndExpand(saved.getId())
+            .toUri();
+    <span class="k">return</span> <span class="ty">ResponseEntity</span>.created(location).body(saved);   <span class="c">// 201 + Location: /api/users/123</span>
+}
+</code></pre>
+<h2>@ResponseBody</h2>
+<ul>
+<li>When we return a plain string or POJO directly from the class, then the <code>@ResponseBody</code> annotation is <strong>required</strong>.</li>
+<li><code>@RestController</code> automatically puts <code>@ResponseBody</code> on all the methods.</li>
+<li>If you use plain <code>@Controller</code>, it will throw an Exception if the return type is a String or other object — <strong>it treats the response as a view</strong> (a page name to render).</li>
+</ul>
+<pre><code><span class="a">@Controller</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">PageController</span> {
+
+    <span class="a">@GetMapping</span>(<span class="s">&quot;/name&quot;</span>)
+    <span class="a">@ResponseBody</span>                 <span class="c">// without this, &quot;Alex&quot; is looked up as a VIEW name</span>
+    <span class="k">public</span> <span class="ty">String</span> name() {
+        <span class="k">return</span> <span class="s">&quot;Alex&quot;</span>;
+    }
+}
+
+<span class="a">@RestController</span>                   <span class="c">// = @Controller + @ResponseBody on every method</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">UserApi</span> {
+
+    <span class="a">@GetMapping</span>(<span class="s">&quot;/user&quot;</span>)
+    <span class="k">public</span> <span class="ty">User</span> user() {
+        <span class="k">return</span> <span class="k">new</span> <span class="ty">User</span>(<span class="s">&quot;Alex&quot;</span>);  <span class="c">// serialized to JSON automatically</span>
+    }
+}
+</code></pre>
+<blockquote>
+<p>Added: the third way to control the status code (after <code>ResponseEntity</code> and the default
+200) is the <strong><code>@ResponseStatus</code></strong> annotation — a very common interview follow-up:
+"can you return 201 without using ResponseEntity?"</p>
+</blockquote>
+<p><strong>On a handler method</strong> — return the POJO directly, the annotation supplies the status:</p>
+<pre><code><span class="a">@PostMapping</span>
+<span class="a">@ResponseStatus</span>(<span class="ty">HttpStatus</span>.<span class="ty">CREATED</span>)      <span class="c">// 201 instead of the default 200</span>
+<span class="k">public</span> <span class="ty">User</span> createUser(<span class="a">@RequestBody</span> <span class="ty">User</span> user) {
+    <span class="k">return</span> userService.save(user);       <span class="c">// body is still auto-serialized to JSON</span>
+}
+</code></pre>
+<p><strong>On a custom exception class</strong> — whenever this exception escapes a controller, Spring
+answers with the declared status (no handler code needed):</p>
+<pre><code><span class="a">@ResponseStatus</span>(value = <span class="ty">HttpStatus</span>.<span class="ty">NOT_FOUND</span>, reason = <span class="s">&quot;User not found&quot;</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">UserNotFoundException</span> <span class="k">extends</span> <span class="ty">RuntimeException</span> {
+    <span class="k">public</span> <span class="ty">UserNotFoundException</span>(<span class="k">long</span> id) { <span class="k">super</span>(<span class="s">&quot;User &quot;</span> + id + <span class="s">&quot; not found&quot;</span>); }
+}
+</code></pre>
+<p>Trade-offs worth saying out loud in an interview: <code>@ResponseStatus</code> is <strong>static</strong> — one
+fixed status, and per-request headers/bodies are impossible. Use <code>ResponseEntity</code> when the
+status depends on runtime logic (found → 200, missing → 404), and <code>@ResponseStatus</code> when
+it never changes. If <strong>both</strong> are present, the <code>ResponseEntity</code>'s status wins.</p>
+<h2>Response Codes — the five families</h2>
+<p>The notes draw the codes as a number line from 1XX to 5XX:</p>
+<ul class="cards"><li><b>1XX</b> — Informational — 100</li><li><b>2XX</b> — Success — 200, 201, 202, 204, 206</li><li><b>3XX</b> — Redirection — 301, 308, 304</li><li><b>4XX</b> — Validation error (client side) — 400, 401, 403, 404, 405, 409, 422, 429</li><li><b>5XX</b> — Server error — 500, 501, 502</li></ul>
+<h2>2XX (Success)</h2>
+<p>Request received from the client is received and <strong>processed successfully</strong>.</p>
+<ul class="cards"><li><b>200</b> — OK — GET, POST — Request is successful and we are returning the response body.</li><li><b>201</b> — Created — POST — Request is successful and a new resource is created.</li><li><b>202</b> — Accepted — POST — Request is successfully accepted but processing is not yet completed. Batch processing like Export / Import etc.</li><li><b>204</b> — No Content — DELETE — Request is successful and we are NOT returning any data in the response body.</li><li><b>206</b> — Partial Content — POST — Request is partially successful — say Bulk Addition of 100 users, 95 passed and 5 requests failed; this response code can be used.</li></ul>
+<h2>3XX (Redirection)</h2>
+<p>Client must take <strong>additional action</strong> to complete the request.</p>
+<ul class="cards"><li><b>301</b> — Moved Permanently — When we migrate from a legacy API to a new API (old status code — the new one is 308) — All requests should be directed to the new URI: <code>.header("Location", "/v1.0/abc")</code>. Clients like Postman have a setting "Automatically follow redirects" → ON/OFF.</li><li><b>308</b> — Permanent Redirect — When we migrate from a legacy API to a new API — Same as 301, but it does <strong>not</strong> allow the HTTP method to change while redirecting (e.g. if the old API call is POST, then the new API call should also be POST — which is relaxed in 301).</li></ul>
+<pre><code><span class="a">@GetMapping</span>(<span class="s">&quot;/old-api&quot;</span>)
+<span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">Void</span>&gt; oldApi() {
+    <span class="k">return</span> <span class="ty">ResponseEntity</span>.status(<span class="ty">HttpStatus</span>.<span class="ty">PERMANENT_REDIRECT</span>)   <span class="c">// 308</span>
+            .header(<span class="s">&quot;Location&quot;</span>, <span class="s">&quot;/v1.0/abc&quot;</span>)
+            .build();
+}
+</code></pre>
+<h3>304 — Not Modified (GET)</h3>
+<p>Avoid using it with PATCH. Example: you are trying to update the name of the user, but say the name is <strong>already the same</strong> in the DB, so no update is required. In that case we should <strong>not</strong> throw 304, instead return 204 or 200.</p>
+<p>The caching flow with <code>If-Modified-Since</code>:</p>
+<ol>
+<li>Client makes a GET call; the server returns it with the <strong>Last-Modified</strong> time in the header.</li>
+<li>Client <strong>caches</strong> the response.</li>
+<li>Client makes the GET call again, passing this last-modified time in the <strong><code>If-Modified-Since</code></strong> header.</li>
+<li>Server checks the particular resource's last update time against what the client provided — if the resource is <strong>not updated</strong>, the server simply returns <strong>304 (NOT_MODIFIED)</strong>.</li>
+<li>If modified, the server processes the request as usual and returns the new values.</li>
+</ol>
+<pre><code><span class="c">// Spring does the If-Modified-Since comparison for you:</span>
+<span class="a">@GetMapping</span>(<span class="s">&quot;/user/{id}&quot;</span>)
+<span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">User</span>&gt; getUser(<span class="a">@PathVariable</span> <span class="k">long</span> id, <span class="ty">WebRequest</span> request) {
+    <span class="k">long</span> lastModified = userService.lastModified(id);
+    <span class="k">if</span> (request.checkNotModified(lastModified)) {
+        <span class="k">return</span> <span class="k">null</span>;                     <span class="c">// Spring already wrote 304 Not Modified</span>
+    }
+    <span class="k">return</span> <span class="ty">ResponseEntity</span>.ok().lastModified(lastModified).body(userService.find(id));
+}
+</code></pre>
+<blockquote>
+<p>Added: the modern sibling of this flow uses an <strong>ETag</strong> (a version/hash of the resource)
+instead of a timestamp — no clock precision problems, works for sub-second updates.
+Server sends <code>ETag: "v5"</code>; client sends it back as <code>If-None-Match: "v5"</code>; same
+<code>checkNotModified</code> API:</p>
+</blockquote>
+<pre><code><span class="a">@GetMapping</span>(<span class="s">&quot;/user/{id}&quot;</span>)
+<span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">User</span>&gt; getUser(<span class="a">@PathVariable</span> <span class="k">long</span> id, <span class="ty">WebRequest</span> request) {
+    <span class="ty">String</span> etag = <span class="s">&quot;\&quot;v&quot;</span> + userService.version(id) + <span class="s">&quot;\&quot;&quot;</span>;   <span class="c">// e.g. the @Version column</span>
+    <span class="k">if</span> (request.checkNotModified(etag)) {
+        <span class="k">return</span> <span class="k">null</span>;                     <span class="c">// Spring wrote 304 + the ETag header</span>
+    }
+    <span class="k">return</span> <span class="ty">ResponseEntity</span>.ok().eTag(etag).body(userService.find(id));
+}
+</code></pre>
+<p>For hash-based ETags across all GETs you can simply register Spring's
+<code>ShallowEtagHeaderFilter</code> — it computes an MD5 of the response body and answers 304 when
+it matches (saves bandwidth, not server CPU).</p>
+<h2>4XX (Client / Validation Error)</h2>
+<ul class="cards"><li><b>400</b> — Bad Request — GET, POST, PATCH, DELETE — Client is not passing the request details needed to process the request.</li><li><b>401</b> — Unauthorised — GET, POST, PATCH, DELETE — Any API which requires authentication, and the client tries to access it without providing authentication details.</li><li><b>403</b> — Forbidden — GET, POST, PATCH, DELETE — Say only ADMIN can perform a certain operation. If the API gets invoked by anyone apart from ADMIN we should throw the 401 [sic] status code, as the client does not have permission to access the resource.</li><li><b>404</b> — Not Found — GET, PATCH, DELETE — The requested resource which the client passes is not found in the DB by the server. E.g. get the user detail for ID 123, but no such ID is present in the DB.</li><li><b>405</b> — Method Not Allowed — GET, POST, PATCH, DELETE — E.g. hitting a GET API but with the POST HTTP method. In Spring Boot the DispatcherServlet might throw this error, as control does not even reach the Controller.</li><li><b>409</b> — Conflict — POST, PATCH, DELETE — Creating the same resource twice: <code>POST v1.0/user</code> and again <code>POST v1.0/user</code>.</li><li><b>422</b> — Un-processable Entity — GET, POST, PATCH, DELETE — Your application's business validation — e.g. a France user should not be allowed to open an account (as the country is not supported yet).</li><li><b>429</b> — Too Many Requests — GET, POST, PATCH, DELETE — Say our rule is: 1 user can make 10 calls in a minute. If user 12345 makes the 11th call in a minute, that 11th call should fail and we can throw the 429 error code.</li></ul>
+<blockquote>
+<p>Added: the 403 row keeps the notes' original "throw 401" wording marked [sic] — it should of course read <strong>403</strong>. The rule of thumb: <strong>401 = who are you?</strong> (not authenticated), <strong>403 = I know who you are, but you may not do this</strong> (not authorized).</p>
+</blockquote>
+<h2>5XX (Server Error)</h2>
+<p>Request failed <strong>at the server</strong>, even though the client passed a valid request. Means something is wrong at the server.</p>
+<ul class="cards"><li><b>500</b> — Internal Server Error — GET, POST, PATCH, DELETE — Generic code when no more specific error code is suitable.</li><li><b>501</b> — Not Implemented — GET, POST, PATCH, DELETE — API lacks the ability to fulfill the request — or say the API is in development and will be available in the future.</li><li><b>502</b> — Bad Gateway — GET, POST, PATCH, DELETE — Server acting as a proxy got an invalid response while calling upstream. Example: my app is deployed behind a reverse proxy (Nginx). If Nginx is not able to communicate with my app, it is eligible to throw 502 Bad Gateway.</li></ul>
+<blockquote>
+<p>Added: one more 5XX worth knowing — <strong>503 Service Unavailable</strong>: the server is temporarily unable to handle the request (overloaded, or down for maintenance), often sent with a <code>Retry-After</code> header. Unlike 502 it is about <em>this</em> server being unavailable, not a bad upstream answer.</p>
+</blockquote>
+<h2>100 (Informational)</h2>
+<p>An <strong>interim response</strong> to communicate request progress or its status <strong>before processing the final request</strong>.</p>
+<p><strong>100 — Continue — POST.</strong> Before sending the (large) request, the client checks with the server if it can handle the request and is ready:</p>
+<ol>
+<li>Client adds a few things in the <strong>headers first</strong>:
+   - <code>Content-Length: 1048576</code>
+   - <code>Content-Type: multipart/form-data</code>
+   - <code>Expect: 100-continue</code></li>
+<li>Server checks that <code>Expect: 100-continue</code> is present in the header — meaning the client is <em>just checking</em>. So the server validates everything (authentication, authorization, content type, length etc.).</li>
+<li>If the server is okay, it returns the <strong>100 Continue</strong> status code.</li>
+<li>Client receives it and then invokes the API <strong>again without <code>Expect</code></strong>, and the server processes the request.</li>
+</ol>
+<blockquote>
+<p>Good to know: instead of building an error <code>ResponseEntity</code> by hand, Spring lets you throw <code>ResponseStatusException</code> from anywhere: <code>throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User 123 not found");</code> — Spring converts it into the proper status code + message. How Spring resolves exceptions into responses is exactly the next topic.</p>
+</blockquote>
+<h2>Architect's Corner</h2>
+<ul>
+<li><strong>Standard error body</strong>: Spring 6 ships <code>ProblemDetail</code> (RFC 7807 / RFC 9457) — <code>{type, title, status, detail, instance}</code>. Adopt it org-wide instead of inventing error JSON shapes.</li>
+<li><strong>Idempotency by method</strong>: GET/PUT/DELETE must be idempotent; POST is not — support an <code>Idempotency-Key</code> header for safely-retryable POSTs (payments!).</li>
+<li><strong>429 must carry <code>Retry-After</code></strong>, and clients should honor it with exponential backoff + jitter.</li>
+<li><strong>304 + ETag</strong> is cheap server-side caching for read-heavy APIs — <code>If-None-Match</code> beats <code>If-Modified-Since</code> (no clock issues).</li>
+<li>Add <strong>503 Service Unavailable</strong> to your vocabulary: the correct answer during graceful shutdown and dependency outages — load balancers react to it.</li>
+</ul>
+<h2>Quick Revision</h2>
+<ul>
+<li>Response = <strong>Status Code + Header + Body</strong>; <code>ResponseEntity&lt;T&gt;</code> builds it — Builder pattern: <code>status(...)</code>/<code>headers(...)</code> return the builder, <code>body(...)</code> (last!) returns the <code>ResponseEntity</code>; <code>build()</code> for no body (<code>ResponseEntity&lt;Void&gt;</code>); default status is <strong>200</strong>.</li>
+<li><code>@ResponseBody</code> is required to return a plain string/POJO; <code>@RestController</code> adds it to all methods; plain <code>@Controller</code> treats the return value as a <strong>view</strong>.</li>
+<li>Families: 1XX informational, 2XX success, 3XX redirection, 4XX validation/client error, 5XX server error.</li>
+<li>2XX: 200 OK, 201 Created, 202 Accepted (batch), 204 No Content (DELETE), 206 Partial Content (bulk 95/100).</li>
+<li>3XX: 301 Moved Permanently (method may change), 308 Permanent Redirect (method preserved), 304 Not Modified (<code>Last-Modified</code> → <code>If-Modified-Since</code>; don't misuse with PATCH — return 200/204).</li>
+<li>4XX: 400 bad request, 401 unauthenticated, 403 forbidden (authenticated but no permission), 404 not found, 405 method not allowed (DispatcherServlet), 409 conflict (duplicate POST), 422 business validation, 429 rate limit.</li>
+<li>5XX: 500 generic, 501 not implemented, 502 bad gateway (proxy ↔ upstream); plus 503 service unavailable.</li>
+<li>100 Continue: headers with <code>Expect: 100-continue</code> → server validates → <code>100</code> → client sends the real request.</li>
+<li>Static shortcuts: <code>ok / created(uri) / accepted / noContent / badRequest / notFound / unprocessableEntity</code>; POST → 201 uses <code>ResponseEntity.created(location)</code> with <code>ServletUriComponentsBuilder</code>.</li>
+<li><strong><code>@ResponseStatus</code></strong> sets a fixed status on a handler method or a custom exception class — static; use <code>ResponseEntity</code> when the status depends on runtime logic.</li>
+<li><strong>ETag / <code>If-None-Match</code></strong> = version-based 304 (beats timestamps); <code>request.checkNotModified(etag)</code> + <code>.eTag(...)</code>, or <code>ShallowEtagHeaderFilter</code> app-wide.</li>
+</ul>
+<hr />
+<p>Next topic: <strong>Exception Handling</strong> — the five resolver classes (<code>HandlerExceptionResolver</code> family) and how <code>@ExceptionHandler</code> / <code>@ControllerAdvice</code> produce error responses.</p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = ResponseEntity_and_HTTP_Status_Codes_Explained_Part1.mp4; Part 2 = ResponseEntity_and_HTTP_Status_Codes_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

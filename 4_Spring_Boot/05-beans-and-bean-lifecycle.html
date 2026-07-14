@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beans and Bean Lifecycle</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#15803d22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #15803d40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#15803d0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #15803d33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#15803d;--a2:#22c55e">
+<header class="hero"><div class="in">
+  <span class="badge">🍃 SPRING BOOT</span>
+  <h1>Beans and Bean Lifecycle</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>What a bean is, and what the IOC container does with it  ·  Two ways to create a bean — @Component vs @Bean — and when…</em></p>
+<p class="chips">☕ 7 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> What a bean is, and what the IOC container does with it  ·  Two ways to create a bean — @Component vs @Bean — and when @Component fails  ·  How Spring Boot finds your beans (@ComponentScan, @Configuration)  ·  When beans get created: eager vs lazy initialization</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Beans_and_Bean_Lifecycle_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>What is a Bean?</h2>
+<p>A <strong>bean is a Java object which is managed by the Spring container</strong> (also known as the <strong>IOC container</strong>).</p>
+<figure><img alt="Beans and Bean Lifecycle — diagram" src="05-beans-and-bean-lifecycle.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p>The IOC container contains all the beans which get created, and also manages them — it creates them, wires them together, and destroys them at the end.</p>
+<blockquote>
+<p>Added: <strong>IOC = Inversion of Control.</strong> Normally <em>your</em> code creates objects with <code>new</code>. With IoC the control is inverted — the <em>container</em> creates and manages the objects, and your code just declares what it needs. The <strong><code>ApplicationContext</code></strong> interface is the implementation of the IOC container that Spring Boot gives you.</p>
+</blockquote>
+<h2>How to create a Bean?</h2>
+<ul>
+<li>It follows the <strong>"convention over configuration"</strong> approach.</li>
+<li>Means Spring Boot will try to auto-configure based on conventions, reducing the need for explicit configuration.</li>
+<li><code>@Controller</code>, <code>@Service</code> etc. all internally tell Spring to create a bean and manage it.</li>
+</ul>
+<p>So here, Spring Boot will internally call <code>new User()</code> to create an instance of this class:</p>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">User</span> {
+    <span class="ty">String</span> username;
+    <span class="ty">String</span> email;
+}
+<span class="c">// works: auto-configuration calls the DEFAULT constructor -&gt; object created</span>
+</code></pre>
+<p>Now, here Spring Boot has its auto-configuration rule — "OK, I have to call the default constructor and it will create the object". But watch what happens with a parameterized constructor:</p>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">User</span> {
+    <span class="ty">String</span> username;
+    <span class="ty">String</span> email;
+
+    <span class="ty">User</span>(<span class="ty">String</span> username, <span class="ty">String</span> email) {
+        <span class="k">this</span>.username = username;
+        <span class="k">this</span>.email = email;
+    }
+}
+<span class="c">// FAILS: default constructor not present -&gt; auto-configuration</span>
+<span class="c">// cannot create the object using a default constructor.</span>
+</code></pre>
+<p>Why does it fail? Because Spring Boot <strong>does not know what to pass</strong> in these constructor parameters.</p>
+<h3>2) Using @Bean</h3>
+<p>So what to do? <strong><code>@Bean</code> comes into the picture</strong> — we provide the configuration details ourselves and tell Spring Boot to use it while creating the bean. (<code>@Component</code> removed from the class.)</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">User</span> {                      <span class="c">// plain class, no @Component</span>
+    <span class="ty">String</span> username;
+    <span class="ty">String</span> email;
+
+    <span class="k">public</span> <span class="ty">User</span>(<span class="ty">String</span> username, <span class="ty">String</span> email) {
+        <span class="k">this</span>.username = username;
+        <span class="k">this</span>.email = email;
+    }
+}
+</code></pre>
+<pre><code><span class="a">@Configuration</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">AppConfig</span> {
+
+    <span class="a">@Bean</span>
+    <span class="k">public</span> <span class="ty">User</span> createUserBean() {
+        <span class="k">return</span> <span class="k">new</span> <span class="ty">User</span>(<span class="s">&quot;defaultUsername&quot;</span>, <span class="s">&quot;email&quot;</span>);   <span class="c">// WE tell Spring how</span>
+    }
+}
+</code></pre>
+<p>Two important rules from the notes:</p>
+<ul>
+<li>If a default constructor is added to <code>User</code> <strong>and</strong> <code>@Component</code> is added to the class <strong>and</strong> a <code>@Bean</code> configuration exists — <strong>first priority is always given to <code>@Bean</code></strong>.</li>
+<li>If we add the bean <strong>2 times</strong> in the configuration file, Spring will create <strong>2 beans</strong> of it — it will create two <code>User</code> objects:</li>
+</ul>
+<pre><code><span class="a">@Configuration</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">AppConfig</span> {
+    <span class="a">@Bean</span>
+    <span class="k">public</span> <span class="ty">User</span> user1() { <span class="k">return</span> <span class="k">new</span> <span class="ty">User</span>(<span class="s">&quot;u1&quot;</span>, <span class="s">&quot;u1@mail.com&quot;</span>); }
+
+    <span class="a">@Bean</span>
+    <span class="k">public</span> <span class="ty">User</span> user2() { <span class="k">return</span> <span class="k">new</span> <span class="ty">User</span>(<span class="s">&quot;u2&quot;</span>, <span class="s">&quot;u2@mail.com&quot;</span>); }
+    <span class="c">// -&gt; TWO distinct User beans live in the container</span>
+}
+</code></pre>
+<h2>How does Spring Boot find these beans?</h2>
+<ol>
+<li>Using the <strong><code>@ComponentScan</code></strong> annotation — it will scan the specified package <em>and its sub-packages</em> for classes annotated with <code>@Component</code>, <code>@Service</code> etc.</li>
+</ol>
+<pre><code><span class="a">@ComponentScan</span>(basePackages = <span class="s">&quot;com.patel.boot&quot;</span>)
+</code></pre>
+<ol start="2">
+<li>Through <strong>explicit defining</strong> of a bean via the <code>@Bean</code> annotation in a <code>@Configuration</code> class.</li>
+</ol>
+<blockquote>
+<p>Good to know: <code>@SpringBootApplication</code> already contains <code>@ComponentScan</code> — by default it scans the package of your main class and everything below it. That is why your classes are found "magically" as long as they sit under the main package.</p>
+</blockquote>
+<h2>At what time do these beans get created?</h2>
+<p><strong>Eagerness</strong></p>
+<ul>
+<li>Some beans get created when we <strong>start up</strong> the application.</li>
+<li>For example: beans with <strong>Singleton scope</strong> are eagerly initialized.</li>
+</ul>
+<p><strong>Lazy</strong></p>
+<ul>
+<li>Some beans get created <strong>lazily</strong> — means when they are actually needed.</li>
+<li>For example: beans with a scope like <strong>Prototype</strong> are lazy initialized, or any bean with the <code>@Lazy</code> annotation:</li>
+</ul>
+<pre><code><span class="a">@Lazy</span>
+<span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Order</span> { }
+<span class="c">// created only when first requested, not at startup</span>
+</code></pre>
+<h2>Life Cycle of a Bean</h2>
+<p>This is the complete journey of every bean, from application start to destruction:</p>
+<h3>Step 1 — Application Start</h3>
+<ul>
+<li>Spring Boot invokes the IOC container. <strong><code>ApplicationContext</code> provides the implementation of the IOC container.</strong></li>
+<li>The IOC container makes use of the <strong>configuration</strong> and <strong><code>@ComponentScan</code></strong> to look out for the classes for which beans need to be created.</li>
+</ul>
+<h3>Step 2 — Construct the Bean</h3>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">User</span> {
+    <span class="k">public</span> <span class="ty">User</span>() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;hi&quot;</span>);
+    }
+}
+</code></pre>
+<p>No scope annotation, so by default the scope is <strong>singleton</strong> — i.e. <strong>eager initialization</strong> — i.e. at application start it will create the bean (and you will see <code>hi</code> printed during startup).</p>
+<h3>Step 3 — Inject the Dependency into the Constructed Bean</h3>
+<ul>
+<li><code>@Autowired</code> first looks for a bean of the required type.</li>
+<li>If a bean is found, Spring will inject it. Different ways of injection:</li>
+<li>Constructor injection</li>
+<li>Setter injection</li>
+<li>Field injection</li>
+<li>If the bean is <strong>not</strong> found, Spring will create one and then inject it.</li>
+</ul>
+<pre><code><span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">User</span> {
+    <span class="a">@Autowired</span>
+    <span class="ty">Order</span> order;
+
+    <span class="k">public</span> <span class="ty">User</span>() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Hi&quot;</span>);
+    }
+}
+
+<span class="a">@Lazy</span>
+<span class="a">@Component</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Order</span> {
+    <span class="k">public</span> <span class="ty">Order</span>() {
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Lazy&quot;</span>);
+    }
+}
+
+<span class="c">// Output at startup:</span>
+<span class="c">//   Hi</span>
+<span class="c">//   Lazy</span>
+</code></pre>
+<ul>
+<li>Even though <code>Order</code> is <code>@Lazy</code>, <code>User</code> <em>needs</em> it — so injecting the dependency forces its creation right after <code>User</code>'s constructor runs.</li>
+<li>If <code>@Autowired Order order</code> is <strong>not</strong> there, then only <code>Hi</code> will be printed (the lazy <code>Order</code> bean is never needed, so it is never created).</li>
+</ul>
+<h3>Step 4 — @PostConstruct: perform any task before the bean is used</h3>
+<pre><code><span class="a">@PostConstruct</span>
+<span class="k">public</span> <span class="k">void</span> initialize() {
+    <span class="ty">System</span>.out.println(<span class="s">&quot;Bean is Ready&quot;</span>);
+}
+
+<span class="c">// Output at startup:</span>
+<span class="c">//   Hi</span>
+<span class="c">//   Lazy</span>
+<span class="c">//   Bean is Ready</span>
+</code></pre>
+<h3>Step 5 — Use the Bean</h3>
+<p>Use the bean in your application. Means: we are using the bean (or object) to invoke some methods, to perform some business logic.</p>
+<h3>Step 6 — @PreDestroy: perform any task before the bean is getting destroyed</h3>
+<pre><code><span class="ty">ConfigurableApplicationContext</span> context =
+        <span class="ty">SpringApplication</span>.run(<span class="ty">SpringbootApplication</span>.<span class="k">class</span>, args);
+context.close();
+</code></pre>
+<pre><code><span class="a">@PreDestroy</span>
+<span class="k">public</span> <span class="k">void</span> preDestroy() {
+    <span class="ty">System</span>.out.println(<span class="s">&quot;destroy&quot;</span>);
+}
+</code></pre>
+<p>Because of this it will print <code>destroy</code> — as we are closing the application immediately after it is started.</p>
+<blockquote>
+<p>Good to know: <code>@PostConstruct</code> and <code>@PreDestroy</code> come from <code>jakarta.annotation</code> (Java EE <code>javax.annotation</code> in older versions), not from Spring itself — Spring just honors them. <code>@PreDestroy</code> runs on a <em>graceful</em> shutdown (<code>context.close()</code>, Ctrl-C); it will not run if the process is killed with <code>kill -9</code>.</p>
+</blockquote>
+<h2>The other lifecycle hooks — and their exact order</h2>
+<blockquote>
+<p>Added: interviewers love this follow-up — <em>"is <code>@PostConstruct</code> the only way?"</em> No. Spring supports <strong>three</strong> init/destroy mechanisms, and they have a fixed execution order:</p>
+</blockquote>
+<ul class="cards"><li><b>Annotations (preferred)</b> — <code>@PostConstruct</code> — <code>@PreDestroy</code></li><li><b>Spring interfaces</b> — <code>InitializingBean.afterPropertiesSet()</code> — <code>DisposableBean.destroy()</code></li><li><b><code>@Bean</code> attributes</b> — <code>@Bean(initMethod = "init")</code> — <code>@Bean(destroyMethod = "cleanup")</code></li></ul>
+<pre><code><span class="c">// All three init hooks on ONE bean — printed in this exact order:</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Connection</span> <span class="k">implements</span> <span class="ty">InitializingBean</span>, <span class="ty">DisposableBean</span> {
+
+    <span class="a">@PostConstruct</span>
+    <span class="k">public</span> <span class="k">void</span> annotated() { <span class="ty">System</span>.out.println(<span class="s">&quot;1. @PostConstruct&quot;</span>); }
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">void</span> afterPropertiesSet() { <span class="ty">System</span>.out.println(<span class="s">&quot;2. afterPropertiesSet()&quot;</span>); }
+
+    <span class="k">public</span> <span class="k">void</span> customInit() { <span class="ty">System</span>.out.println(<span class="s">&quot;3. initMethod&quot;</span>); }
+
+    <span class="c">// destroy side, same ranking:</span>
+    <span class="a">@PreDestroy</span>
+    <span class="k">public</span> <span class="k">void</span> preDestroy() { <span class="ty">System</span>.out.println(<span class="s">&quot;1. @PreDestroy&quot;</span>); }
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">void</span> destroy() { <span class="ty">System</span>.out.println(<span class="s">&quot;2. DisposableBean.destroy()&quot;</span>); }
+
+    <span class="k">public</span> <span class="k">void</span> customClose() { <span class="ty">System</span>.out.println(<span class="s">&quot;3. destroyMethod&quot;</span>); }
+}
+</code></pre>
+<pre><code><span class="a">@Configuration</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">AppConfig</span> {
+    <span class="a">@Bean</span>(initMethod = <span class="s">&quot;customInit&quot;</span>, destroyMethod = <span class="s">&quot;customClose&quot;</span>)
+    <span class="k">public</span> <span class="ty">Connection</span> connection() { <span class="k">return</span> <span class="k">new</span> <span class="ty">Connection</span>(); }
+}
+</code></pre>
+<blockquote>
+<p>Added: order to remember — init: <strong><code>@PostConstruct</code> → <code>afterPropertiesSet()</code> → <code>initMethod</code></strong>; destroy: <strong><code>@PreDestroy</code> → <code>DisposableBean.destroy()</code> → <code>destroyMethod</code></strong>. Prefer the annotations: they don't couple your class to Spring interfaces; use <code>initMethod</code>/<code>destroyMethod</code> when the class is third-party code you can't annotate.</p>
+</blockquote>
+<h3>Where do Aware interfaces and BeanPostProcessor fit?</h3>
+<blockquote>
+<p>Added: the fuller picture of the sequence between "inject dependencies" and "use":
+1. Construct → inject dependencies.
+2. <strong>Aware callbacks</strong> — if the bean implements <code>BeanNameAware</code> / <code>ApplicationContextAware</code>, Spring hands it its own name / the container reference here.
+3. <strong><code>BeanPostProcessor.postProcessBeforeInitialization()</code></strong> — runs for <em>every</em> bean (this is what triggers <code>@PostConstruct</code>).
+4. Init hooks (the three above, in order).
+5. <strong><code>BeanPostProcessor.postProcessAfterInitialization()</code></strong> — where AOP proxies wrap the bean (Topic 09).
+6. Bean is ready for use.</p>
+</blockquote>
+<h3>The prototype gotcha</h3>
+<blockquote>
+<p>Added: for <strong>prototype</strong>-scoped beans Spring calls the init hooks but does <strong>NOT</strong> manage destruction — <code>@PreDestroy</code>/<code>destroy()</code> are never invoked for prototypes. The container hands the object over and forgets it; cleanup is the caller's job. (Scopes in detail: Topic 07.)</p>
+</blockquote>
+<h2>Architect's Corner</h2>
+<ul>
+<li><strong>ApplicationContext = BeanFactory + events + AOP + i18n</strong> — Boot always gives you an ApplicationContext.</li>
+<li><strong>BeanPostProcessor is the machinery</strong> behind <code>@PostConstruct</code>, <code>@Autowired</code>, AOP proxies — knowing it exists demystifies "Spring magic" and stack traces.</li>
+<li><strong>Startup performance</strong>: <code>spring.main.lazy-initialization=true</code> defers all bean creation — faster boot, but moves failures to first request; use selectively.</li>
+<li><strong><code>@DependsOn</code></strong> forces creation order when there's an implicit dependency (e.g., a cache warmer needing a migration bean).</li>
+<li><strong>Context events</strong> (<code>ApplicationReadyEvent</code>, <code>ContextClosedEvent</code>) are the clean hooks for warmup and shutdown work — prefer them over ad-hoc main-method code.</li>
+</ul>
+<h2>Quick Revision</h2>
+<ul>
+<li><strong>Bean</strong> = a Java object managed by the Spring <strong>IOC container</strong>; <code>ApplicationContext</code> is the container implementation.</li>
+<li>Create beans two ways: <strong><code>@Component</code></strong> (convention — Spring calls the default constructor) or <strong><code>@Bean</code></strong> in a <code>@Configuration</code> class (you construct it — needed when the constructor takes parameters).</li>
+<li><code>@Bean</code> <strong>wins</strong> over <code>@Component</code> for the same class; two <code>@Bean</code> methods = <strong>two</strong> beans.</li>
+<li>Beans are found via <strong><code>@ComponentScan</code></strong> (package + sub-packages) or explicit <code>@Bean</code> methods.</li>
+<li><strong>Eager</strong> = created at startup (singleton scope). <strong>Lazy</strong> = created when needed (prototype scope, <code>@Lazy</code>).</li>
+<li>Lifecycle: <strong>Application Start → IOC container → Construct → Inject dependencies → <code>@PostConstruct</code> → Use → <code>@PreDestroy</code> → Destroy</strong>.</li>
+<li>Three init/destroy mechanisms, fixed order — init: <code>@PostConstruct</code> → <code>afterPropertiesSet()</code> → <code>initMethod</code>; destroy: <code>@PreDestroy</code> → <code>DisposableBean.destroy()</code> → <code>destroyMethod</code>.</li>
+<li>Between inject and use: Aware callbacks → <code>BeanPostProcessor</code> before-init → init hooks → after-init (AOP proxies).</li>
+<li><strong>Prototype beans never get destroy callbacks</strong> — Spring creates them, then forgets them.</li>
+</ul>
+<hr />
+<p>Next topic: <strong>Dependency Injection</strong> — why <code>new</code> inside a class is a problem, three injection styles, and the classic circular / unsatisfied dependency issues.</p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Beans_and_Bean_Lifecycle_Explained_Part1.mp4; Part 2 = Beans_and_Bean_Lifecycle_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

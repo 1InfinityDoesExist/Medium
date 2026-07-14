@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Four Pillars of OOPs</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#e8590c22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #e8590c40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#e8590c0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #e8590c33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#e8590c;--a2:#fd7e14">
+<header class="hero"><div class="in">
+  <span class="badge">☕ CORE JAVA</span>
+  <h1>The Four Pillars of OOPs</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>Everyday examples</em></p>
+<p class="chips">☕ 7 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> Data Abstraction — hiding how things work, showing only what they do  ·  Data Encapsulation — bundling data with code, and protecting it with getters/setters  ·  Inheritance — reusing a parent class in a child class, the 4 types, and the diamond problem  ·  Polymorphism — one method, many forms (compile-time overloading and runtime overriding)</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Four_Pillars_of_OOPs_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<p>Object-Oriented Programming stands on <strong>four pillars</strong>. Just like a building needs all its pillars to stand, good OOP code uses all four ideas together.</p>
+<figure><img alt="The Four Pillars of OOPs — diagram" src="02-four-pillars-of-oops.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<hr />
+<h2>Pillar 1 — Data Abstraction</h2>
+<p><strong>Definition:</strong> Abstraction <strong>hides the internal implementation and shows only the essential functionality to the user.</strong></p>
+<p>In simple words: you see <em>what</em> a thing does, not <em>how</em> it does it — like a TV remote: you press a button and the channel changes; you never see the electronics inside.</p>
+<ul>
+<li>
+<p>It can be achieved through an <strong>interface</strong> and an <strong>abstract class</strong>.</p>
+</li>
+<li>
+<p><strong>Car:</strong> We are only shown the <strong>brake pedal</strong>. If we press it, the car's speed reduces. But <em>how</em> does it reduce? That is <strong>abstracted</strong> (hidden) from us.</p>
+</li>
+<li><strong>Cellphone:</strong> We dial a number and the call connects. <em>How</em> the call is actually made is abstracted from us.</li>
+</ul>
+<h3>Advantage of Abstraction</h3>
+<ul>
+<li><strong>Increased security and confidentiality</strong> — users only see what they need to see; the sensitive inner working stays hidden.</li>
+</ul>
+<h3>Java example (using an interface)</h3>
+<p>An <code>interface</code> only declares <em>what</em> must be done. The class that implements it decides <em>how</em>.</p>
+<pre><code><span class="c">// The interface shows only the essential functionality:</span>
+<span class="k">interface</span> <span class="ty">Car</span> {
+    <span class="k">public</span> <span class="k">void</span> applyBreak();   <span class="c">// WHAT: brakes can be applied</span>
+    <span class="k">public</span> <span class="k">void</span> speedUp();      <span class="c">// WHAT: car can speed up</span>
+}
+
+<span class="c">// The hidden implementation (the &quot;HOW&quot;):</span>
+<span class="k">class</span> <span class="ty">Swift</span> <span class="k">implements</span> <span class="ty">Car</span> {
+    <span class="k">private</span> <span class="k">int</span> speed = <span class="n">60</span>;
+
+    <span class="k">public</span> <span class="k">void</span> applyBreak() {
+        <span class="c">// internal details the user never sees</span>
+        speed = speed - <span class="n">20</span>;
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Brake applied. Speed is now &quot;</span> + speed);
+    }
+
+    <span class="k">public</span> <span class="k">void</span> speedUp() {
+        speed = speed + <span class="n">20</span>;
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Speeding up. Speed is now &quot;</span> + speed);
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Car</span> myCar = <span class="k">new</span> <span class="ty">Swift</span>();   <span class="c">// user only knows the Car interface</span>
+        myCar.speedUp();
+        myCar.applyBreak();
+    }
+}
+</code></pre>
+<p><strong>Output:</strong></p>
+<pre><code><span class="ty">Speeding</span> up. <span class="ty">Speed</span> is now <span class="n">80</span>
+<span class="ty">Brake</span> applied. <span class="ty">Speed</span> is now <span class="n">60</span>
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> Abstraction = show the <em>what</em>, hide the <em>how</em>. Achieved with <strong>interfaces</strong> and <strong>abstract classes</strong>.</p>
+</blockquote>
+<hr />
+<h2>Pillar 2 — Data Encapsulation</h2>
+<p><strong>Definition:</strong> Encapsulation <strong>bundles the data and the code working on that data into a single unit</strong> (the class). It is also known as <strong>data hiding</strong>.</p>
+<p>Think of a <strong>medicine capsule</strong>: the powder (data) is sealed inside a shell (the class). You cannot touch the powder directly — you take the capsule as a whole.</p>
+<h3>Steps to achieve encapsulation</h3>
+<ol>
+<li>Declare the <strong>variables of a class as <code>private</code></strong> (nobody outside can touch them directly).</li>
+<li>Provide <strong>public getter and setter methods</strong> to view and modify the value of the variables.</li>
+</ol>
+<h3>Advantages of Encapsulation</h3>
+<ul>
+<li><strong>Loosely coupled code</strong> — outside code depends only on the getters/setters, not on the internal details, so internals can change without breaking other code.</li>
+<li><strong>Better access control and security</strong> — you decide exactly who can read or change the data, and you can add checks inside the setter.</li>
+</ul>
+<h3>Java example</h3>
+<pre><code><span class="k">class</span> <span class="ty">Dog</span> {
+    <span class="k">private</span> <span class="ty">String</span> color;   <span class="c">// data variable — hidden (private)</span>
+
+    <span class="c">// public getter — the only way to VIEW the color</span>
+    <span class="k">public</span> <span class="ty">String</span> getDogColor() {
+        <span class="k">return</span> color;
+    }
+
+    <span class="c">// public setter — the only way to CHANGE the color</span>
+    <span class="k">public</span> <span class="k">void</span> setColor(<span class="ty">String</span> col) {
+        <span class="k">this</span>.color = col;
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Dog</span> dog = <span class="k">new</span> <span class="ty">Dog</span>();
+        dog.setColor(<span class="s">&quot;Black&quot;</span>);                    <span class="c">// set through the setter</span>
+        <span class="ty">System</span>.out.println(dog.getDogColor());    <span class="c">// read through the getter</span>
+    }
+}
+</code></pre>
+<p><strong>Output:</strong></p>
+<pre><code><span class="ty">Black</span>
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> Encapsulation = <strong>private variables + public getters/setters</strong>. Data and the methods that work on it live together in one unit.</p>
+</blockquote>
+<hr />
+<h2>Pillar 3 — Inheritance</h2>
+<p><strong>Definition:</strong> Inheritance is the <strong>capability of a class to inherit properties from its parent class</strong>.</p>
+<p>Think of it like family inheritance: a child automatically receives things from the parent, without earning them again.</p>
+<ul>
+<li>A child class can inherit <strong>both functions (methods) and variables</strong>, so we do <strong>not have to write them again</strong> in the child class.</li>
+<li>It can be achieved using the <strong><code>extends</code></strong> keyword, or through an <strong>interface</strong> (with <code>implements</code>).</li>
+</ul>
+<h3>Java example</h3>
+<pre><code><span class="k">class</span> <span class="ty">Animal</span> {                        <span class="c">// parent class</span>
+    <span class="ty">String</span> name;
+
+    <span class="k">public</span> <span class="k">void</span> eat() {
+        <span class="ty">System</span>.out.println(name + <span class="s">&quot; is eating.&quot;</span>);
+    }
+}
+
+<span class="k">class</span> <span class="ty">Dog</span> <span class="k">extends</span> <span class="ty">Animal</span> {            <span class="c">// child class — inherits name and eat()</span>
+    <span class="k">public</span> <span class="k">void</span> bark() {
+        <span class="ty">System</span>.out.println(name + <span class="s">&quot; says: Woof!&quot;</span>);
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Dog</span> d = <span class="k">new</span> <span class="ty">Dog</span>();
+        d.name = <span class="s">&quot;Tommy&quot;</span>;   <span class="c">// inherited variable — we did not rewrite it</span>
+        d.eat();            <span class="c">// inherited method  — we did not rewrite it</span>
+        d.bark();           <span class="c">// Dog&#x27;s own method</span>
+    }
+}
+</code></pre>
+<p><strong>Output:</strong></p>
+<pre><code><span class="ty">Tommy</span> is eating.
+<span class="ty">Tommy</span> says: <span class="ty">Woof</span>!
+</code></pre>
+<h3>Types of Inheritance</h3>
+<ul class="cards"><li><b><strong>Single</strong></b> — One child inherits from one parent — <code>A -&gt; B</code></li><li><b><strong>Multilevel</strong></b> — A chain: child of a child — <code>A -&gt; B -&gt; C</code></li><li><b><strong>Hierarchical</strong></b> — One parent, many children — <code>A -&gt; B</code> and <code>A -&gt; C</code></li><li><b><strong>Multiple</strong></b> — One child, many parents — <strong>not allowed with classes in Java</strong> (diamond problem); achieved <strong>through interfaces</strong> — <code>A, B -&gt; C</code></li></ul>
+<h3>The Diamond Problem (why multiple inheritance of classes is not allowed)</h3>
+<p>Imagine class <code>A</code> has a method <code>getEngine()</code> and class <code>B</code> also has a method <code>getEngine()</code>. Now class <code>C</code> tries to inherit from <strong>both</strong>:</p>
+<pre><code>   +--------------+        +--------------+
+   |      <span class="ty">A</span>       |        |      <span class="ty">B</span>       |
+   |  getEngine() |        |  getEngine() |
+   +--------------+        +--------------+
+            \                  /
+             \                /
+              v              v
+             +----------------+
+             |       <span class="ty">C</span>        |
+             +----------------+
+</code></pre>
+<pre><code><span class="c">// NOT allowed in Java — this does NOT compile:</span>
+<span class="k">class</span> <span class="ty">C</span> <span class="k">extends</span> <span class="ty">A</span>, <span class="ty">B</span> {
+
+}
+</code></pre>
+<pre><code><span class="ty">C</span> obj = <span class="k">new</span> <span class="ty">C</span>();
+obj.getEngine();   <span class="c">// PROBLEM: which class&#x27;s getEngine() should be invoked? A&#x27;s or B&#x27;s?</span>
+</code></pre>
+<p>Java cannot decide <strong>which <code>getEngine()</code> to invoke</strong> — A's version or B's version. This confusion is called the <strong>diamond problem</strong>, and that is why Java forbids <code>extends</code> with two classes.</p>
+<p><strong>Solution:</strong> use <strong>interfaces</strong>. Through interfaces we can resolve the diamond problem, because an interface only <em>declares</em> the method — class <code>C</code> must write its <strong>own single implementation</strong>, so there is no confusion:</p>
+<pre><code><span class="k">interface</span> <span class="ty">A</span> { <span class="k">boolean</span> getEngine(); }
+<span class="k">interface</span> <span class="ty">B</span> { <span class="k">boolean</span> getEngine(); }
+
+<span class="c">// Multiple inheritance through interfaces — perfectly legal:</span>
+<span class="k">class</span> <span class="ty">C</span> <span class="k">implements</span> <span class="ty">A</span>, <span class="ty">B</span> {
+    <span class="k">public</span> <span class="k">boolean</span> getEngine() {   <span class="c">// C provides ONE implementation — no confusion</span>
+        <span class="k">return</span> <span class="k">true</span>;
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">C</span> obj = <span class="k">new</span> <span class="ty">C</span>();
+        <span class="ty">System</span>.out.println(obj.getEngine());
+    }
+}
+</code></pre>
+<p><strong>Output:</strong></p>
+<pre><code><span class="k">true</span>
+</code></pre>
+<h3>Advantages of Inheritance</h3>
+<ul>
+<li><strong>Code reusability</strong> — write common code once in the parent, reuse it in every child.</li>
+<li><strong>We can achieve polymorphism using inheritance</strong> (see the next pillar).</li>
+</ul>
+<blockquote>
+<p><strong>Remember:</strong> <code>extends</code> for class inheritance, <code>implements</code> for interfaces. Multiple inheritance of <strong>classes</strong> = diamond problem; multiple inheritance of <strong>interfaces</strong> = allowed.</p>
+</blockquote>
+<hr />
+<h2>Pillar 4 — Polymorphism</h2>
+<p><strong>Definition:</strong> <strong>Poly</strong> means <strong>many</strong> and <strong>morphism</strong> means <strong>form</strong>. So polymorphism means <em>many forms</em>: <strong>the same method behaves differently in different situations.</strong></p>
+<h3>Everyday example</h3>
+<ul>
+<li>The <strong>same person</strong> can be a <strong>father</strong> at home, a <strong>doctor</strong> at the hospital, a customer at a shop. One person — many forms depending on the situation.</li>
+</ul>
+<h3>Types of Polymorphism</h3>
+<ol>
+<li><strong>Compile-Time Polymorphism</strong> — also called <strong>Static Polymorphism</strong> or <strong>Method Overloading</strong>.</li>
+<li><strong>Runtime Polymorphism</strong> — also called <strong>Dynamic Polymorphism</strong> or <strong>Method Overriding</strong>.</li>
+</ol>
+<h3>Type 1 — Compile-Time / Static Polymorphism (Method Overloading)</h3>
+<p>Same method <strong>name</strong>, but <strong>different parameters</strong>, inside the <strong>same class</strong>. The compiler decides <em>at compile time</em> which version to call by looking at the arguments.</p>
+<pre><code><span class="k">class</span> <span class="ty">Sum</span> {
+    <span class="k">int</span> doSum(<span class="k">int</span> a, <span class="k">int</span> b) {          <span class="c">// version 1: two numbers</span>
+        <span class="k">return</span> a + b;
+    }
+
+    <span class="k">int</span> doSum(<span class="k">int</span> a, <span class="k">int</span> b, <span class="k">int</span> c) {   <span class="c">// version 2: three numbers (same name!)</span>
+        <span class="k">return</span> (a + b + c);
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Sum</span> s = <span class="k">new</span> <span class="ty">Sum</span>();
+        <span class="ty">System</span>.out.println(s.doSum(<span class="n">10</span>, <span class="n">20</span>));       <span class="c">// compiler picks version 1</span>
+        <span class="ty">System</span>.out.println(s.doSum(<span class="n">10</span>, <span class="n">20</span>, <span class="n">30</span>));   <span class="c">// compiler picks version 2</span>
+    }
+}
+</code></pre>
+<p><strong>Output:</strong></p>
+<pre><code><span class="n">30</span>
+<span class="n">60</span>
+</code></pre>
+<h3>Type 2 — Runtime / Dynamic Polymorphism (Method Overriding)</h3>
+<p>A <strong>child class rewrites (overrides)</strong> a method it inherited from its parent, giving it new behavior. Which version runs is decided <strong>at runtime</strong>, based on the actual object.</p>
+<pre><code>   +--------------+
+   |      <span class="ty">A</span>       |   parent
+   |  getEngine() |   -&gt; returns <span class="k">true</span>
+   +--------------+
+          |
+          v  (<span class="ty">B</span> <span class="k">extends</span> <span class="ty">A</span>)
+   +--------------+
+   |      <span class="ty">B</span>       |   child
+   |  getEngine() |   -&gt; overridden: returns <span class="k">false</span>
+   +--------------+
+</code></pre>
+<p>The child <strong>may or may not</strong> change the inherited method — if it does not override it, the parent's version is used.</p>
+<pre><code><span class="k">class</span> <span class="ty">A</span> {
+    <span class="k">boolean</span> getEngine() {
+        <span class="k">return</span> <span class="k">true</span>;
+    }
+}
+
+<span class="k">class</span> <span class="ty">B</span> <span class="k">extends</span> <span class="ty">A</span> {
+    <span class="a">@Override</span>
+    <span class="k">boolean</span> getEngine() {      <span class="c">// B overrides A&#x27;s method</span>
+        <span class="k">return</span> <span class="k">false</span>;
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">B</span> b = <span class="k">new</span> <span class="ty">B</span>();
+        <span class="ty">System</span>.out.println(b.getEngine());   <span class="c">// B&#x27;s version runs -&gt; false</span>
+
+        <span class="ty">A</span> a = <span class="k">new</span> <span class="ty">A</span>();
+        <span class="ty">System</span>.out.println(a.getEngine());   <span class="c">// A&#x27;s version runs -&gt; true</span>
+    }
+}
+</code></pre>
+<p><strong>Output:</strong></p>
+<pre><code><span class="k">false</span>
+<span class="k">true</span>
+</code></pre>
+<ul class="cards"><li><b>Also called</b> — Static polymorphism — Dynamic polymorphism</li><li><b>Happens in</b> — The <strong>same</strong> class — <strong>Parent and child</strong> classes</li><li><b>Parameters</b> — Must be <strong>different</strong> — Must be the <strong>same</strong></li><li><b>Decided</b> — At compile time — At runtime</li><li><b>Needs inheritance?</b> — No — Yes</li></ul>
+<blockquote>
+<p><strong>Remember:</strong> Over<strong>load</strong>ing = same name, different <em>parameter list</em>, same class. Over<strong>rid</strong>ing = same signature, child <em>replaces</em> the parent's behavior.</p>
+</blockquote>
+<hr />
+<h2>Quick Revision</h2>
+<ul>
+<li><strong>Four pillars:</strong> Abstraction, Encapsulation, Inheritance, Polymorphism.</li>
+<li><strong>Abstraction</strong> hides internal implementation, shows only essential functionality; achieved via <strong>interface / abstract class</strong>; advantage: security and confidentiality (car brake, cellphone call).</li>
+<li><strong>Encapsulation</strong> bundles data + code into one unit ("data hiding"): <strong>private variables + public getters/setters</strong>; advantages: loosely coupled code, better access control and security.</li>
+<li><strong>Inheritance</strong> lets a child class reuse the parent's variables and methods via <strong><code>extends</code></strong> or interfaces; types: <strong>single, multilevel, hierarchical, multiple</strong>; advantage: code reusability, and it enables polymorphism.</li>
+<li><strong>Diamond problem:</strong> <code>class C extends A, B</code> is illegal — Java would not know which <code>getEngine()</code> to invoke; solved by using <strong>interfaces</strong>.</li>
+<li><strong>Polymorphism</strong> = many forms; <strong>compile-time = method overloading</strong> (same name, different parameters), <strong>runtime = method overriding</strong> (child redefines a parent method).</li>
+</ul>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Four_Pillars_of_OOPs_Explained_Part1.mp4; Part 2 = Four_Pillars_of_OOPs_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

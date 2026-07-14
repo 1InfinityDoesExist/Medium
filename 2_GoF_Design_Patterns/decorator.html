@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Decorator Design Pattern</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#6366f122;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #6366f140}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#6366f10d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #6366f133}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#6366f114,#818cf822);border:1px solid #6366f133;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#6366f114,#818cf822);border:1px solid #6366f133;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#6366f1;--a2:#818cf8">
+<header class="hero"><div class="in">
+  <span class="badge">🏛️ GANG-OF-FOUR PATTERN</span>
+  <h1>Decorator Design Pattern</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>IShipment.java — the Component</em></p>
+<p class="chips">☕ 4 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> Attach responsibilities to an object dynamically by wrapping it in an object with the same interface that delegates and adds its own contribution.</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Decorator_Short_Overview_EN.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<hr />
+<h2>Intent</h2>
+<p>Attach responsibilities to an object <strong>dynamically</strong> by wrapping it in an object with the <strong>same interface</strong> that delegates and adds its own contribution. Decorators stack — wrap a wrap — composing surcharges, features, or behavior at runtime without subclassing.</p>
+<hr />
+<h2>The example domain</h2>
+<p>Shipping cost calculation: a base shipment (a domestic parcel at 40, an international crate at 90) can take <strong>optional add-ons</strong> — insurance (+15), express handling (+25) — in any combination. Subclassing every combination (<code>InsuredExpressCrate</code>, …) explodes; decorators make each add-on its own wrapper, so cost and description <strong>accumulate as you wrap</strong>.</p>
+<hr />
+<h2>How the pattern works</h2>
+<ul>
+<li><code>IShipment</code> is the <strong>Component</strong>: <code>getDescription()</code>, <code>getCost()</code>, <code>process()</code>.</li>
+<li><code>DomesticParcel</code> / <code>InternationalCrate</code> are <strong>Concrete Components</strong> — base descriptions and costs.</li>
+<li><code>AbstractShipmentDecorator</code> is the <strong>Decorator base</strong>: it <em>implements</em> <code>IShipment</code> <em>and</em> wraps one (<code>protected final IShipment shipment</code>). Its <code>getCost()</code> = wrapped cost + <code>getSurcharge()</code>; <code>getDescription()</code> appends the surcharge label; <code>process()</code> delegates then reports the addition. Subclasses supply only two hooks.</li>
+<li><code>InsuranceDecorator</code> (+15) / <code>ExpressHandlingDecorator</code> (+25) are <strong>Concrete Decorators</strong> — each defines just its surcharge and label.</li>
+<li>Wrapping is nestable: <code>new ExpressHandlingDecorator(new InsuranceDecorator(crate))</code> — 90 → 105 → 130.</li>
+</ul>
+<hr />
+<h2>UML Class Diagram</h2>
+<figure><img alt="Decorator Design Pattern — diagram" src="decorator.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p><strong>Reading the diagram:</strong> both base shipments and the decorator implement <code>IShipment</code>; the decorator additionally <em>holds</em> an <code>IShipment</code> (dashed arrow). Because the wrapped field is interface-typed, decorators wrap decorators — stackability.</p>
+<hr />
+<h2>The players</h2>
+<ul class="cards"><li><b><code>IShipment</code></b> — Component — description/cost/process contract.</li><li><b><code>DomesticParcel</code> / <code>InternationalCrate</code></b> — Concrete components — base cost 40 / 90.</li><li><b><code>AbstractShipmentDecorator</code></b> — Decorator base — same interface + wrapped delegate + surcharge hooks.</li><li><b><code>InsuranceDecorator</code> / <code>ExpressHandlingDecorator</code></b> — Concrete decorators — +15 / +25.</li><li><b><code>ShippingDesignPattern</code></b> — Client — stacks two decorators on two bases.</li></ul>
+<hr />
+<h2>Code walkthrough — every line explained</h2>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">IShipment</span> {
+    <span class="ty">String</span> getDescription();
+    <span class="k">int</span> getCost();
+    <span class="k">void</span> process();
+}
+</code></pre>
+<ul>
+<li>The shared contract every layer speaks — base or wrapper — making wrapping invisible to callers.</li>
+</ul>
+<h3><code>InternationalCrate.java</code> — a Concrete Component</h3>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">InternationalCrate</span> <span class="k">implements</span> <span class="ty">IShipment</span> {
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">String</span> description;
+    <span class="k">private</span> <span class="k">final</span> <span class="k">int</span> cost;
+    <span class="k">public</span> <span class="ty">InternationalCrate</span>(<span class="ty">String</span> description) { <span class="k">this</span>.description = description; <span class="k">this</span>.cost = <span class="n">90</span>; }
+    <span class="a">@Override</span> <span class="k">public</span> <span class="k">int</span> getCost() { <span class="k">return</span> cost; }
+    <span class="a">@Override</span> <span class="k">public</span> <span class="k">void</span> process() { <span class="ty">System</span>.out.println(<span class="s">&quot;The cost of &quot;</span> + description + <span class="s">&quot;:&quot;</span> + cost); }
+}
+</code></pre>
+<ul>
+<li>The undecorated base: fixed cost 90, its own description, and a <code>process()</code> that reports itself. <code>DomesticParcel</code> is the same at cost 40.</li>
+</ul>
+<h3><code>AbstractShipmentDecorator.java</code> — the Decorator base</h3>
+<pre><code><span class="k">public</span> <span class="k">abstract</span> <span class="k">class</span> <span class="ty">AbstractShipmentDecorator</span> <span class="k">implements</span> <span class="ty">IShipment</span> {
+
+    <span class="k">protected</span> <span class="k">final</span> <span class="ty">IShipment</span> shipment;
+
+    <span class="k">public</span> <span class="ty">AbstractShipmentDecorator</span>(<span class="ty">IShipment</span> shipment) { <span class="k">this</span>.shipment = shipment; }
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="ty">String</span> getDescription() { <span class="k">return</span> shipment.getDescription() + <span class="s">&quot;:&quot;</span> + getSurchargeLabel(); }
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">int</span> getCost() { <span class="k">return</span> shipment.getCost() + getSurcharge(); }
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">void</span> process() {
+        shipment.process();
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Added &quot;</span> + getSurchargeLabel() + <span class="s">&quot; to &quot;</span> + shipment.getDescription()
+                + <span class="s">&quot; -&gt; cost of &quot;</span> + getDescription() + <span class="s">&quot;:&quot;</span> + getCost());
+    }
+
+    <span class="k">public</span> <span class="k">abstract</span> <span class="k">int</span> getSurcharge();
+    <span class="k">public</span> <span class="k">abstract</span> <span class="ty">String</span> getSurchargeLabel();
+}
+</code></pre>
+<ul>
+<li><strong>The double role</strong>: implements <code>IShipment</code> <em>and</em> wraps one. The wrapped field is interface-typed — it may hold a base shipment or another decorator. That's stackability.</li>
+<li><code>getCost()</code> is the accumulation rule: <em>whatever's underneath</em> + my surcharge. Description accumulates the same way. <code>process()</code> delegates first (inner layers report first), then reports this layer's addition.</li>
+<li>The two abstract hooks mean a concrete decorator is ~10 lines.</li>
+</ul>
+<h3>The concrete decorators</h3>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">InsuranceDecorator</span> <span class="k">extends</span> <span class="ty">AbstractShipmentDecorator</span> {
+    <span class="a">@Override</span> <span class="k">public</span> <span class="k">int</span> getSurcharge() { <span class="k">return</span> <span class="n">15</span>; }
+    <span class="a">@Override</span> <span class="k">public</span> <span class="ty">String</span> getSurchargeLabel() { <span class="k">return</span> <span class="s">&quot;Insurance&quot;</span>; }
+}
+</code></pre>
+<ul>
+<li>Insurance +15; <code>ExpressHandlingDecorator</code> +25. All wrapping mechanics are inherited.</li>
+</ul>
+<h3><code>ShippingDesignPattern.java</code> — the client</h3>
+<pre><code><span class="ty">IShipment</span> crateShipment = <span class="k">new</span> <span class="ty">ExpressHandlingDecorator</span>(<span class="k">new</span> <span class="ty">InsuranceDecorator</span>(<span class="k">new</span> <span class="ty">InternationalCrate</span>(<span class="s">&quot;Machinery Crate&quot;</span>)));
+crateShipment.process();
+</code></pre>
+<ul>
+<li>Read inside-out: crate (90) → insured (105) → express (130). The variable is plain <code>IShipment</code> — the client can't tell how many layers it holds. The parcel gets the same two wraps: 40 → 55 → 80.</li>
+</ul>
+<hr />
+<h2>Why the design decisions</h2>
+<ul>
+<li><strong>Why must the decorator implement the interface it wraps?</strong> Substitutability — a wrapped shipment goes anywhere a plain one does.</li>
+<li><strong>Why is the wrapped field interface-typed?</strong> Stackability: decorators wrap decorators, any order, any depth — every combination for free.</li>
+<li><strong>Why decorator instead of subclassing combinations?</strong> 2 add-ons → 4 subclasses; 3 → 8. Decorators are linear: one class per add-on.</li>
+</ul>
+<hr />
+<h2>Expected output</h2>
+<pre><code><span class="ty">The</span> cost of <span class="ty">Machinery</span> <span class="ty">Crate</span>:<span class="n">90</span>
+<span class="ty">Added</span> <span class="ty">Insurance</span> to <span class="ty">Machinery</span> <span class="ty">Crate</span> -&gt; cost of <span class="ty">Machinery</span> <span class="ty">Crate</span>:<span class="ty">Insurance</span>:<span class="n">105</span>
+<span class="ty">Added</span> <span class="ty">ExpressHandling</span> to <span class="ty">Machinery</span> <span class="ty">Crate</span>:<span class="ty">Insurance</span> -&gt; cost of <span class="ty">Machinery</span> <span class="ty">Crate</span>:<span class="ty">Insurance</span>:<span class="ty">ExpressHandling</span>:<span class="n">130</span>
+<span class="ty">The</span> cost of <span class="ty">Book</span> <span class="ty">Parcel</span>:<span class="n">40</span>
+<span class="ty">Added</span> <span class="ty">Insurance</span> to <span class="ty">Book</span> <span class="ty">Parcel</span> -&gt; cost of <span class="ty">Book</span> <span class="ty">Parcel</span>:<span class="ty">Insurance</span>:<span class="n">55</span>
+<span class="ty">Added</span> <span class="ty">ExpressHandling</span> to <span class="ty">Book</span> <span class="ty">Parcel</span>:<span class="ty">Insurance</span> -&gt; cost of <span class="ty">Book</span> <span class="ty">Parcel</span>:<span class="ty">Insurance</span>:<span class="ty">ExpressHandling</span>:<span class="n">80</span>
+</code></pre>
+<p><em>(Spring Boot banner/log lines precede this.)</em></p>
+<hr />
+<h2>Where this pattern shows up in real systems</h2>
+<ul>
+<li>Shipping/pricing surcharges (this example).</li>
+<li><code>java.io</code>: <code>new BufferedInputStream(new FileInputStream(...))</code> — the classic stack.</li>
+<li><code>Collections.unmodifiableList</code> / <code>synchronizedList</code>; retry/metrics/logging wrappers around clients.</li>
+</ul>
+<hr />
+<p><em>Same interface outside, a surcharge inside — stack as many as the shipment needs.</em></p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload Decorator_Design_Pattern_Explained_EN.mp4 to YouTube, then replace YOUTUBE_FULL_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK">YOUTUBE_FULL_LINK</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

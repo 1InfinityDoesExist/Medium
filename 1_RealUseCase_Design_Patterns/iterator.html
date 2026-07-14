@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Iterator Design Pattern</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#0d948822;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #0d948840}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#0d94880d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #0d948833}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#0d948814,#14b8a622);border:1px solid #0d948833;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#0d948814,#14b8a622);border:1px solid #0d948833;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#0d9488;--a2:#14b8a6">
+<header class="hero"><div class="in">
+  <span class="badge">🧩 REAL-WORLD DESIGN PATTERN</span>
+  <h1>Iterator Design Pattern</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>JSNode.java — the aggregate</em></p>
+<p class="chips">☕ 4 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> Provide a way to access the elements of an aggregate sequentially, without exposing its internal representation.</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Iterator_Short_Overview_EN.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<hr />
+<h2>Intent</h2>
+<p>Provide a way to access the elements of an aggregate <strong>sequentially</strong>, without exposing its internal representation. All traversal state lives in the <strong>iterator</strong>, not the collection — so multiple independent iterations can run over the same structure at once, and clients traverse through two methods only: <code>hasNext()</code> / <code>next()</code>.</p>
+<hr />
+<h2>How it mirrors production code</h2>
+<p>Workflow engines store function-call trees (<code>JSNode</code> — a node per function with children it invokes). Executing such a workflow means walking the tree <strong>level by level</strong>: everything at depth 0, then depth 1, and so on — a breadth-first traversal where each level can be scheduled as a batch. Exposing the tree's internals to every consumer would couple them all to its shape. The production fix: the aggregate hands out a <strong>level-order iterator</strong>, and consumers just loop <code>hasNext()</code>/<code>next()</code>, receiving one level's function-ids per step.</p>
+<hr />
+<h2>How the pattern works</h2>
+<ul>
+<li><code>JSNode</code> is the <strong>aggregate</strong>: id + children, plus the <strong>factory method</strong> <code>levelOrderIterator()</code> — the client never constructs an iterator directly.</li>
+<li><code>JSNodeIterator</code> implements the JDK's <code>Iterator&lt;Set&lt;String&gt;&gt;</code>: its <code>currentLevel</code> list is the <strong>cursor</strong> — all traversal state lives here, not in the tree.</li>
+<li><code>next()</code> returns the current level's ids and advances the cursor by collecting all children — a classic BFS frontier without an explicit queue.</li>
+<li>The <strong>client</strong> builds the tree, asks it for an iterator, and loops.</li>
+</ul>
+<hr />
+<h2>UML Class Diagram</h2>
+<figure><img alt="Iterator Design Pattern — diagram" src="iterator.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p><strong>Reading the diagram:</strong> the client builds the tree, then talks only to the iterator's <code>hasNext</code>/<code>next</code>. The dashed arrow is the aggregate's factory method creating the iterator — the only coupling between the two.</p>
+<hr />
+<h2>The players</h2>
+<ul class="cards"><li><b><code>JSNode</code></b> — Aggregate — a function-call tree node; hands out iterators via <code>levelOrderIterator()</code>.</li><li><b><code>JSNodeIterator</code></b> — Iterator — holds the traversal cursor; yields one level's ids per <code>next()</code>.</li><li><b><code>IteratorDesignPattern</code></b> — Client — builds a tree, loops <code>hasNext()</code>/<code>next()</code>.</li></ul>
+<hr />
+<h2>Code walkthrough — every line explained</h2>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">JSNode</span> {
+
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">String</span> functionId;
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">List</span>&lt;<span class="ty">JSNode</span>&gt; children = <span class="k">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+
+    <span class="k">public</span> <span class="ty">JSNode</span>(<span class="ty">String</span> functionId) { <span class="k">this</span>.functionId = functionId; }
+
+    <span class="k">public</span> <span class="ty">JSNode</span> addChild(<span class="ty">JSNode</span> child) {
+        children.add(child);
+        <span class="k">return</span> <span class="k">this</span>;
+    }
+
+    <span class="k">public</span> <span class="ty">Iterator</span>&lt;<span class="ty">Set</span>&lt;<span class="ty">String</span>&gt;&gt; levelOrderIterator() {
+        <span class="k">return</span> <span class="k">new</span> <span class="ty">JSNodeIterator</span>(<span class="k">this</span>);
+    }
+}
+</code></pre>
+<ul>
+<li>A node holds its <code>functionId</code> and children. <code>addChild</code> returns <code>this</code> so trees build fluently.</li>
+<li><strong><code>levelOrderIterator()</code> is the pattern's factory method</strong>: consumers ask the aggregate for a traversal instead of constructing <code>JSNodeIterator</code> themselves — the aggregate stays the authority on how it can be walked, and each call returns a <em>fresh, independent</em> iterator.</li>
+</ul>
+<h3><code>JSNodeIterator.java</code> — the iterator</h3>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">JSNodeIterator</span> <span class="k">implements</span> <span class="ty">Iterator</span>&lt;<span class="ty">Set</span>&lt;<span class="ty">String</span>&gt;&gt; {
+
+    <span class="k">private</span> <span class="ty">List</span>&lt;<span class="ty">JSNode</span>&gt; currentLevel;
+
+    <span class="k">public</span> <span class="ty">JSNodeIterator</span>(<span class="ty">JSNode</span> root) {
+        <span class="k">this</span>.currentLevel = <span class="k">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+        <span class="k">this</span>.currentLevel.add(root);
+    }
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">boolean</span> hasNext() {
+        <span class="k">return</span> !currentLevel.isEmpty();
+    }
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="ty">Set</span>&lt;<span class="ty">String</span>&gt; next() {
+        <span class="ty">Set</span>&lt;<span class="ty">String</span>&gt; ids = <span class="k">new</span> <span class="ty">LinkedHashSet</span>&lt;&gt;();
+        <span class="ty">List</span>&lt;<span class="ty">JSNode</span>&gt; nextLevel = <span class="k">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+        <span class="k">for</span> (<span class="ty">JSNode</span> node : currentLevel) {
+            ids.add(node.getFunctionId());
+            nextLevel.addAll(node.getChildren());
+        }
+        currentLevel = nextLevel;
+        <span class="k">return</span> ids;
+    }
+}
+</code></pre>
+<ul>
+<li><strong><code>currentLevel</code> is the cursor</strong> — the entire traversal state, living in the iterator, not the tree. Two iterators over the same tree advance independently.</li>
+<li>It implements the JDK's own <code>Iterator&lt;Set&lt;String&gt;&gt;</code>, so it plugs into any Java code expecting standard iterators.</li>
+<li><code>next()</code> does one BFS step: collect this level's ids (a <code>LinkedHashSet</code> keeps insertion order and dedupes), gather all children as the next frontier, swap the cursor, return the level.</li>
+</ul>
+<h3><code>IteratorDesignPattern.java</code> — the client</h3>
+<pre><code><span class="ty">JSNode</span> root = <span class="k">new</span> <span class="ty">JSNode</span>(<span class="s">&quot;root&quot;</span>);
+root.addChild(<span class="k">new</span> <span class="ty">JSNode</span>(<span class="s">&quot;a&quot;</span>).addChild(<span class="k">new</span> <span class="ty">JSNode</span>(<span class="s">&quot;a1&quot;</span>)));
+root.addChild(<span class="k">new</span> <span class="ty">JSNode</span>(<span class="s">&quot;b&quot;</span>));
+
+<span class="ty">Iterator</span>&lt;<span class="ty">Set</span>&lt;<span class="ty">String</span>&gt;&gt; iterator = root.levelOrderIterator();
+<span class="k">while</span> (iterator.hasNext()) {
+    <span class="ty">System</span>.out.println(<span class="s">&quot;level: &quot;</span> + iterator.next());
+}
+</code></pre>
+<ul>
+<li>Builds a three-level tree (root → a, b → a1), asks the tree for its iterator, and drains it — printing one level per line. The client never touches <code>children</code> or knows the traversal is BFS.</li>
+</ul>
+<hr />
+<h2>Why the design decisions</h2>
+<ul>
+<li><strong>Why does the cursor live in the iterator?</strong> So iteration is independent of the collection: many concurrent walks, no state pollution in the tree, and the tree stays immutable during traversal.</li>
+<li><strong>Why a factory method on the aggregate?</strong> The client stays decoupled from the concrete iterator class — the aggregate can change traversal strategy (or return different iterators) without touching callers.</li>
+<li><strong>Why implement the JDK <code>Iterator</code>?</strong> Interoperability — the custom traversal works with every Java idiom that consumes iterators.</li>
+</ul>
+<hr />
+<h2>Expected output</h2>
+<pre><code>$ java -cp target/classes com.realusecase.patterns.<span class="ty">IteratorDesignPattern</span>
+
+level: [root]
+level: [a, b]
+level: [a1]
+</code></pre>
+<hr />
+<h2>Where this pattern shows up in real systems</h2>
+<ul>
+<li>Level-order execution of workflow function trees (this example).</li>
+<li>Every <code>java.util</code> collection's <code>iterator()</code>; <code>Iterable</code> + for-each.</li>
+<li>Database cursors, paginated API result iterators, stream tokenizers.</li>
+</ul>
+<hr />
+<p><em>The collection stores; the iterator walks — and each walk is its own.</em></p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload Iterator_Design_Pattern_Explained_EN.mp4 to YouTube, then replace YOUTUBE_FULL_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK">YOUTUBE_FULL_LINK</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

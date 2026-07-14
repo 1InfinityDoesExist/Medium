@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Factory Method Design Pattern</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#0d948822;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #0d948840}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#0d94880d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #0d948833}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#0d948814,#14b8a622);border:1px solid #0d948833;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#0d948814,#14b8a622);border:1px solid #0d948833;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#0d9488;--a2:#14b8a6">
+<header class="hero"><div class="in">
+  <span class="badge">🧩 REAL-WORLD DESIGN PATTERN</span>
+  <h1>Factory Method Design Pattern</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>ICrudService.java — the product interface</em></p>
+<p class="chips">☕ 5 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> Define an interface for creating an object, but let subclasses decide which concrete class to instantiate.</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Factory_Short_Overview_EN.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<hr />
+<h2>Intent</h2>
+<p>Define an interface for creating an object, but let <strong>subclasses decide which concrete class to instantiate</strong>. The creator's own algorithm works against an abstract product; a single <em>factory method</em> is the one point each subclass overrides to supply its own product.</p>
+<p>The client picks a <em>creator</em>, never a <em>product</em> directly. This keeps the code that uses a product completely decoupled from the code that constructs it — new product types can be added without touching a single existing line.</p>
+<hr />
+<h2>How it mirrors production code</h2>
+<p>In real backend services, the same business operation — say, "read a record by id" — must run against different storage engines: MongoDB, PostgreSQL, Neo4j. Each engine needs its own client object and its own read logic, but the <em>calling code</em> should not care which engine is behind it. This module models exactly that: an abstract <code>AbstractCrudServiceCreator</code> whose <code>fetch(id)</code> algorithm is written once, and one concrete creator per database that supplies the matching <code>ICrudService</code>. Adding a fourth engine (say Redis) means adding two small classes and editing nothing else.</p>
+<hr />
+<h2>How the pattern works</h2>
+<ul>
+<li><code>ICrudService</code> is the <strong>product interface</strong> — every storage-specific service implements it (<code>read(id)</code>, <code>dbType()</code>).</li>
+<li><code>AbstractCrudServiceCreator</code> is the <strong>abstract creator</strong>. It declares an abstract <code>createCrudService()</code> — the <em>factory method</em> — and a concrete <code>fetch(id)</code> method that is the real algorithm: it calls the factory method, then uses the returned product.</li>
+<li>Each <strong>concrete creator</strong> (<code>MongoCrudServiceCreator</code>, <code>PostgresCrudServiceCreator</code>, <code>Neo4jCrudServiceCreator</code>) overrides only <code>createCrudService()</code> to return its own product.</li>
+<li>The <strong>client</strong> picks creators, calls <code>fetch(id)</code> on each, and never names a concrete product.</li>
+</ul>
+<p>The key insight: the abstract creator is not just a <em>maker</em> of products — it is a <em>user</em> of the product it makes. That is what separates Factory Method from a plain object factory.</p>
+<hr />
+<h2>UML Class Diagram</h2>
+<figure><img alt="Factory Method Design Pattern — diagram" src="factory.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p><strong>Reading the diagram:</strong> <code>FactoryDesignPattern</code> (the client) only ever touches <code>AbstractCrudServiceCreator</code> and, through it, the <code>ICrudService</code> interface — never a concrete <code>MongoCrudService</code>. Each concrete creator <code>extends</code> the abstract creator and overrides the single factory method; each concrete product <code>implements</code> <code>ICrudService</code>. Only three of the products/creators are shown; Postgres and Neo4j follow the identical shape.</p>
+<hr />
+<h2>The players</h2>
+<ul class="cards"><li><b><code>ICrudService</code></b> — Product interface — <code>read(id)</code> and <code>dbType()</code>, implemented by every storage service.</li><li><b><code>MongoCrudService</code> / <code>PostgresCrudService</code> / <code>Neo4jCrudService</code></b> — Concrete products — one per storage engine, each with its own <code>read</code> behavior.</li><li><b><code>AbstractCrudServiceCreator</code></b> — Abstract creator — declares the factory method <code>createCrudService()</code> and owns the <code>fetch(id)</code> template algorithm.</li><li><b><code>MongoCrudServiceCreator</code> / …</b> — Concrete creators — each overrides <code>createCrudService()</code> to build its matching product.</li><li><b><code>FactoryDesignPattern</code></b> — Client — chooses creators and calls <code>fetch</code>, staying decoupled from concrete products.</li></ul>
+<hr />
+<h2>Code walkthrough — every line explained</h2>
+<pre><code><span class="k">public</span> <span class="k">interface</span> <span class="ty">ICrudService</span> {
+    <span class="ty">DBType</span> dbType();
+    <span class="ty">String</span> read(<span class="ty">String</span> id);
+}
+</code></pre>
+<ul>
+<li><code>dbType()</code> lets each product declare its own identity (<code>MONGO</code>, <code>POSTGRES</code>, <code>NEO4J</code>) — the product carries its own key, so nothing outside needs a lookup table.</li>
+<li><code>read(String id)</code> is the behavior every product offers; it is what the creator's <code>fetch</code> ultimately calls.</li>
+</ul>
+<h3><code>MongoCrudService.java</code> — one concrete product</h3>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">MongoCrudService</span> <span class="k">implements</span> <span class="ty">ICrudService</span> {
+    <span class="a">@Override</span> <span class="k">public</span> <span class="ty">DBType</span> dbType() { <span class="k">return</span> <span class="ty">DBType</span>.<span class="ty">MONGO</span>; }
+    <span class="a">@Override</span> <span class="k">public</span> <span class="ty">String</span> read(<span class="ty">String</span> id) { <span class="k">return</span> <span class="s">&quot;mongo document &quot;</span> + id; }
+}
+</code></pre>
+<ul>
+<li>A plain class implementing the interface. Only its <em>own</em> creator ever constructs it. <code>Postgres</code> and <code>Neo4j</code> are identical except for the string they return.</li>
+</ul>
+<h3><code>AbstractCrudServiceCreator.java</code> — the abstract creator</h3>
+<pre><code><span class="k">public</span> <span class="k">abstract</span> <span class="k">class</span> <span class="ty">AbstractCrudServiceCreator</span> {
+    <span class="k">public</span> <span class="k">abstract</span> <span class="ty">ICrudService</span> createCrudService();
+    <span class="k">public</span> <span class="ty">String</span> fetch(<span class="ty">String</span> id) {
+        <span class="ty">ICrudService</span> crudService = createCrudService();
+        <span class="k">return</span> crudService.read(id);
+    }
+}
+</code></pre>
+<ul>
+<li><code>createCrudService()</code> <strong>is the factory method</strong> — the one deferred decision. It returns the abstract <code>ICrudService</code>, so nothing in this class ever names a concrete product.</li>
+<li><code>fetch(id)</code> is the real algorithm the pattern exists to share: create a product, then use it (<code>read</code>). Written once here, inherited by every creator. If <code>fetch</code> grew (validate → create → read → log), all creators would gain those steps for free.</li>
+</ul>
+<h3><code>MongoCrudServiceCreator.java</code> — one concrete creator</h3>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">MongoCrudServiceCreator</span> <span class="k">extends</span> <span class="ty">AbstractCrudServiceCreator</span> {
+    <span class="a">@Override</span> <span class="k">public</span> <span class="ty">ICrudService</span> createCrudService() {
+        <span class="k">return</span> <span class="k">new</span> <span class="ty">MongoCrudService</span>();
+    }
+}
+</code></pre>
+<ul>
+<li>One line of real logic: <code>new MongoCrudService()</code>. This is the <strong>only place in the module a concrete product is constructed.</strong> The other two creators differ only in which product they <code>new</code>.</li>
+</ul>
+<h3><code>FactoryDesignPattern.java</code> — the client</h3>
+<pre><code><span class="ty">List</span>&lt;<span class="ty">AbstractCrudServiceCreator</span>&gt; creators = <span class="ty">List</span>.of(
+    <span class="k">new</span> <span class="ty">MongoCrudServiceCreator</span>(), <span class="k">new</span> <span class="ty">PostgresCrudServiceCreator</span>(), <span class="k">new</span> <span class="ty">Neo4jCrudServiceCreator</span>());
+creators.forEach(creator -&gt; <span class="ty">System</span>.out.println(creator.fetch(<span class="s">&quot;42&quot;</span>)));
+</code></pre>
+<ul>
+<li>The client builds a list of <em>creators</em> (never products), then calls <code>fetch("42")</code> on each. Each creator internally builds its own product and reads through it. The client never sees <code>MongoCrudService</code> — only the abstraction.</li>
+</ul>
+<hr />
+<h2>Why the design decisions</h2>
+<ul>
+<li><strong>Why an abstract creator + subclasses instead of one factory with a <code>switch</code>?</strong> Because the variation point is the creation itself, and Factory Method puts that variation in the type system. Adding a <code>RedisCrudService</code> = add the product + a <code>RedisCrudServiceCreator</code>; no existing file changes — Open/Closed by construction.</li>
+<li><strong>Why does <code>fetch()</code> live in the abstract creator?</strong> That is the point: the creator is a <em>user</em> of its own product. <code>fetch</code> is code written once against <code>ICrudService</code> that works for every current and future subclass.</li>
+<li><strong>Why does the factory method return <code>ICrudService</code>, not the concrete type?</strong> So the inherited <code>fetch</code> and any caller stay coupled only to the abstraction. The concrete class name appears exactly once, inside its creator.</li>
+</ul>
+<hr />
+<h2>Expected output</h2>
+<pre><code>$ java -cp target/classes com.realusecase.patterns.<span class="ty">FactoryDesignPattern</span>
+
+mongo document <span class="n">42</span>
+postgres row <span class="n">42</span>
+neo4j node <span class="n">42</span>
+</code></pre>
+<hr />
+<h2>Where this pattern shows up in real systems</h2>
+<ul>
+<li>Storage-engine abstraction — the same operation over Mongo / Postgres / Neo4j behind one creator hierarchy (this example).</li>
+<li><code>java.util.Calendar.getInstance()</code> and <code>NumberFormat.getInstance()</code> — the JDK's own factory methods.</li>
+<li>Connection/driver factories in JDBC, logging-framework logger factories, and document-parser factories all defer the concrete type to a subclass or configuration.</li>
+</ul>
+<hr />
+<p><em>Pick the factory, and it makes — and uses — its one product. That is Factory Method.</em></p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload Factory_Design_Pattern_Explained_EN.mp4 to YouTube, then replace YOUTUBE_FULL_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK">YOUTUBE_FULL_LINK</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

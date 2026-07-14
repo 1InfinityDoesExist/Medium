@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bean Scopes</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#15803d22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #15803d40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#15803d0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #15803d33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#15803d;--a2:#22c55e">
+<header class="hero"><div class="in">
+  <span class="badge">🍃 SPRING BOOT</span>
+  <h1>Bean Scopes</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>The 5 bean scopes: Singleton, Prototype, Request, Session, Application  ·  Which scopes are eagerly vs lazily…</em></p>
+<p class="chips">☕ 5 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> The 5 bean scopes: Singleton, Prototype, Request, Session, Application  ·  Which scopes are eagerly vs lazily initialized — and what that means  ·  How to declare a scope with @Scope (string name or ConfigurableBeanFactory constant)  ·  Why injecting a request-scoped bean into a singleton fails — and the proxyMode fix</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Bean_Scopes_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>Scope — the five kinds</h2>
+<p>Scope answers one question: <strong>how many instances of a bean does the IOC container create, and when?</strong></p>
+<figure><img alt="Bean Scopes — diagram" src="07-bean-scopes.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<h2>Singleton</h2>
+<ul>
+<li><strong>Default scope</strong> — if you write no <code>@Scope</code> at all, you get singleton.</li>
+<li>Only <strong>1 instance created per IOC</strong> container.</li>
+<li><strong>Eagerly initialized</strong> by the IOC — means at the time of application startup, the object gets created.</li>
+</ul>
+<pre><code><span class="a">@Component</span>
+<span class="a">@Scope</span>(value = <span class="ty">ConfigurableBeanFactory</span>.<span class="ty">SCOPE_SINGLETON</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">PaymentService</span> { }
+</code></pre>
+<p>OR the plain string form — both mean exactly the same:</p>
+<pre><code><span class="a">@Component</span>
+<span class="a">@Scope</span>(<span class="s">&quot;singleton&quot;</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">PaymentService</span> { }
+</code></pre>
+<blockquote>
+<p>Good to know: one singleton instance is <strong>shared by all threads</strong> serving requests. Keep singleton beans <strong>stateless</strong> (no mutable fields) — otherwise you must make them thread-safe yourself.</p>
+</blockquote>
+<h2>Prototype</h2>
+<ul>
+<li><strong>Each time, a new object is created</strong> — every injection point / <code>getBean()</code> call gets its own instance.</li>
+<li>It is <strong>lazily initialized</strong> — means when the object is actually needed, then only it gets created.</li>
+</ul>
+<pre><code><span class="a">@Component</span>
+<span class="a">@Scope</span>(value = <span class="ty">ConfigurableBeanFactory</span>.<span class="ty">SCOPE_PROTOTYPE</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">ReportBuilder</span> { }
+</code></pre>
+<p>OR</p>
+<pre><code><span class="a">@Component</span>
+<span class="a">@Scope</span>(<span class="s">&quot;prototype&quot;</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">ReportBuilder</span> { }
+</code></pre>
+<h2>Request</h2>
+<ul>
+<li><strong>New object is created for each HTTP request.</strong></li>
+<li>Lazily initialized — no request, no object.</li>
+</ul>
+<pre><code><span class="a">@Component</span>
+<span class="a">@Scope</span>(<span class="s">&quot;request&quot;</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">RequestTracker</span> { }
+</code></pre>
+<h2>Session</h2>
+<ul>
+<li><strong>New object is created for each HTTP Session.</strong></li>
+<li>Lazily initialized.</li>
+<li>When the user accesses any endpoint, the session is created.</li>
+<li>The bean remains active till the session does not expire.</li>
+</ul>
+<pre><code><span class="a">@Component</span>
+<span class="a">@Scope</span>(value = <span class="s">&quot;session&quot;</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">UserCart</span> { }
+</code></pre>
+<h2>Application</h2>
+<ul>
+<li><strong>1 object created across multiple IOC</strong> containers — the bean lives at the <code>ServletContext</code> level, so even if several DispatcherServlets (each with its own IOC) run inside one web application, they all share the same instance.</li>
+</ul>
+<pre><code><span class="a">@Component</span>
+<span class="a">@Scope</span>(<span class="s">&quot;application&quot;</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">GlobalCounters</span> { }
+</code></pre>
+<blockquote>
+<p>Added: a sixth scope exists — <strong>websocket</strong> (<code>@Scope("websocket")</code>): one bean instance per WebSocket session. Note that request, session, application and websocket are <strong>web-aware scopes</strong> — they only work in a web application context.</p>
+</blockquote>
+<h2>Scopes at a glance</h2>
+<ul class="cards"><li><b>Singleton</b> — Application startup (eager) — 1 per IOC container — Stateless services, repositories</li><li><b>Prototype</b> — Every time it is needed (lazy) — New object each time — Stateful helpers, builders</li><li><b>Request</b> — Each HTTP request (lazy) — 1 per request — Per-request data, tracing info</li><li><b>Session</b> — Each HTTP session (lazy) — 1 per user session — Cart, logged-in user state</li><li><b>Application</b> — Once for the ServletContext — 1 across multiple IOC — App-wide shared state, counters</li></ul>
+<p>The eager-vs-lazy column above hides a classic trap: what happens when an <strong>eager</strong> singleton depends on a <strong>lazy</strong> request-scoped bean?</p>
+<h2>Problem — request-scoped bean inside a singleton</h2>
+<p>The singleton is created at startup, and Spring immediately tries to inject its dependencies. But a request-scoped dependency cannot exist yet — there is no HTTP request at startup — so <strong>it will fail</strong>.</p>
+<p><strong>Solution — scoped proxy:</strong></p>
+<pre><code><span class="a">@Component</span>
+<span class="a">@Scope</span>(value = <span class="s">&quot;request&quot;</span>, proxyMode = <span class="ty">ScopedProxyMode</span>.<span class="ty">TARGET_CLASS</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">RequestTracker</span> { }
+</code></pre>
+<p><code>proxyMode = TARGET_CLASS</code> <strong>creates a dummy (proxy) object and injects</strong> it into the singleton at startup. Every time a method is called on it during a real HTTP request, the proxy forwards the call to the actual request-scoped bean of that request.</p>
+<p>Complete working example:</p>
+<pre><code><span class="a">@Component</span>
+<span class="a">@Scope</span>(value = <span class="s">&quot;request&quot;</span>, proxyMode = <span class="ty">ScopedProxyMode</span>.<span class="ty">TARGET_CLASS</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">RequestTracker</span> {
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">String</span> requestId = <span class="ty">UUID</span>.randomUUID().toString();
+    <span class="k">public</span> <span class="ty">String</span> getRequestId() { <span class="k">return</span> requestId; }
+}
+
+<span class="a">@RestController</span>                       <span class="c">// controllers are singletons by default</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">OrderController</span> {
+
+    <span class="a">@Autowired</span>
+    <span class="k">private</span> <span class="ty">RequestTracker</span> tracker;   <span class="c">// proxy injected here — startup is safe</span>
+
+    <span class="a">@GetMapping</span>(<span class="s">&quot;/order&quot;</span>)
+    <span class="k">public</span> <span class="ty">String</span> order() {
+        <span class="c">// each HTTP request sees its OWN tracker instance:</span>
+        <span class="k">return</span> <span class="s">&quot;handling request &quot;</span> + tracker.getRequestId();
+    }
+}
+</code></pre>
+<blockquote>
+<p>Good to know: the same <code>proxyMode</code> trick applies to session-scoped beans inside singletons. <code>TARGET_CLASS</code> uses a CGLIB class proxy; <code>ScopedProxyMode.INTERFACES</code> is the JDK-proxy variant when the bean implements an interface.</p>
+</blockquote>
+<h2>Problem — prototype bean inside a singleton</h2>
+<blockquote>
+<p>Added: the mirror-image trap, and a favourite interview question. Injecting a prototype into a singleton does <strong>not</strong> fail — it does something sneakier. Injection happens <strong>once</strong>, when the singleton is created, so the singleton keeps using the <strong>same</strong> prototype instance forever. The "new object each time" promise silently breaks.</p>
+</blockquote>
+<pre><code><span class="a">@Component</span>
+<span class="a">@Scope</span>(<span class="s">&quot;prototype&quot;</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">ReportBuilder</span> { }
+
+<span class="a">@Service</span>                              <span class="c">// singleton</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">ReportService</span> {
+
+    <span class="a">@Autowired</span>
+    <span class="ty">ReportBuilder</span> builder;            <span class="c">// ONE prototype, injected once at startup</span>
+
+    <span class="k">public</span> <span class="k">void</span> generate() {
+        <span class="c">// every call reuses that same builder — NOT a new object each time!</span>
+    }
+}
+</code></pre>
+<p><strong>Fix 1 — <code>ObjectProvider</code> (recommended)</strong>: don't inject the bean, inject a <em>provider</em> and ask the container each time:</p>
+<pre><code><span class="a">@Service</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">ReportService</span> {
+
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">ObjectProvider</span>&lt;<span class="ty">ReportBuilder</span>&gt; builders;
+
+    <span class="k">public</span> <span class="ty">ReportService</span>(<span class="ty">ObjectProvider</span>&lt;<span class="ty">ReportBuilder</span>&gt; builders) {
+        <span class="k">this</span>.builders = builders;
+    }
+
+    <span class="k">public</span> <span class="k">void</span> generate() {
+        <span class="ty">ReportBuilder</span> builder = builders.getObject();  <span class="c">// fresh instance per call</span>
+    }
+}
+</code></pre>
+<p><strong>Fix 2 — <code>@Lookup</code> method</strong>: Spring overrides the method at runtime (CGLIB) so it returns a new bean on every call:</p>
+<pre><code><span class="a">@Service</span>
+<span class="k">public</span> <span class="k">abstract</span> <span class="k">class</span> <span class="ty">ReportService</span> {
+
+    <span class="k">public</span> <span class="k">void</span> generate() {
+        <span class="ty">ReportBuilder</span> builder = builder();   <span class="c">// new instance per call</span>
+    }
+
+    <span class="a">@Lookup</span>
+    <span class="k">protected</span> <span class="k">abstract</span> <span class="ty">ReportBuilder</span> builder();
+}
+</code></pre>
+<p><strong>Fix 3 — scoped proxy on the prototype</strong> (<code>proxyMode = TARGET_CLASS</code>): works, but then <em>every single method call</em> lands on a brand-new instance — usually wrong for a stateful builder, so prefer Fix 1.</p>
+<blockquote>
+<p>Added: two more quick facts interviewers like:</p>
+<ul>
+<li><strong>Spring singleton ≠ GoF singleton.</strong> Spring guarantees one instance <em>per bean definition per container</em> — not one per JVM. Two containers (or two <code>@Bean</code> definitions of the same class) = two instances.</li>
+<li>A singleton can opt out of eager startup with <strong><code>@Lazy</code></strong> on the class — it is then created on first use. (<code>spring.main.lazy-initialization=true</code> flips the entire application to lazy.)</li>
+</ul>
+</blockquote>
+<h2>Architect's Corner</h2>
+<ul>
+<li><strong>Singleton + stateless is the golden combination</strong> — no mutable instance fields in services; state lives in the DB, cache, or request.</li>
+<li>If you must hold per-request data, prefer method parameters or <code>RequestContextHolder</code> over request-scoped beans — fewer proxies, clearer flow.</li>
+<li><strong>Prototype beans are NOT destroyed by Spring</strong> — <code>@PreDestroy</code> never fires for them; you own their cleanup.</li>
+<li>Scoped proxies (<code>proxyMode = TARGET_CLASS</code>) resolve per-call — tiny overhead, fine for config-style beans, avoid in hot loops.</li>
+<li><strong>WebSocket scope</strong> exists too; and in batch apps, Spring Batch adds step/job scopes — same proxy mechanics.</li>
+</ul>
+<h2>Quick Revision</h2>
+<ul>
+<li>5 scopes: <strong>Singleton</strong> (default, 1 per IOC, eager), <strong>Prototype</strong> (new object each time, lazy), <strong>Request</strong> (1 per HTTP request, lazy), <strong>Session</strong> (1 per HTTP session, lives till expiry, lazy), <strong>Application</strong> (1 across multiple IOC).</li>
+<li>Declare with <code>@Scope("...")</code> or <code>@Scope(value = ConfigurableBeanFactory.SCOPE_...)</code>.</li>
+<li>Singleton is created at startup; prototype/request/session only when actually needed.</li>
+<li>Request bean inside a singleton fails at startup → fix with <code>@Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)</code> — a dummy proxy is injected and delegates per request.</li>
+<li><strong>Prototype inside a singleton</strong> doesn't fail — it silently freezes to ONE instance → fix with <code>ObjectProvider&lt;T&gt;.getObject()</code> per call, or a <code>@Lookup</code> method.</li>
+<li>Spring singleton = 1 per bean definition <strong>per container</strong>, not per JVM (≠ GoF singleton); <code>@Lazy</code> makes a singleton created on first use instead of at startup.</li>
+<li>Singletons are shared across threads — keep them stateless.</li>
+</ul>
+<hr />
+<p>Next topic: <strong>Configuration: @Value, @ConditionalOnProperty and @Profile</strong> — injecting values and creating beans per environment.</p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Bean_Scopes_Explained_Part1.mp4; Part 2 = Bean_Scopes_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spring MVC and REST Annotations</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#15803d22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #15803d40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#15803d0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #15803d33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#15803d;--a2:#22c55e">
+<header class="hero"><div class="in">
+  <span class="badge">🍃 SPRING BOOT</span>
+  <h1>Spring MVC and REST Annotations</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>Where each annotation reads from</em></p>
+<p class="chips">☕ 6 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> What @Controller, @ResponseBody and @RestController really do  ·  Mapping URLs with @RequestMapping — and the @GetMapping/@PostMapping shortcuts  ·  Binding request data: @RequestParam, @PathVariable, @RequestBody  ·  Custom parameter binding with a PropertyEditor and @InitBinder</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Spring_MVC_and_REST_Annotations_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>@Controller</h2>
+<p>It indicates that the class is <strong>responsible for handling incoming HTTP requests</strong>.</p>
+<figure><img alt="Spring MVC and REST Annotations — diagram" src="04-spring-mvc-and-rest-annotations.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<pre><code><span class="a">@Controller</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">PageController</span> {
+
+    <span class="a">@RequestMapping</span>(<span class="s">&quot;/home&quot;</span>)
+    <span class="k">public</span> <span class="ty">String</span> home() {
+        <span class="k">return</span> <span class="s">&quot;home&quot;</span>;   <span class="c">// no @ResponseBody -&gt; &quot;home&quot; is treated as a VIEW name</span>
+    }
+}
+</code></pre>
+<h2>@ResponseBody</h2>
+<ul>
+<li>Denotes that the <strong>return value of the controller method should be serialized to the HTTP response body</strong>.</li>
+<li>In other words: the return type of the method should be considered as the HTTP response itself.</li>
+<li>If we do <strong>not</strong> provide <code>@ResponseBody</code>, Spring will consider the response as the <strong>name of a view</strong> and tries to resolve and render it — e.g. <code>return "user";</code> makes it look for <code>user.jsp</code> and try to render that page.</li>
+</ul>
+<h2>@RestController</h2>
+<p><strong>@RestController = @Controller + @ResponseBody.</strong></p>
+<p>Every handler method's return value goes straight into the HTTP response body (usually as JSON) — no view resolution at all.</p>
+<pre><code><span class="a">@RestController</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">UserRestController</span> {
+
+    <span class="a">@RequestMapping</span>(path = <span class="s">&quot;/fetchUser&quot;</span>, method = <span class="ty">RequestMethod</span>.<span class="ty">GET</span>)
+    <span class="k">public</span> <span class="ty">User</span> fetchUser() {
+        <span class="k">return</span> <span class="k">new</span> <span class="ty">User</span>(<span class="s">&quot;Ram&quot;</span>, <span class="s">&quot;ram@example.com&quot;</span>);   <span class="c">// serialized to JSON</span>
+    }
+}
+</code></pre>
+<h2>@RequestMapping</h2>
+<p>Maps a URL path (and the HTTP method) to a controller class or method:</p>
+<pre><code><span class="a">@RequestMapping</span>(path = <span class="s">&quot;/fetchUser&quot;</span>, method = <span class="ty">RequestMethod</span>.<span class="ty">GET</span>)
+</code></pre>
+<blockquote>
+<p>Good to know: in Spring's own source code the <code>@RequestMapping</code> annotation is itself annotated with <code>@Reflective({ControllerMappingReflectiveProcessor.class})</code> — that is how Spring registers reflection hints for controller mappings (used for AOT and native-image support).</p>
+<p>Added: shortcuts — <code>@GetMapping("/x")</code> is exactly <code>@RequestMapping(path = "/x", method = RequestMethod.GET)</code>. Likewise <code>@PostMapping</code>, <code>@PutMapping</code>, <code>@DeleteMapping</code>, <code>@PatchMapping</code>. Put a common prefix on the class: <code>@RequestMapping("/api/users")</code> at class level + <code>@GetMapping("/{id}")</code> on the method = <code>GET /api/users/{id}</code>.</p>
+<p>Added: <code>@RequestMapping</code> (and the shortcuts) also take <strong><code>consumes</code></strong> and <strong><code>produces</code></strong> — e.g. <code>@PostMapping(path = "/users", consumes = "application/json", produces = "application/json")</code> restricts which <code>Content-Type</code> the endpoint accepts and which media type it returns (content negotiation). A mismatch gives the client <strong>415 Unsupported Media Type</strong> / <strong>406 Not Acceptable</strong>.</p>
+</blockquote>
+<h2>The request's journey — DispatcherServlet (front controller)</h2>
+<blockquote>
+<p>Added: the classic interview question for this topic — <em>"what happens between the HTTP request arriving and your <code>@GetMapping</code> method running?"</em> Every request goes through ONE servlet, the <strong><code>DispatcherServlet</code></strong> (the <em>front controller</em>), which Spring Boot auto-configures for you (Topic 01):</p>
+</blockquote>
+<ol>
+<li><strong><code>DispatcherServlet</code></strong> receives every request — the <em>front controller</em> pattern.</li>
+<li>It asks a <strong><code>HandlerMapping</code></strong>: "which controller method is registered for this URL + HTTP method?" (this is where your <code>@RequestMapping</code>/<code>@GetMapping</code> data is looked up).</li>
+<li>A <strong><code>HandlerAdapter</code></strong> invokes that method — performing all the argument binding from this topic (<code>@RequestParam</code>, <code>@PathVariable</code>, <code>@RequestBody</code>).</li>
+<li>The return value is written to the response:
+   - with <code>@ResponseBody</code>/<code>@RestController</code> → an <strong><code>HttpMessageConverter</code></strong> (Jackson for JSON) serializes the object straight into the response body;
+   - without it → a <strong><code>ViewResolver</code></strong> treats the returned string as a view name and renders the page.</li>
+</ol>
+<blockquote>
+<p>Added: so the real difference between <code>@Controller</code> and <code>@RestController</code> in one line: <strong>ViewResolver path vs HttpMessageConverter path</strong>.</p>
+</blockquote>
+<h2>@RequestParam</h2>
+<p>Used to <strong>bind a request parameter</strong> (the query string, e.g. <code>?name=Ram</code>) <strong>to a controller method parameter</strong>. The framework <strong>automatically performs type conversion</strong> from the request parameter's string representation to the specified type.</p>
+<pre><code><span class="a">@RestController</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">GreetController</span> {
+
+    <span class="c">// GET /greet?name=Ram&amp;age=21&amp;type=ADMIN</span>
+    <span class="a">@GetMapping</span>(<span class="s">&quot;/greet&quot;</span>)
+    <span class="k">public</span> <span class="ty">String</span> greet(<span class="a">@RequestParam</span> <span class="ty">String</span> name,
+                        <span class="a">@RequestParam</span> <span class="k">int</span> age,          <span class="c">// &quot;21&quot; -&gt; int 21</span>
+                        <span class="a">@RequestParam</span> <span class="ty">UserType</span> type) {  <span class="c">// &quot;ADMIN&quot; -&gt; enum</span>
+        <span class="k">return</span> <span class="s">&quot;Hello &quot;</span> + name + <span class="s">&quot;, age &quot;</span> + age + <span class="s">&quot;, type &quot;</span> + type;
+    }
+}
+</code></pre>
+<p>Which target types can it bind to?</p>
+<ol>
+<li><strong>Primitive types</strong> — such as <code>int</code>, <code>long</code>, <code>float</code>, <code>double</code>, <code>boolean</code> etc.</li>
+<li><strong>Wrapper classes</strong> — such as <code>Integer</code>, <code>Long</code>, <code>Float</code>, <code>Double</code>, <code>Boolean</code>.</li>
+<li><strong>String</strong> — request parameters are inherently treated as strings anyway.</li>
+<li><strong>Enums</strong> — you can bind a request parameter to an enum type.</li>
+<li><strong>Custom object types</strong> — we can do it using a <strong>registered PropertyEditor</strong> (next section).</li>
+</ol>
+<blockquote>
+<p>Added: useful <code>@RequestParam</code> attributes — <code>@RequestParam(required = false)</code> makes the parameter optional, and <code>@RequestParam(defaultValue = "10")</code> supplies a value when the client sends none.</p>
+</blockquote>
+<h2>How to use the PropertyEditor?</h2>
+<p>Two steps: write the editor, then register it in the controller with <code>@InitBinder</code>.</p>
+<pre><code><span class="c">// Step 1 — the editor: converts the incoming text before binding.</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">FirstNamePropertyEditor</span> <span class="k">extends</span> <span class="ty">PropertyEditorSupport</span> {
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="k">void</span> setAsText(<span class="ty">String</span> text) <span class="k">throws</span> <span class="ty">IllegalArgumentException</span> {
+        setValue(text.trim().toLowerCase());
+    }
+}
+</code></pre>
+<pre><code><span class="c">// Step 2 — register it for the &quot;firstName&quot; parameter of this controller.</span>
+<span class="a">@RestController</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">NameController</span> {
+
+    <span class="a">@InitBinder</span>
+    <span class="k">protected</span> <span class="k">void</span> initBinder(<span class="ty">DataBinder</span> binder) {
+        binder.registerCustomEditor(<span class="ty">String</span>.<span class="k">class</span>, <span class="s">&quot;firstName&quot;</span>,
+                <span class="k">new</span> <span class="ty">FirstNamePropertyEditor</span>());
+    }
+
+    <span class="c">// GET /hello?firstName=%20RAM%20  -&gt;  &quot;  RAM  &quot; arrives as &quot;ram&quot;</span>
+    <span class="a">@GetMapping</span>(<span class="s">&quot;/hello&quot;</span>)
+    <span class="k">public</span> <span class="ty">String</span> hello(<span class="a">@RequestParam</span> <span class="ty">String</span> firstName) {
+        <span class="k">return</span> <span class="s">&quot;Hello &quot;</span> + firstName;
+    }
+}
+</code></pre>
+<h2>@PathVariable</h2>
+<p>Used to <strong>extract values from the path of the URL</strong> and helps to bind them to a controller method parameter.</p>
+<pre><code><span class="c">// GET /users/42   -&gt;  id = 42</span>
+<span class="a">@GetMapping</span>(<span class="s">&quot;/users/{id}&quot;</span>)
+<span class="k">public</span> <span class="ty">UserDto</span> getUser(<span class="a">@PathVariable</span> <span class="ty">Long</span> id) {
+    <span class="k">return</span> service.getById(id);
+}
+</code></pre>
+<h2>@RequestBody</h2>
+<p><strong>Binds the body of the HTTP request</strong> (typically JSON or XML) <strong>to a controller method parameter</strong> (a Java object).</p>
+<pre><code><span class="c">// POST /users  with body {&quot;name&quot;:&quot;Ram&quot;,&quot;email&quot;:&quot;ram@example.com&quot;}</span>
+<span class="a">@PostMapping</span>(<span class="s">&quot;/users&quot;</span>)
+<span class="k">public</span> <span class="ty">UserDto</span> create(<span class="a">@RequestBody</span> <span class="ty">UserDto</span> dto) {
+    <span class="k">return</span> service.create(dto);
+}
+</code></pre>
+<h3>@RequestHeader and @CookieValue</h3>
+<blockquote>
+<p>Added: two more binding annotations complete the set — they read from the <strong>HTTP headers</strong> and <strong>cookies</strong> instead of the URL or body:</p>
+</blockquote>
+<pre><code><span class="a">@RestController</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">HeaderController</span> {
+
+    <span class="c">// GET /whoami  with headers  Authorization: Bearer abc  and cookie  SESSION=xyz</span>
+    <span class="a">@GetMapping</span>(<span class="s">&quot;/whoami&quot;</span>)
+    <span class="k">public</span> <span class="ty">String</span> whoAmI(
+            <span class="a">@RequestHeader</span>(<span class="s">&quot;Authorization&quot;</span>) <span class="ty">String</span> auth,               <span class="c">// one header</span>
+            <span class="a">@RequestHeader</span>(value = <span class="s">&quot;X-Tenant&quot;</span>, required = <span class="k">false</span>) <span class="ty">String</span> tenant,
+            <span class="a">@CookieValue</span>(value = <span class="s">&quot;SESSION&quot;</span>, defaultValue = <span class="s">&quot;none&quot;</span>) <span class="ty">String</span> session) {
+        <span class="k">return</span> <span class="s">&quot;auth=&quot;</span> + auth + <span class="s">&quot;, tenant=&quot;</span> + tenant + <span class="s">&quot;, session=&quot;</span> + session;
+    }
+}
+</code></pre>
+<p>Same conveniences as <code>@RequestParam</code>: automatic type conversion, <code>required = false</code>, <code>defaultValue</code>.</p>
+<h2>ResponseEntity</h2>
+<p>It represents the <strong>entire HTTP response</strong>: headers, status, response body etc.</p>
+<pre><code><span class="a">@GetMapping</span>(<span class="s">&quot;/report&quot;</span>)
+<span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">String</span>&gt; report() {
+    <span class="k">return</span> <span class="ty">ResponseEntity</span>.status(<span class="ty">HttpStatus</span>.<span class="ty">OK</span>)      <span class="c">// status</span>
+            .header(<span class="s">&quot;X-App-Version&quot;</span>, <span class="s">&quot;1.0&quot;</span>)          <span class="c">// headers</span>
+            .body(<span class="s">&quot;report-content&quot;</span>);                 <span class="c">// body</span>
+}
+</code></pre>
+<blockquote>
+<p>Added: a complete CRUD controller that uses everything from this topic together:</p>
+</blockquote>
+<pre><code><span class="a">@RestController</span>
+<span class="a">@RequestMapping</span>(<span class="s">&quot;/api/users&quot;</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">UserController</span> {
+
+    <span class="k">private</span> <span class="k">final</span> <span class="ty">UserService</span> service;
+
+    <span class="k">public</span> <span class="ty">UserController</span>(<span class="ty">UserService</span> service) { <span class="k">this</span>.service = service; }
+
+    <span class="a">@PostMapping</span>                          <span class="c">// CREATE — @RequestBody: JSON -&gt; UserDto</span>
+    <span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">UserDto</span>&gt; create(<span class="a">@RequestBody</span> <span class="ty">UserDto</span> dto) {
+        <span class="ty">UserDto</span> saved = service.create(dto);
+        <span class="k">return</span> <span class="ty">ResponseEntity</span>.status(<span class="ty">HttpStatus</span>.<span class="ty">CREATED</span>).body(saved);
+    }
+
+    <span class="a">@GetMapping</span>(<span class="s">&quot;/{id}&quot;</span>)                  <span class="c">// READ one — @PathVariable from the URL</span>
+    <span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">UserDto</span>&gt; getOne(<span class="a">@PathVariable</span> <span class="ty">Long</span> id) {
+        <span class="k">return</span> <span class="ty">ResponseEntity</span>.ok(service.getById(id));
+    }
+
+    <span class="a">@GetMapping</span>                           <span class="c">// READ many — @RequestParam paging</span>
+    <span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">List</span>&lt;<span class="ty">UserDto</span>&gt;&gt; getAll(
+            <span class="a">@RequestParam</span>(defaultValue = <span class="s">&quot;0&quot;</span>) <span class="k">int</span> page,
+            <span class="a">@RequestParam</span>(defaultValue = <span class="s">&quot;10&quot;</span>) <span class="k">int</span> size) {
+        <span class="k">return</span> <span class="ty">ResponseEntity</span>.ok(service.getAll(page, size));
+    }
+
+    <span class="a">@PutMapping</span>(<span class="s">&quot;/{id}&quot;</span>)                  <span class="c">// UPDATE — path variable + body together</span>
+    <span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">UserDto</span>&gt; update(<span class="a">@PathVariable</span> <span class="ty">Long</span> id,
+                                          <span class="a">@RequestBody</span> <span class="ty">UserDto</span> dto) {
+        <span class="k">return</span> <span class="ty">ResponseEntity</span>.ok(service.update(id, dto));
+    }
+
+    <span class="a">@DeleteMapping</span>(<span class="s">&quot;/{id}&quot;</span>)               <span class="c">// DELETE — 204, no body</span>
+    <span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">Void</span>&gt; delete(<span class="a">@PathVariable</span> <span class="ty">Long</span> id) {
+        service.delete(id);
+        <span class="k">return</span> <span class="ty">ResponseEntity</span>.noContent().build();
+    }
+}
+</code></pre>
+<h2>Architect's Corner</h2>
+<ul>
+<li><strong>Bean Validation</strong>: annotate request DTOs (<code>@NotNull</code>, <code>@Size</code>, <code>@Email</code>) and add <code>@Valid</code> on <code>@RequestBody</code> — rejects bad input with 400 before your code runs.</li>
+<li><strong>API versioning</strong>: pick one strategy org-wide — URI (<code>/v1/users</code>), header, or media-type. URI versioning is the pragmatic default.</li>
+<li><strong>Pagination convention</strong>: <code>?page=0&amp;size=20&amp;sort=name,asc</code> maps automatically to a <code>Pageable</code> parameter.</li>
+<li><strong>Outbound calls</strong>: <code>RestClient</code> (Spring 6.1) is the modern fluent replacement for RestTemplate; <code>WebClient</code> for reactive stacks.</li>
+<li><strong>Document as you build</strong>: <code>springdoc-openapi</code> turns these annotations into a live OpenAPI/Swagger UI with one dependency.</li>
+</ul>
+<pre><code><span class="a">@PostMapping</span>(<span class="s">&quot;/users&quot;</span>)
+<span class="k">public</span> <span class="ty">ResponseEntity</span>&lt;<span class="ty">UserResponse</span>&gt; create(<span class="a">@Valid</span> <span class="a">@RequestBody</span> <span class="ty">CreateUserRequest</span> req) { ... }
+</code></pre>
+<h2>Quick Revision</h2>
+<ul>
+<li><code>@Controller</code> — the class handles incoming HTTP requests; return values are <strong>view names</strong> unless <code>@ResponseBody</code> is present.</li>
+<li><code>@ResponseBody</code> — return value is <strong>serialized into the HTTP response body</strong>; without it Spring looks for a view (e.g. <code>return.jsp</code>) to render.</li>
+<li><code>@RestController</code> = <code>@Controller</code> + <code>@ResponseBody</code>.</li>
+<li><code>@RequestMapping(path, method)</code> maps URLs; shortcuts: <code>@GetMapping</code>, <code>@PostMapping</code>, <code>@PutMapping</code>, <code>@DeleteMapping</code>.</li>
+<li><code>@RequestParam</code> binds query parameters with automatic type conversion — primitives, wrappers, String, enums, and custom types via a <strong>registered PropertyEditor</strong> (<code>@InitBinder</code> + <code>PropertyEditorSupport</code>).</li>
+<li><code>@PathVariable</code> extracts values from the URL path; <code>@RequestBody</code> binds the JSON/XML body to a Java object.</li>
+<li><code>ResponseEntity</code> = the whole response: <strong>status + headers + body</strong>.</li>
+<li>Request flow: <strong>DispatcherServlet</strong> (front controller) → <strong>HandlerMapping</strong> (find the method) → <strong>HandlerAdapter</strong> (bind args, invoke) → <strong>HttpMessageConverter</strong> (JSON) or <strong>ViewResolver</strong> (view name).</li>
+<li><code>@RequestHeader</code> binds HTTP headers, <code>@CookieValue</code> binds cookies — same <code>required</code>/<code>defaultValue</code> options as <code>@RequestParam</code>.</li>
+<li><code>consumes</code>/<code>produces</code> on a mapping restrict media types — mismatches return 415 / 406.</li>
+</ul>
+<hr />
+<p>Next topic: <strong>Beans</strong> — what a Spring bean is, and creating beans with @Component and @Bean.</p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Spring_MVC_and_REST_Annotations_Explained_Part1.mp4; Part 2 = Spring_MVC_and_REST_Annotations_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Variables and Data Types</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#e8590c22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #e8590c40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#e8590c0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #e8590c33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#e8590c;--a2:#fd7e14">
+<header class="hero"><div class="in">
+  <span class="badge">☕ CORE JAVA</span>
+  <h1>Variables and Data Types</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>What is a variable?</em></p>
+<p class="chips">☕ 16 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> What a variable is and the rules for naming it  ·  All 8 primitive data types with their sizes and ranges  ·  How negative numbers are stored (2&#x27;s complement)  ·  Widening and narrowing conversion, casting, and the &quot;wraparound&quot; surprise</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Variables_and_Data_Types_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>Part 1: Variables &amp; Naming</h2>
+<p>A <strong>variable is a container which holds a value</strong>. Think of it like a labelled box: the label is the variable name, and inside the box you keep a value.</p>
+<figure><img alt="Variables and Data Types — diagram" src="05-variables-and-data-types.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p>The general pattern is:</p>
+<pre><code><span class="ty">DataType</span> variableName = value;
+
+<span class="k">int</span> x = <span class="n">10</span>;   <span class="c">// a box named &quot;x&quot; that stores the whole number 10</span>
+</code></pre>
+<h3>Java is statically typed AND strongly typed</h3>
+<p>These two phrases appear together in the notes. They mean two slightly different things:</p>
+<ol>
+<li><strong>Statically typed</strong> — you must tell Java <em>what kind of data</em> the variable will store, before you use it. When you write <code>int x = 10;</code>, the word <code>int</code> announces: "this box will only ever hold whole numbers."</li>
+<li><strong>Strongly typed</strong> — Java strictly enforces those types. You cannot assign just any value; <strong>the value must be within the range of that type</strong>. For example, an <code>int</code> can hold <code>100</code> easily, but it cannot hold a number bigger than its maximum range, and it will never silently accept text.</li>
+</ol>
+<blockquote>
+<p><strong>Remember:</strong> In Java, every variable has a fixed type, decided at the moment you declare it, and Java checks it for you at compile time.</p>
+</blockquote>
+<h3>Variable naming conventions</h3>
+<p>These are the rules (and good manners) for naming variables:</p>
+<ul class="cards"><li><b>Names are <strong>case sensitive</strong></b> — <code>age</code> and <code>Age</code> are two different variables</li><li><b>Any legal identifier is allowed — Unicode letters and digits</b> — <code>total1</code>, <code>résumé</code></li><li><b>A name can <strong>start with</strong> a letter, <code>$</code>, or <code>_</code></b> — <code>_abc</code> ✔, <code>$abc</code> ✔</li><li><b>A name <strong>cannot start with a digit</strong></b> — <code>9abc</code> ✘ (not allowed)</li><li><b>A name cannot be a <strong>Java reserved keyword</strong></b> — <code>int</code>, <code>class</code>, <code>for</code> ✘</li><li><b>One word → all lowercase; multiple words → <strong>camelCase</strong></b> — <code>salary</code>, <code>employeeSalary</code></li><li><b><strong>Constants</strong> are written in ALL CAPITAL LETTERS</b> — <code>static final int JAIPUR = 2;</code></li></ul>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">NamingDemo</span> {
+    <span class="k">static</span> <span class="k">final</span> <span class="k">int</span> <span class="ty">MAX_STUDENTS</span> = <span class="n">60</span>;   <span class="c">// constant -&gt; CAPITALS</span>
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="k">int</span> age = <span class="n">25</span>;              <span class="c">// one word -&gt; all small</span>
+        <span class="k">int</span> employeeSalary = <span class="n">5000</span>; <span class="c">// two words -&gt; camelCase</span>
+        <span class="k">int</span> _abc = <span class="n">1</span>;              <span class="c">// OK, starts with underscore</span>
+        <span class="k">int</span> $abc = <span class="n">2</span>;              <span class="c">// OK, starts with dollar sign</span>
+        <span class="c">// int 9abc = 3;           // ERROR: cannot start with a digit</span>
+        <span class="c">// int class = 4;          // ERROR: &#x27;class&#x27; is a reserved keyword</span>
+        <span class="ty">System</span>.out.println(age + <span class="s">&quot; &quot;</span> + employeeSalary + <span class="s">&quot; &quot;</span> + <span class="ty">MAX_STUDENTS</span>);
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 25 5000 60</span>
+</code></pre>
+<h3>Types of variables — the big picture</h3>
+<p>The notes draw this family tree:</p>
+<pre><code>                Types of Variable
+                /              \
+        Primitive            Non-Primitive
+        /    |    \           (Reference types:
+  Integral  Fractional        class, String,
+  char,     (floating)        Interface, Array...)
+  byte,     float,
+  short,    double
+  int,
+  long          + boolean
+</code></pre>
+<p>In plain words: <strong>primitive</strong> types are the simple built-in boxes (numbers, characters, true/false). Everything else (objects, Strings, arrays) is <strong>non-primitive</strong>. This topic focuses on the primitives; non-primitives get their own topic.</p>
+<hr />
+<h2>Part 2: Primitive Types</h2>
+<p>Java has exactly <strong>8 primitive types</strong>. Here they all are in one table:</p>
+<ul class="cards"><li><b>1</b> — <code>char</code> — 2 bytes (16 bits) — 0 to 65,535 — <code>' '</code> — Character; unsigned</li><li><b>2</b> — <code>byte</code> — 1 byte (8 bits) — -128 to 127 — 0 — Signed 2's complement</li><li><b>3</b> — <code>short</code> — 2 bytes (16 bits) — -32,768 to 32,767 — 0 — Signed 2's complement</li><li><b>4</b> — <code>int</code> — 4 bytes (32 bits) — -2^31 to 2^31 - 1 — 0 — Signed 2's complement</li><li><b>5</b> — <code>long</code> — 8 bytes (64 bits) — -2^63 to 2^63 - 1 — 0 — Signed 2's complement</li><li><b>6</b> — <code>float</code> — 4 bytes (32 bits) — IEEE 754 value — 0.0f — Fractional</li><li><b>7</b> — <code>double</code> — 8 bytes (64 bits) — IEEE 754 value — 0.0d — Fractional</li><li><b>8</b> — <code>boolean</code> — 1 bit of information — <code>true</code> / <code>false</code> — <code>false</code> — Logical</li></ul>
+<blockquote>
+<p><strong>Remember:</strong> The default value only applies to <strong>class member variables</strong>. A local variable inside a method has NO default — Java forces you to assign it before use.</p>
+</blockquote>
+<h3>1. char — a single character</h3>
+<ul>
+<li>Takes <strong>2 bytes (16 bits)</strong>.</li>
+<li>It is the <strong>character representation of a numeric (ASCII/Unicode) value</strong>. Every character secretly has a number behind it.</li>
+<li>Range: <strong>0 to 65,535</strong> (that is 2^15 + 2^14 + ... + 2^0 when all 16 bits are 1). Because the smallest value is 0, <code>char</code> is the only unsigned numeric type.</li>
+</ul>
+<p>You can assign a character directly, or assign its number — both work:</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">CharDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="k">char</span> var1 = <span class="s">&#x27;a&#x27;</span>;   <span class="c">// assign the character itself</span>
+        <span class="ty">System</span>.out.println(var1);
+
+        <span class="k">char</span> var2 = <span class="n">65</span>;    <span class="c">// assign the ASCII number: 65 is &#x27;A&#x27;</span>
+        <span class="ty">System</span>.out.println(var2);
+
+        <span class="k">char</span> var3 = <span class="n">97</span>;    <span class="c">// 97 is &#x27;a&#x27;</span>
+        <span class="ty">System</span>.out.println(var3);
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// a</span>
+<span class="c">// A</span>
+<span class="c">// a</span>
+</code></pre>
+<p>(Small correction to the handwritten note: ASCII <strong>65 is capital 'A'</strong>; lowercase <code>'a'</code> is <strong>97</strong>.)</p>
+<h3>2. byte — the smallest number box</h3>
+<ul>
+<li>Takes <strong>1 byte (8 bits)</strong>.</li>
+<li>Stored as <strong>signed 2's complement</strong>.</li>
+<li>Range: <strong>-128 to 127</strong>. Default value is 0.</li>
+</ul>
+<p>Why -128 to 127 and not 0 to 255? Because one bit is reserved for the <strong>sign</strong>:</p>
+<pre><code>  [0] _ _ _ _ _ _ _   &lt;- first bit 0  =&gt; the number is positive (+)
+  [1] _ _ _ _ _ _ _   &lt;- first bit 1  =&gt; the number is negative (-)
+</code></pre>
+<p>With 8 bits you can make 256 patterns (0–255). Java splits them: half for negatives (-128 to -1) and half for zero and positives (0 to 127).</p>
+<p><strong>How 2's complement works — a tiny 4-bit example from the notes.</strong>
+Say we only have 4 bits. The place values are:</p>
+<pre><code>   2^3  2^2  2^1  2^0
+    8    4    2    1
+
+  +3  =  0 0 1 1          (8*0 + 4*0 + 2*1 + 1*1 = 3)
+
+  To get -3:
+    Step 1: flip every bit of +3:   0011 -&gt; 1100
+    Step 2: add 1:                  1100 + 1 = 1101
+
+  -3  =  1 1 0 1          &lt;- this is the 2&#x27;s complement of 3
+</code></pre>
+<p>So a computer never stores a minus sign; it stores this special flipped-and-plus-one pattern. The leading 1 tells us it is negative.</p>
+<h3>3. short</h3>
+<ul>
+<li><strong>2 bytes (16 bits)</strong>, signed 2's complement.</li>
+<li>Range: <strong>-32,768 to 32,767</strong>. Default value 0.</li>
+</ul>
+<h3>4. int — the everyday workhorse</h3>
+<ul>
+<li><strong>4 bytes (32 bits)</strong>, signed 2's complement.</li>
+<li>Range: <strong>-2^31 to 2^31 - 1</strong> (about -2.1 billion to +2.1 billion). Default value 0.</li>
+</ul>
+<h3>5. long — for really big whole numbers</h3>
+<ul>
+<li><strong>8 bytes (64 bits)</strong>, signed 2's complement.</li>
+<li>Range: <strong>-2^63 to 2^63 - 1</strong>. Default value 0.</li>
+<li><code>char, byte, short, int, long</code> together form the <strong>integral types</strong> (whole numbers). Everything up to here is integral.</li>
+</ul>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">IntegralDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="k">byte</span>  b = <span class="n">100</span>;
+        <span class="k">short</span> s = <span class="n">30000</span>;
+        <span class="k">int</span>   i = <span class="n">2000000000</span>;
+        <span class="k">long</span>  l = <span class="n">9000000000L</span>;   <span class="c">// note the L suffix for long literals</span>
+        <span class="ty">System</span>.out.println(b + <span class="s">&quot; &quot;</span> + s + <span class="s">&quot; &quot;</span> + i + <span class="s">&quot; &quot;</span> + l);
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 100 30000 2000000000 9000000000</span>
+</code></pre>
+<h3>6. float and 7. double — fractional (floating) types</h3>
+<ul>
+<li><code>float</code> is a <strong>32-bit IEEE 754 value</strong>: <code>float var = 0.3f;</code> (the <code>f</code> suffix is required).</li>
+<li><code>double</code> is a <strong>64-bit IEEE 754 value</strong>: <code>double var = 0.6d;</code> (the <code>d</code> is optional; double is the default).</li>
+</ul>
+<p>IEEE 754 is the international standard describing how a decimal number is packed into bits — Part 5 explains it fully.</p>
+<p><strong>The famous precision surprise from the notes:</strong></p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">FloatSurprise</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">System</span>.out.println(<span class="n">0.3f</span> - <span class="n">0.1f</span>);
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 0.20000002      &lt;- NOT exactly 0.2 !</span>
+</code></pre>
+<p>Why not exactly <code>0.2</code>? Because 0.3 and 0.1 <strong>cannot be stored exactly</strong> in binary (Part 5 shows why), so tiny errors creep in and show up in the answer.</p>
+<blockquote>
+<p><strong>Remember:</strong> We never use <code>float</code>/<code>double</code> in industry for money or exact calculations. Instead use <strong><code>BigDecimal</code></strong> (the notes say BigInteger — <code>BigInteger</code> is for huge whole numbers; for exact <em>decimal</em> values like money the correct class is <code>BigDecimal</code>).</p>
+</blockquote>
+<pre><code><span class="k">import</span> java.math.<span class="ty">BigDecimal</span>;
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">MoneyDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">BigDecimal</span> price = <span class="k">new</span> <span class="ty">BigDecimal</span>(<span class="s">&quot;0.3&quot;</span>);
+        <span class="ty">BigDecimal</span> tax   = <span class="k">new</span> <span class="ty">BigDecimal</span>(<span class="s">&quot;0.1&quot;</span>);
+        <span class="ty">System</span>.out.println(price.subtract(tax));
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 0.2      &lt;- exact, no surprise</span>
+</code></pre>
+<h3>8. boolean — true or false</h3>
+<ul>
+<li>Holds only <strong><code>true</code> or <code>false</code></strong>.</li>
+<li>Represents <strong>1 bit</strong> of information (the JVM may actually use more space internally, but logically it is a single yes/no).</li>
+<li>Default value is <strong><code>false</code></strong>.</li>
+</ul>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">BooleanDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="k">boolean</span> isJavaFun = <span class="k">true</span>;
+        <span class="ty">System</span>.out.println(isJavaFun);
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// true</span>
+</code></pre>
+<hr />
+<h2>Part 3: Conversion &amp; Casting</h2>
+<p>Sometimes a value needs to move from one type of box to another. There are two directions.</p>
+<h3>1. Widening / Automatic conversion (small box → big box)</h3>
+<p>If the value goes <strong>from a lower (smaller) type to a higher (bigger) type</strong>, Java converts it <strong>automatically</strong>. Nothing can be lost — a small value always fits in a bigger box, like pouring a cup of water into a bucket.</p>
+<p>The automatic-conversion ladder:</p>
+<pre><code>byte  -&gt;  short  -&gt;  int  -&gt;  long  -&gt;  float  -&gt;  double
+(small ------------------------------------------&gt; big)
+</code></pre>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">WideningDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="k">int</span> <span class="k">var</span> = <span class="n">10</span>;
+        <span class="k">long</span> varLong = <span class="k">var</span>;      <span class="c">// int -&gt; long : automatic, no cast needed</span>
+
+        <span class="k">byte</span> b = <span class="n">10</span>;
+        <span class="k">int</span> var2 = b;            <span class="c">// byte -&gt; int : automatic conversion</span>
+
+        <span class="ty">System</span>.out.println(varLong + <span class="s">&quot; &quot;</span> + var2);
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 10 10</span>
+</code></pre>
+<h3>2. Down casting / Explicit casting (big box → small box)</h3>
+<p>Going <strong>from higher to lower</strong> does NOT happen automatically — a bucket of water might not fit in a cup. Java refuses unless you <em>explicitly</em> take responsibility with a <strong>cast</strong>: <code>(targetType) value</code>.</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">NarrowingDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="k">int</span> x = <span class="n">10</span>;
+        <span class="c">// byte b = x;          // COMPILE ERROR: higher to lower not allowed</span>
+        <span class="k">byte</span> b = (<span class="k">byte</span>) x;      <span class="c">// works: we explicitly cast</span>
+        <span class="ty">System</span>.out.println(b);
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 10</span>
+</code></pre>
+<p><strong>But there is one issue: wraparound.</strong> If the value is too big for the small box, the extra part is chopped off and the number "wraps around" the range:</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">WraparoundDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="k">int</span> x = <span class="n">128</span>;                 <span class="c">// byte range is only -128 to 127</span>
+        <span class="k">byte</span> b = (<span class="k">byte</span>) x;
+        <span class="ty">System</span>.out.println(b);
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// -128     &lt;- because 128 is out of range!</span>
+</code></pre>
+<p>Why -128? Think of the byte range as a circle: ... 126, 127, then it <strong>wraps back to the start</strong>: -128, -127... So one step past 127 lands on -128.</p>
+<pre><code>        ... 125  126  127
+                       |
+                (go one more)
+                       v
+       -128  -127  -126 ...     &lt;- wrapped around!
+</code></pre>
+<h3>Promotion during expressions</h3>
+<p><strong>Example 1 — byte + byte.</strong> Even when both values fit in bytes, this fails:</p>
+<pre><code><span class="k">byte</span> a = <span class="n">127</span>;
+<span class="k">byte</span> b = <span class="n">1</span>;
+<span class="k">byte</span> sum = a + b;     <span class="c">// COMPILE ERROR!</span>
+</code></pre>
+<p>Why? During an expression, if the result can cross the range, Java does an <strong>internal promotion</strong>: <code>a + b</code> is calculated as an <strong>int</strong> (127 + 1 = 128 — out of byte range, so promotion protects us). An <code>int</code> result cannot silently go back into a <code>byte</code> box.</p>
+<p>Two ways to fix it:</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">PromotionDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="k">byte</span> a = <span class="n">127</span>;
+        <span class="k">byte</span> b = <span class="n">1</span>;
+
+        <span class="k">int</span> sum1 = a + b;             <span class="c">// Fix 1: store the promoted result in an int</span>
+        <span class="ty">System</span>.out.println(sum1);
+
+        <span class="k">byte</span> sum2 = (<span class="k">byte</span>) (a + b);   <span class="c">// Fix 2: down-cast — but beware wraparound</span>
+        <span class="ty">System</span>.out.println(sum2);
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 128</span>
+<span class="c">// -128     &lt;- the cast chopped it, wrapping to -128</span>
+</code></pre>
+<p><strong>Example 2 — int + double.</strong> In a mixed expression, the smaller type is promoted to the bigger one, so the <em>result</em> takes the bigger type:</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">MixedExpressionDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="k">int</span> a = <span class="n">34</span>;
+        <span class="k">double</span> <span class="k">var</span> = <span class="n">20d</span>;
+
+        <span class="c">// int sum = a + var;         // FAILS: a+var is a double expression</span>
+        <span class="k">double</span> sum1 = a + <span class="k">var</span>;        <span class="c">// Fix 1: use double for the result</span>
+        <span class="k">int</span> sum2 = (<span class="k">int</span>) (a + <span class="k">var</span>);   <span class="c">// Fix 2: explicitly cast down to int</span>
+
+        <span class="ty">System</span>.out.println(sum1);
+        <span class="ty">System</span>.out.println(sum2);
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 54.0</span>
+<span class="c">// 54</span>
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> small → big is free and automatic. big → small needs a <code>(cast)</code> and may wrap around. Inside any math expression, everything is promoted at least to <code>int</code>, and to the biggest type present.</p>
+</blockquote>
+<hr />
+<h2>Part 4: Kinds of Variables</h2>
+<p>Depending on <em>where</em> a variable is declared, it gets a different name and different behaviour. All four kinds in one class:</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">Employee</span> {
+
+    <span class="k">static</span> <span class="k">int</span> staticVariable = <span class="n">100</span>;   <span class="c">// (1) static / class variable</span>
+
+    <span class="k">int</span> memberVariable;                <span class="c">// (2) member / instance variable</span>
+
+    <span class="k">public</span> <span class="k">void</span> dummyMethod() {
+        <span class="k">byte</span> localVariable = <span class="n">100</span>;      <span class="c">// (3) local variable</span>
+        <span class="ty">System</span>.out.println(localVariable);
+    }
+
+    <span class="k">public</span> <span class="k">int</span> dummyMethod2(<span class="k">int</span> a, <span class="k">int</span> b) {   <span class="c">// (4) a and b: method parameters</span>
+        <span class="k">return</span> (a + b);
+    }
+
+    <span class="ty">Employee</span>() { }              <span class="c">// no-arg constructor</span>
+    <span class="ty">Employee</span>(<span class="k">int</span> a) { }         <span class="c">// parameterised constructor (&#x27;a&#x27; is a parameter too)</span>
+}
+</code></pre>
+<h3>(1) Member variable / instance variable</h3>
+<p>Declared <strong>inside the class but outside any method</strong>. Every object gets <strong>its own personal copy</strong>.</p>
+<pre><code><span class="k">class</span> <span class="ty">Employee</span> {
+    <span class="k">int</span> memberVariable = <span class="n">10</span>;
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">MemberDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Employee</span> ob1 = <span class="k">new</span> <span class="ty">Employee</span>();
+        <span class="ty">Employee</span> ob2 = <span class="k">new</span> <span class="ty">Employee</span>();
+
+        ob1.memberVariable = <span class="n">99</span>;        <span class="c">// change only ob1&#x27;s copy</span>
+        <span class="ty">System</span>.out.println(ob1.memberVariable);
+        <span class="ty">System</span>.out.println(ob2.memberVariable);   <span class="c">// ob2&#x27;s copy is untouched</span>
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 99</span>
+<span class="c">// 10</span>
+</code></pre>
+<pre><code>   +--------------+      +--------------+
+   |     ob1      |      |     ob2      |
+   | memberV = 99 |      | memberV = 10 |
+   +--------------+      +--------------+
+   Each object has its OWN copy of the member variable.
+</code></pre>
+<h3>(2) Static / class variable</h3>
+<p>Declared with the keyword <code>static</code>. It is <strong>associated with the class itself, not with objects</strong>. No matter how many objects you create, <strong>only one copy exists</strong>, and everyone shares it.</p>
+<pre><code><span class="k">class</span> <span class="ty">Counter</span> {
+    <span class="k">static</span> <span class="k">int</span> <span class="k">var</span> = <span class="n">10</span>;
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">StaticDemo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Counter</span> ob1 = <span class="k">new</span> <span class="ty">Counter</span>();
+        <span class="ty">Counter</span> ob2 = <span class="k">new</span> <span class="ty">Counter</span>();
+
+        <span class="ty">Counter</span>.<span class="k">var</span> = <span class="n">50</span>;              <span class="c">// change the single shared copy</span>
+        <span class="ty">System</span>.out.println(<span class="ty">Counter</span>.<span class="k">var</span>);
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 50</span>
+</code></pre>
+<pre><code>              +----------+
+              | var = 50 |   &lt;- ONE shared copy, lives with the class
+              +----------+
+                ^      ^
+                |      |
+          +-----+--+ +-+------+
+          |  ob1   | |  ob2   |     both objects point to the SAME var
+          +--------+ +--------+
+</code></pre>
+<h3>(3) Local variable</h3>
+<p><strong>Created inside a method, and its scope is only within that method.</strong> The moment the method ends, the variable disappears. It has <strong>no default value</strong> — you must assign it before use.</p>
+<pre><code><span class="k">public</span> <span class="k">void</span> dummyMethod() {
+    <span class="k">byte</span> localVariable = <span class="n">100</span>;   <span class="c">// exists only while dummyMethod runs</span>
+    <span class="ty">System</span>.out.println(localVariable);
+}
+</code></pre>
+<h3>(4) Method parameter</h3>
+<p>The variables listed <strong>inside the parentheses of a method</strong> (or constructor). They receive the values you pass when calling.</p>
+<pre><code><span class="k">int</span> dummyMethod(<span class="k">int</span> x, <span class="k">int</span> y) { ... }   <span class="c">// x and y are method parameters</span>
+
+<span class="ty">Employee</span>(<span class="k">int</span> a) { }                     <span class="c">// parameterised constructor —</span>
+                                        <span class="c">// &#x27;a&#x27; is its parameter</span>
+</code></pre>
+<hr />
+<h2>Part 5: How float and double are stored — IEEE 754</h2>
+<p><strong>The question:</strong> how does a decimal number like <code>4.125</code> actually live inside 32 bits of memory? The answer is the <strong>IEEE 754</strong> standard.</p>
+<p>A <code>float</code> (32 bits) is split into three fields:</p>
+<pre><code>+--------+------------+---------------------------+
+| 1 bit  |   8 bits   |          23 bits          |
+|  Sign  |  Exponent  |   Mantissa / significand  |
++--------+------------+---------------------------+
+</code></pre>
+<ul>
+<li><strong>Sign:</strong> <code>0</code> means positive (+), <code>1</code> means negative (-).</li>
+<li><strong>Exponent:</strong> stored with a <strong>bias of 127</strong> (that is 2^7 - 1). You <em>add</em> 127 to the real exponent before storing. This trick lets negative exponents be stored without a second sign bit.</li>
+<li><strong>Mantissa:</strong> the significant digits after the leading <code>1.</code> (the leading 1 is not stored — it is always assumed).</li>
+</ul>
+<p>A <code>double</code> works exactly the same way, just bigger: 1 sign bit, 11 exponent bits (bias 1023), 52 mantissa bits.</p>
+<h3>Worked Example 1: how is 4.125f stored?</h3>
+<p><strong>Step 1 — Convert to binary.</strong></p>
+<p>Whole part: divide 4 by 2 repeatedly and read the remainders bottom-up:</p>
+<pre><code>  2 | 4    remainder 0
+  2 | 2    remainder 0
+      1
+  =&gt;  4 (decimal) = 100 (binary)
+</code></pre>
+<p>Fraction part: multiply .125 by 2 repeatedly and collect the digit before the decimal point:</p>
+<pre><code>  .125 x 2 = 0.25    -&gt; 0
+  .25  x 2 = 0.50    -&gt; 0
+  .50  x 2 = 1.00    -&gt; 1   (fraction is now 0, we stop)
+  =&gt;  .125 = .001 (binary)
+</code></pre>
+<p>So <code>4.125 = 100.001</code> in binary.</p>
+<p><strong>Step 2 — Write it in exponent form (1.xxx × 2^n).</strong>
+Slide the point left until only a single <code>1</code> remains before it:</p>
+<pre><code>  100.001  =  1.00001 x 2^2
+              mantissa = 00001,  exponent = 2
+</code></pre>
+<p><strong>Step 3 — Add the bias to the exponent.</strong></p>
+<pre><code>  127 + 2 = 129
+  129 in binary (using 128 64 32 16 8 4 2 1) = 1000 0001
+</code></pre>
+<p><strong>Step 4 — Pack the three fields.</strong></p>
+<pre><code>+---+-----------------+-----------------------------+
+| 0 | 1 0 0 0 0 0 0 1 | 0 0 0 0 1 0 0 0 0 ... 0     |
++---+-----------------+-----------------------------+
+sign      exponent          mantissa (23 bits)
+</code></pre>
+<p>This is exactly how 4.125f sits in memory.</p>
+<p><strong>Checking it in reverse.</strong> The decoding formula is:</p>
+<pre><code>  value = (-1)^sign  x  (1 + mantissa)  x  2^(e - 127)
+
+        = (-1)^0  x  (1 + 1/32)  x  2^(129 - 127)
+        =    1    x  (1 + 0.03125)  x  2^2
+        =  1.03125  x  4
+        =  4.125            &lt;- we got our number back, EXACTLY
+</code></pre>
+<p>(The <code>1/32</code> comes from the single mantissa bit in position 5: 1/2^5 = 1/32 = 0.03125.)</p>
+<p>4.125 survives perfectly because its binary form <code>100.001</code> <strong>terminates</strong> — it needs only a few bits.</p>
+<h3>Worked Example 2: how is 0.7f stored? (the precision-loss story)</h3>
+<p><strong>Step 1 — Convert 0.7 to binary.</strong> Multiply by 2, collect the whole digit each time, keep the fraction:</p>
+<pre><code>  .7 x 2 = 1.4   -&gt; 1   (keep .4)
+  .4 x 2 = 0.8   -&gt; 0   (keep .8)
+  .8 x 2 = 1.6   -&gt; 1   (keep .6)
+  .6 x 2 = 1.2   -&gt; 1   (keep .2)
+  .2 x 2 = 0.4   -&gt; 0   (keep .4)   &lt;- .4 again! we&#x27;ve been here before
+  .4 x 2 = 0.8   -&gt; 0
+  .8 x 2 = 1.6   -&gt; 1
+  .6 x 2 = 1.2   -&gt; 1
+  ...forever...
+
+  =&gt;  0.7 = .1011 0011 0011 0011 ...  (the pattern 0011 repeats FOREVER)
+</code></pre>
+<p>This is the key moment: <strong>0.7 in binary never ends</strong>, just like 1/3 = 0.3333... never ends in decimal. But a float has only 23 mantissa bits — so the tail must be <strong>cut off</strong>. That cut is the precision loss.</p>
+<p><strong>Step 2 — Exponent form.</strong></p>
+<pre><code>  .10110011...  =  1.0110 0110 0110 ...  x  2^(-1)
+</code></pre>
+<p><strong>Step 3 — Add the bias.</strong></p>
+<pre><code>  127 + (-1) = 126     -&gt;  0111 1110 in binary
+</code></pre>
+<p><strong>Step 4 — Pack the fields (mantissa chopped at 23 bits).</strong></p>
+<pre><code>+---+-----------------+---------------------------+
+| 0 | 0 1 1 1 1 1 1 0 | 0110 0110 0110 0110 011...|
++---+-----------------+---------------------------+
+sign      exponent       mantissa (cut at 23 bits)
+</code></pre>
+<p><strong>Now decode it back — what number is REALLY stored?</strong></p>
+<pre><code>  value = (-1)^sign x (1 + mantissa) x 2^(e - 127)
+        = (-1)^0    x (1 + *)        x 2^(126 - 127)
+        =    1      x (1 + *)        x 2^(-1)
+
+  where * = the mantissa bits turned back into a fraction:
+  * = 1/2^2 + 1/2^3 + 1/2^6 + 1/2^7 + 1/2^10 + 1/2^11 + 1/2^14 + 1/2^15 + ...
+    = 0.25  + 0.125 + 0.015625 + ...
+</code></pre>
+<p>Adding just the first few terms (as the notes do):</p>
+<pre><code>  * ≈ 0.399414062
+  value ≈ 1 x (1 + 0.399414062) x 2^(-1)
+        ≈ 1.399414062 / 2
+        ≈ 0.699707031        &lt;- close to 0.7, but NOT 0.7
+</code></pre>
+<p>Each extra mantissa bit pushes the value closer to 0.7 (with all 23 bits the stored value is about 0.69999998807), but since the true pattern repeats forever, <strong>it can never be exactly 0.7</strong>.</p>
+<p><strong>In plain words:</strong> the computer stores the <em>nearest possible</em> binary number to 0.7, not 0.7 itself. That tiny gap is why <code>0.3f - 0.1f</code> printed <code>0.20000002</code> back in Part 2 — the inputs were already slightly "off" before the subtraction even started.</p>
+<pre><code><span class="k">public</span> <span class="k">class</span> <span class="ty">Ieee754Demo</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="k">float</span> f = <span class="n">0.7f</span>;
+        <span class="ty">System</span>.out.println(f);                        <span class="c">// printed rounded</span>
+        <span class="ty">System</span>.out.println((<span class="k">double</span>) f);               <span class="c">// reveal the truth</span>
+        <span class="ty">System</span>.out.println(<span class="ty">Float</span>.toHexString(<span class="n">4.125f</span>)); <span class="c">// 4.125 is exact</span>
+    }
+}
+<span class="c">// Output:</span>
+<span class="c">// 0.7</span>
+<span class="c">// 0.699999988079071      &lt;- what is really stored for 0.7f</span>
+<span class="c">// 0x1.08p2               &lt;- 4.125 stored exactly (1.03125 x 2^2)</span>
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> floats are like writing 1/3 with only 10 decimal places — fine for approximate work, dangerous for money. Terminating binary fractions (0.5, 0.25, 4.125) are exact; most others (0.1, 0.3, 0.7) are not. Use <code>BigDecimal</code> when the exact value matters.</p>
+</blockquote>
+<hr />
+<h2>Quick Revision</h2>
+<ul>
+<li>A variable is a <strong>named container</strong> for a value; Java is <strong>static + strongly typed</strong>, so every variable has a declared type and range.</li>
+<li>Names: case sensitive; start with letter/<code>$</code>/<code>_</code> (never a digit); no keywords; camelCase; constants in CAPITALS.</li>
+<li>8 primitives: <code>char</code>(2B, 0–65535), <code>byte</code>(1B, -128..127), <code>short</code>(2B), <code>int</code>(4B), <code>long</code>(8B), <code>float</code>(32-bit IEEE 754), <code>double</code>(64-bit IEEE 754), <code>boolean</code>(true/false).</li>
+<li>Negative integers are stored in <strong>2's complement</strong>: flip the bits, add 1.</li>
+<li>Default values (0 / false / ' ') apply <strong>only to member variables</strong>, never locals.</li>
+<li><strong>Widening</strong> (byte→short→int→long→float→double) is automatic; <strong>narrowing</strong> needs an explicit <code>(cast)</code> and can <strong>wrap around</strong> (int 128 → byte -128).</li>
+<li>In expressions, operands are <strong>promoted</strong> (byte+byte becomes int; int+double becomes double).</li>
+<li>Kinds of variables: <strong>member/instance</strong> (one copy per object), <strong>static/class</strong> (one shared copy), <strong>local</strong> (lives inside a method), <strong>method parameter</strong> (inside the parentheses).</li>
+<li>IEEE 754 float = <strong>1 sign + 8 exponent (bias 127) + 23 mantissa bits</strong>; decode with <code>(-1)^sign × (1 + mantissa) × 2^(e-127)</code>.</li>
+<li>4.125 is stored <strong>exactly</strong> (binary terminates); 0.7 is stored <strong>approximately</strong> (binary repeats forever) — so avoid float/double for money; use <strong>BigDecimal</strong>.</li>
+</ul>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Variables_and_Data_Types_Explained_Part1.mp4; Part 2 = Variables_and_Data_Types_Explained_Part2.mp4; Part 3 = Variables_and_Data_Types_Explained_Part3.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_3">YOUTUBE_FULL_LINK_PART_3</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

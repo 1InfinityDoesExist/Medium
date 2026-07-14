@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hibernate 2nd-Level Caching and ddl-auto</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#15803d22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #15803d40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#15803d0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #15803d33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#15803d14,#22c55e22);border:1px solid #15803d33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#15803d;--a2:#22c55e">
+<header class="hero"><div class="in">
+  <span class="badge">🍃 SPRING BOOT</span>
+  <h1>Hibernate 2nd-Level Caching and ddl-auto</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>What the 2nd-level cache is and where it sits between the Persistence Context and the DB  ·  The 3 dependencies…</em></p>
+<p class="chips">☕ 8 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> What the 2nd-level cache is and where it sits between the Persistence Context and the DB  ·  The 3 dependencies (ehcache, hibernate-jcache, javax cache) and the exact role of each  ·  Enabling the cache in application.properties and with @Cache on an entity  ·  Regions — logical grouping of cached data, configured in ehcache.xml</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Hibernate_Caching_and_DDL_Auto_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>2nd-level caching — what and where</h2>
+<p>The 1st-level cache (Persistence Context) dies with its EntityManager — i.e. with the HTTP request. The <strong>2nd-level cache</strong> sits <em>behind</em> it and is <strong>shared across all EntityManagers</strong>, so a value cached by one request can be served to the next:</p>
+<figure><img alt="Hibernate 2nd-Level Caching and ddl-auto — diagram" src="18-hibernate-caching-and-ddl-auto.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p>How it behaves:</p>
+<ul>
+<li><strong>During insert</strong> — data is directly inserted into the DB; <strong>no cache insertion or validation happens</strong>.</li>
+<li><strong>During get</strong> — JPA will check: is the data present in the cache? If yes → <strong>cache hit</strong>, return it. Else → <strong>cache miss</strong>, fetch from DB <strong>and put into the cache</strong> (so the next get is a hit).</li>
+</ul>
+<h2>How to achieve it — the 3 dependencies</h2>
+<p>Add these to <code>pom.xml</code>:</p>
+<pre><code><span class="c">&lt;!-- 1) org.ehcache : the actual cache provider (stores the data) --&gt;</span>
+<span class="k">&lt;dependency</span><span class="k">&gt;</span>
+    <span class="k">&lt;groupId</span><span class="k">&gt;</span>org.ehcache<span class="k">&lt;/groupId</span><span class="k">&gt;</span>
+    <span class="k">&lt;artifactId</span><span class="k">&gt;</span>ehcache<span class="k">&lt;/artifactId</span><span class="k">&gt;</span>
+<span class="k">&lt;/dependency</span><span class="k">&gt;</span>
+
+<span class="c">&lt;!-- 2) org.hibernate : hibernate-jcache (bridge between Hibernate &amp; JCache) --&gt;</span>
+<span class="k">&lt;dependency</span><span class="k">&gt;</span>
+    <span class="k">&lt;groupId</span><span class="k">&gt;</span>org.hibernate.orm<span class="k">&lt;/groupId</span><span class="k">&gt;</span>
+    <span class="k">&lt;artifactId</span><span class="k">&gt;</span>hibernate-jcache<span class="k">&lt;/artifactId</span><span class="k">&gt;</span>
+<span class="k">&lt;/dependency</span><span class="k">&gt;</span>
+
+<span class="c">&lt;!-- 3) javax cache : the JCache API interfaces (JSR-107) --&gt;</span>
+<span class="k">&lt;dependency</span><span class="k">&gt;</span>
+    <span class="k">&lt;groupId</span><span class="k">&gt;</span>javax.cache<span class="k">&lt;/groupId</span><span class="k">&gt;</span>
+    <span class="k">&lt;artifactId</span><span class="k">&gt;</span>cache-api<span class="k">&lt;/artifactId</span><span class="k">&gt;</span>
+<span class="k">&lt;/dependency</span><span class="k">&gt;</span>
+</code></pre>
+<p>Who does what:</p>
+<ul>
+<li><strong><code>javax.cache : cache-api</code></strong> — provides the <strong>interface for JCache</strong>; Hibernate interacts with these APIs. The JCache API interface provides APIs like <code>getCache</code>, <code>postCache</code>, ... It helps to achieve <strong>loose coupling</strong>: we can change from Ehcache to some other JCache-compliant caching provider <strong>without changing code</strong>.</li>
+<li><strong><code>org.hibernate : hibernate-jcache</code></strong> — Hibernate-specific caching logic comes with this. Like when we use the <code>@Cache</code> annotation over an entity with a <code>CacheConcurrencyStrategy</code>, specific logic needs to be executed — this library helps us with that. It <strong>acts as a bridge</strong>: it teaches Hibernate <em>how to talk with the JCache API</em>.</li>
+<li><strong><code>org.ehcache</code></strong> — the real implementation that actually stores and evicts the cached data.</li>
+</ul>
+<h2>application.properties configuration</h2>
+<pre><code><span class="c"># turn the 2nd-level cache on</span>
+<span class="a">spring.jpa.properties.hibernate.cache.use_second_level_cache</span>=true
+
+<span class="c"># which region factory Hibernate should use (comes from hibernate-jcache)</span>
+<span class="a">spring.jpa.properties.hibernate.cache.region.factory_class</span>=org.hibernate.cache.jcache.JCacheRegionFactory
+
+<span class="c"># which JCache provider to use  } Imp</span>
+<span class="a">spring.jpa.properties.hibernate.javax.cache.provider</span>=org.ehcache.jsr107.EhcacheCachingProvider
+
+<span class="c"># optional: point to the ehcache.xml resource</span>
+<span class="a">spring.jpa.properties.hibernate.javax.cache.uri</span>=classpath:ehcache.xml
+
+<span class="c"># optional: debug what the cache is doing</span>
+<span class="a">logging.level.org.hibernate.cache</span>=DEBUG
+</code></pre>
+<h2>@Cache on the entity + Regions</h2>
+<pre><code><span class="a">@Entity</span>
+<span class="a">@Cache</span>(usage = <span class="ty">CacheConcurrencyStrategy</span>.<span class="ty">READ_WRITE</span>,
+       region = <span class="s">&quot;userDetails&quot;</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">UserDetails</span> {
+
+    <span class="a">@Id</span>
+    <span class="a">@GeneratedValue</span>(strategy = <span class="ty">GenerationType</span>.<span class="ty">IDENTITY</span>)
+    <span class="k">private</span> <span class="ty">Long</span> id;
+
+    <span class="k">private</span> <span class="ty">String</span> name;
+}
+</code></pre>
+<p><strong>Region</strong></p>
+<ul>
+<li>Helps in <strong>logical grouping</strong> of cached data.</li>
+<li>For each region (or say <em>group</em>), we can apply a different caching strategy, like:</li>
+<li>Eviction policy</li>
+<li>TTL (time to live)</li>
+<li>Cache size</li>
+<li>Concurrency strategy</li>
+<li>This helps in achieving <strong>granular-level management</strong> of cached data — whether it is an <strong>Entity, a Collection, or a Query result</strong>.</li>
+</ul>
+<h2>ehcache.xml — configuring a region</h2>
+<p>Putting the region settings in <code>ehcache.xml</code> is the <em>clean and better approach</em>:</p>
+<pre><code><span class="k">&lt;ehcache</span><span class="k">&gt;</span>
+    <span class="k">&lt;cache</span> alias=<span class="s">&quot;userDetails&quot;</span>
+           maxElementsInMemory=<span class="s">&quot;100&quot;</span>
+           timeToLiveSeconds=<span class="s">&quot;60&quot;</span>
+           evictionStrategy=<span class="s">&quot;LIFO&quot;</span><span class="k">/&gt;</span>
+<span class="k">&lt;/ehcache</span><span class="k">&gt;</span>
+</code></pre>
+<ul>
+<li><strong>hibernate-jcache</strong> has <code>JCacheRegionFactory</code> — it takes care of eviction, memory management and all, per region, using this file.</li>
+</ul>
+<h2>CacheConcurrencyStrategy — the four options</h2>
+<ul class="cards"><li><b><code>READ_ONLY</code></b> — None — updates throw an exception — Static data that never changes</li><li><b><code>READ_WRITE</code></b> — Shared lock on read, exclusive lock on update — Read + write data needing correctness</li><li><b><code>NONSTRICT_READ_WRITE</code></b> — No lock at all; invalidate after commit — Heavy-read apps that tolerate stale reads</li><li><b><code>TRANSACTIONAL</code></b> — Read lock + write lock, cache updated in txn — Strict consistency between cache and DB</li></ul>
+<ul>
+<li>Good for <strong>static data</strong>.</li>
+<li>Which does not require any updates.</li>
+<li>If you try to update such an entity — an <strong>exception</strong> will come.</li>
+</ul>
+<h3>2) READ_WRITE</h3>
+<ul>
+<li><strong>During read</strong>, it puts a <strong>shared lock</strong> — other reads can also acquire the shared lock, but <strong>no write operation</strong> is allowed.</li>
+<li><strong>During update</strong>, it puts an <strong>exclusive lock</strong> — other read <em>and</em> write operations are <strong>not allowed</strong>.</li>
+<li><strong>Insert</strong> goes straight to the <strong>DB</strong> (remember: no cache insertion on insert).</li>
+</ul>
+<p>The <strong>get</strong> path:</p>
+<p>The <strong>update</strong> path — this lock flow is the heart of READ_WRITE:</p>
+<h3>3) NONSTRICT_READ_WRITE</h3>
+<ul>
+<li><strong>During read — no lock is acquired at all.</strong></li>
+<li>During update, <em>after</em> the transaction commits successfully, the cache is <strong>marked invalidated</strong> — it is <strong>not</strong> updated with fresh data.</li>
+<li>Good for <strong>heavy-read applications</strong>.</li>
+<li>So if an update and a read happen <strong>in parallel</strong>, there is a chance the read operation gets <strong>stale data</strong>.</li>
+</ul>
+<h3>4) TRANSACTIONAL</h3>
+<ul>
+<li>Acquires a <strong>READ lock and also a WRITE lock</strong>.</li>
+<li><strong>Updates the cache too</strong>, after the transaction commits successfully.</li>
+<li>Any other READ operation during the cache lock <strong>goes directly to the DB</strong>.</li>
+<li>Any other WRITE operation during the cache lock <strong>waits in a queue</strong>.</li>
+</ul>
+<h2>6b. Query cache, collection cache and manual eviction</h2>
+<blockquote>
+<p>Added: the <code>@Cache</code> annotation above only caches <strong>entities looked up by ID</strong> (<code>find()</code>). Query results and collections need their own switches — and sometimes you must evict by hand.</p>
+</blockquote>
+<h3>Query cache — caching whole query results</h3>
+<p>The 2nd-level cache does <strong>not</strong> help a JPQL query like <code>... WHERE age &gt; 30</code> — that needs the <strong>query cache</strong>, which is off by default:</p>
+<pre><code><span class="a">spring.jpa.properties.hibernate.cache.use_query_cache</span>=true
+</code></pre>
+<p>Then mark each query you want cached as <em>cacheable</em> (per query, not global):</p>
+<pre><code><span class="ty">List</span>&lt;<span class="ty">UserDetails</span>&gt; adults = entityManager
+    .createQuery(<span class="s">&quot;SELECT u FROM UserDetails u WHERE u.age &gt; :age&quot;</span>, <span class="ty">UserDetails</span>.<span class="k">class</span>)
+    .setParameter(<span class="s">&quot;age&quot;</span>, <span class="n">30</span>)
+    .setHint(<span class="s">&quot;org.hibernate.cacheable&quot;</span>, <span class="k">true</span>)   <span class="c">// HINT_CACHEABLE</span>
+    .getResultList();
+</code></pre>
+<p>With Spring Data JPA the same thing is a <code>@QueryHints</code> on the repository method:</p>
+<pre><code><span class="a">@QueryHints</span>(<span class="a">@QueryHint</span>(name = <span class="s">&quot;org.hibernate.cacheable&quot;</span>, value = <span class="s">&quot;true&quot;</span>))
+<span class="ty">List</span>&lt;<span class="ty">UserDetails</span>&gt; findByAgeGreaterThan(<span class="k">int</span> age);
+</code></pre>
+<p>Two things to know:</p>
+<ul>
+<li>The query cache stores only the <strong>IDs</strong> of the matching rows; the entities themselves must come from the 2nd-level cache — so <strong>enable both</strong>, or every hit turns into N loads by ID.</li>
+<li>Hibernate keeps an <strong>update-timestamps cache</strong> per table. Any write to a table <strong>invalidates every cached query</strong> touching that table — which is why the query cache only pays off for rarely-written tables.</li>
+</ul>
+<h3>Collection cache</h3>
+<p>A cached entity does <strong>not</strong> cache its collections. Annotate the collection field too (it gets its own region):</p>
+<pre><code><span class="a">@Entity</span>
+<span class="a">@Cache</span>(usage = <span class="ty">CacheConcurrencyStrategy</span>.<span class="ty">READ_WRITE</span>)
+<span class="k">public</span> <span class="k">class</span> <span class="ty">UserDetails</span> {
+
+    <span class="a">@OneToMany</span>(mappedBy = <span class="s">&quot;user&quot;</span>)
+    <span class="a">@Cache</span>(usage = <span class="ty">CacheConcurrencyStrategy</span>.<span class="ty">READ_WRITE</span>)   <span class="c">// separate region: UserDetails.orders</span>
+    <span class="k">private</span> <span class="ty">List</span>&lt;<span class="ty">Order</span>&gt; orders;
+}
+</code></pre>
+<h3>Evicting programmatically</h3>
+<p>TTL handles time-based expiry, but after an out-of-band change (bulk update, another service writing to the same DB) the cache is silently stale. The JPA <code>Cache</code> API evicts on demand:</p>
+<pre><code><span class="ty">Cache</span> cache = entityManager.getEntityManagerFactory().getCache();
+
+cache.evict(<span class="ty">UserDetails</span>.<span class="k">class</span>, <span class="n">1L</span>);   <span class="c">// evict one entity</span>
+cache.evict(<span class="ty">UserDetails</span>.<span class="k">class</span>);       <span class="c">// evict the whole region</span>
+cache.evictAll();                     <span class="c">// nuke the entire 2nd-level cache</span>
+</code></pre>
+<blockquote>
+<p>Good to know: bulk JPQL/native updates (<code>UPDATE UserDetails SET ...</code>) bypass both the Persistence Context <strong>and</strong> the 2nd-level cache — after one, evict the affected region or you will serve stale entities until TTL saves you.</p>
+</blockquote>
+<h2>spring.jpa.hibernate.ddl-auto</h2>
+<p>Controls what Hibernate does to your <strong>schema</strong> at startup/shutdown:</p>
+<ul class="cards"><li><b><code>none</code></b> — ✗ / ✗ / ✗ — Does nothing to the schema — <strong>Production</strong></li><li><b><code>update</code></b> — ✓ / ✓ / ✗ — Updates schema <strong>without deleting</strong> any existing data or schema — Development environment</li><li><b><code>validate</code></b> — ✗ / ✗ / ✗ — At startup, matches entities against the DB schema; <strong>throws an exception</strong> on mismatch — Prod / staging safety check</li><li><b><code>create</code></b> — ✓ / ✓ / ✓ — <strong>Drops and re-creates</strong> the schema during application startup — Throwaway local runs, tests</li><li><b><code>create-drop</code></b> — ✓ / ✓ / ✓ — Creates the schema at startup <strong>and drops it at application shutdown</strong> — Integration tests, demos</li></ul>
+<pre><code><span class="c"># production — never let Hibernate touch the schema</span>
+<span class="a">spring.jpa.hibernate.ddl-auto</span>=none
+
+<span class="c"># development — evolve the schema, keep the data</span>
+<span class="a">spring.jpa.hibernate.ddl-auto</span>=update
+
+<span class="c"># tests — fresh schema every run, cleaned up afterwards</span>
+<span class="a">spring.jpa.hibernate.ddl-auto</span>=create-drop
+</code></pre>
+<blockquote>
+<p>Good to know: <strong>never use <code>create</code> or <code>create-drop</code> in production</strong> — both drop the schema, which means <em>all your data is gone</em>. For production use <code>none</code> (or <code>validate</code> as a safety net) and manage schema changes with a migration tool like Flyway or Liquibase.</p>
+</blockquote>
+<h2>Architect's Corner</h2>
+<ul>
+<li><strong>In microservices, prefer a distributed cache (Redis) via Spring's <code>@Cacheable</code> abstraction</strong> over the 2nd-level cache — pod-local caches diverge across replicas; 2nd-level shines for single-node or read-mostly reference data.</li>
+<li><strong>Cache invalidation is the design problem</strong>: pick TTLs deliberately, key by tenant, and version your cache keys so deploys don't serve stale shapes.</li>
+<li><strong><code>ddl-auto</code> policy</strong>: <code>update</code>/<code>create</code> are dev-only toys. Production = <code>validate</code> (or <code>none</code>) + <strong>Flyway/Liquibase</strong> versioned migrations reviewed like code.</li>
+<li>Measure before caching: Micrometer exposes hibernate cache hit/miss metrics — a cache with &lt;80% hit rate is usually complexity for nothing.</li>
+<li>Remember the hierarchy from the notes: swap Ehcache↔Caffeine↔Hazelcast freely because JCache is the seam — that loose coupling is the architectural lesson.</li>
+</ul>
+<h2>Quick Revision</h2>
+<ul>
+<li><strong>2nd-level cache</strong> = shared across EntityManagers; lookup order: Persistence Context (1st level) → 2nd level → DB.</li>
+<li><strong>Insert</strong> → straight to DB, no cache write. <strong>Get</strong> → cache hit returns; cache miss fetches from DB <em>and</em> fills the cache.</li>
+<li>3 deps: <strong><code>cache-api</code></strong> (JCache interfaces → loose coupling), <strong><code>hibernate-jcache</code></strong> (bridge; <code>@Cache</code> / strategy logic; <code>JCacheRegionFactory</code>), <strong><code>ehcache</code></strong> (actual provider — swappable with Caffeine/Hazelcast).</li>
+<li>Properties: <code>use_second_level_cache=true</code>, <code>region.factory_class=...JCacheRegionFactory</code>, <code>javax.cache.provider=...EhcacheCachingProvider</code>.</li>
+<li><code>@Cache(usage = ..., region = "userDetails")</code>; <strong>region</strong> = logical group with its own eviction / TTL / size / concurrency — configured cleanly in <code>ehcache.xml</code>.</li>
+<li>Strategies: <strong>READ_ONLY</strong> (static; update → exception), <strong>READ_WRITE</strong> (shared lock read / exclusive lock update; invalidate → commit ? refresh : stay invalid → release lock), <strong>NONSTRICT_READ_WRITE</strong> (no locks; invalidate after commit; stale reads possible), <strong>TRANSACTIONAL</strong> (both locks; cache updated on commit; reads bypass to DB, writes queue).</li>
+<li><strong>Query cache</strong> is a separate switch (<code>use_query_cache=true</code> + <code>org.hibernate.cacheable</code> hint per query); stores only IDs, so pair it with the 2nd-level cache; any table write invalidates its cached queries (update-timestamps cache).</li>
+<li>Collections need their own <code>@Cache</code> on the field; evict manually via <code>entityManagerFactory.getCache().evict(...)</code> — especially after bulk JPQL/native updates, which bypass both caches.</li>
+<li><code>ddl-auto</code>: <code>none</code> (prod) · <code>update</code> (dev, keeps data) · <code>validate</code> (match-or-throw) · <code>create</code> (drop + recreate at startup) · <code>create-drop</code> (also drops at shutdown).</li>
+</ul>
+<hr />
+<p>Next topic: <strong>end of this notebook</strong> — pages 1–80 are covered. Revise from Topic 01 and go build something.</p>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Hibernate_Caching_and_DDL_Auto_Explained_Part1.mp4; Part 2 = Hibernate_Caching_and_DDL_Auto_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>

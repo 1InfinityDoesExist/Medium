@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Annotations — Adding Metadata to Java Code</title><style>
+*{box-sizing:border-box}
+body{font-family:'Iowan Old Style',Georgia,'Times New Roman',serif;color:#1f2328;margin:0;
+     background:#fbfbfa;line-height:1.78;font-size:19px}
+.wrap{max-width:760px;margin:0 auto;padding:0 22px 90px}
+.hero{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;padding:54px 22px 46px;
+      margin-bottom:4px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;
+      background:rgba(255,255,255,.12);border-radius:50%}
+.hero:before{content:"";position:absolute;left:-40px;bottom:-80px;width:200px;height:200px;
+      background:rgba(255,255,255,.08);border-radius:50%}
+.hero .in{max-width:760px;margin:0 auto;position:relative;z-index:1}
+.badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.35);
+      color:#fff;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;font-weight:700;
+      letter-spacing:1.5px;padding:6px 14px;border-radius:30px;margin-bottom:18px}
+.hero h1{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:44px;line-height:1.1;
+      margin:0 0 12px;color:#fff}
+.hero p{font-family:Helvetica,Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.94);margin:0;font-weight:400}
+.chips{margin:26px 0 4px;font-family:Helvetica,Arial,sans-serif}
+.chip{display:inline-block;background:#fff;border:1px solid #ececeb;border-radius:30px;
+      padding:6px 14px;font-size:13.5px;color:#555;margin:0 8px 8px 0}
+.chip b{color:var(--a1)}
+h2{font-family:Helvetica,Arial,sans-serif;font-weight:800;font-size:28px;line-height:1.25;
+      margin:52px 0 12px;color:#111;counter-increment:sec;position:relative;padding-left:52px}
+h2:before{content:counter(sec);position:absolute;left:0;top:-2px;width:38px;height:38px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;
+      box-shadow:0 4px 12px rgba(0,0,0,.14)}
+h2.nonum{padding-left:0}h2.nonum:before{display:none;counter-increment:none}
+.wrap{counter-reset:sec}
+h3{font-family:Helvetica,Arial,sans-serif;font-weight:700;font-size:21px;margin:34px 0 8px;color:#1a1a1a}
+p{margin:16px 0}
+strong,b{color:#111}
+a{color:var(--a1);text-decoration:none;border-bottom:1px solid rgba(0,0,0,.15)}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.14);border:1px solid #eee}
+figcaption{font-family:Helvetica,Arial,sans-serif;font-size:14px;color:#8a8a8a;margin-top:10px;font-style:italic}
+.codeblock{background:#0d1117;border-radius:12px;margin:20px 0;overflow:hidden;
+      box-shadow:0 8px 28px rgba(13,17,23,.28)}
+.codebar{background:#161b22;padding:11px 16px;border-bottom:1px solid #21262d}
+.codebar i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:8px}
+.codebar i:nth-child(1){background:#ff5f56}.codebar i:nth-child(2){background:#ffbd2e}
+.codebar i:nth-child(3){background:#27c93f}
+pre{background:#0d1117;border-radius:12px;margin:20px 0;padding:18px 20px;overflow-x:auto;
+      font-size:14px;line-height:1.62;box-shadow:0 8px 28px rgba(13,17,23,.28);
+      font-family:'JetBrains Mono',Menlo,Consolas,monospace}
+pre code{font-family:inherit;color:#c9d1d9;background:none;padding:0}
+pre .c{color:#8b949e;font-style:italic}pre .s{color:#a5d6ff}pre .k{color:#ff7b72}
+pre .ty{color:#79c0ff}pre .a{color:#d2a8ff}pre .n{color:#f2cc60}
+code{font-family:'JetBrains Mono',Menlo,Consolas,monospace;background:#e8590c22;color:var(--a1);
+      padding:2px 7px;border-radius:5px;font-size:15.5px;border:1px solid #e8590c40}
+blockquote{border:none;background:linear-gradient(135deg,#fff,#e8590c0d);
+      border-left:5px solid var(--a1);margin:22px 0;padding:16px 22px;border-radius:0 12px 12px 0;
+      color:#333;position:relative;box-shadow:0 3px 14px rgba(0,0,0,.05)}
+blockquote:before{content:"💡";margin-right:8px}
+blockquote p{display:inline;margin:0}
+blockquote.tldr{background:linear-gradient(135deg,var(--a1),var(--a2));color:#fff;border:none;
+      border-radius:16px;padding:22px 26px;margin:26px 0;font-family:Helvetica,Arial,sans-serif;
+      font-size:17.5px;line-height:1.7;box-shadow:0 10px 30px #e8590c33}
+blockquote.tldr:before{content:none}
+blockquote.tldr p{display:inline}
+blockquote.tldr strong{color:#fff;font-size:15px;letter-spacing:.5px}
+p.subtitle{font-family:Helvetica,Arial,sans-serif;font-size:21px;color:#5b6470;margin:14px 0 4px}
+p.chips{font-family:Helvetica,Arial,sans-serif;font-size:14.5px;color:#8a8a8a;margin:6px 0 8px}
+h3.vhead{color:var(--a1)}
+p.vlink{background:#0f172a;color:#e8eef7;border-radius:10px;padding:14px 18px;margin:14px 0}
+p.vlink strong{color:#fff}
+p.note{font-size:15px;color:#6b6b6b;margin:6px 0 4px}
+p.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:22px 26px;margin-top:16px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+p.cta strong{color:var(--a1)}
+ul,ol{padding-left:26px}
+li{margin:8px 0}
+ul.cards{list-style:none;padding:0;margin:18px 0}
+ul.cards li{background:#fff;border:1px solid #ececec;border-left:4px solid var(--a1);
+      border-radius:10px;padding:12px 18px;margin:10px 0;font-size:17px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+ul.cards li b{color:var(--a1)}
+.video{background:linear-gradient(135deg,#0f172a,#1e293b);color:#e8eef7;border-radius:16px;
+      padding:26px 28px;margin:34px 0;font-family:Helvetica,Arial,sans-serif;box-shadow:0 12px 34px rgba(15,23,42,.3)}
+.video h3{color:#ffd166;margin:0 0 6px;font-size:22px}
+.video p{margin:8px 0;font-size:16px;color:#c8d3e2}
+.video video{width:100%;border-radius:10px;margin-top:12px;background:#000}
+.video .yt{background:rgba(148,163,184,.12);border:1px dashed #47597a;border-radius:10px;
+      padding:11px 15px;color:#9fb4d0;font-size:14px;margin-top:14px}
+.video .yt code{background:none;color:#ffd166;border:none;padding:0}
+.vlink{background:rgba(148,163,184,.1);border:1px solid #2c3e57;border-radius:9px;
+      padding:12px 16px;margin:12px 0;font-size:16px;color:#dbe6f5}
+.vlink b{color:#fff}
+.vlink a.ph{color:#ffd166;font-family:'JetBrains Mono',Menlo,monospace;font-size:13.5px;
+      background:rgba(255,209,102,.12);border:1px dashed #b9903a;border-radius:6px;
+      padding:3px 9px;text-decoration:none;word-break:break-all;margin-left:6px}
+.vlink a.ph:hover{background:rgba(255,209,102,.22)}
+.rule{text-align:center;color:#cfcfcf;margin:46px 0;font-size:20px;letter-spacing:8px}
+.cta{background:linear-gradient(135deg,#e8590c14,#fd7e1422);border:1px solid #e8590c33;
+      border-radius:16px;padding:24px 26px;margin-top:48px;font-family:Helvetica,Arial,sans-serif;font-size:17px}
+.cta b{color:var(--a1)}
+@media(max-width:560px){.hero h1{font-size:33px}h2{font-size:23px}}
+</style></head>
+<body style="--a1:#e8590c;--a2:#fd7e14">
+<header class="hero"><div class="in">
+  <span class="badge">☕ CORE JAVA</span>
+  <h1>Annotations — Adding Metadata to Java Code</h1>
+</div></header>
+
+<div class="wrap">
+<p class="subtitle"><em>What an annotation is (metadata) and why its usage is optional  ·  The annotation family tree: predefined vs custom…</em></p>
+<p class="chips">☕ 9 min read&nbsp;&nbsp;·&nbsp;&nbsp;🎬 Video walkthrough&nbsp;&nbsp;·&nbsp;&nbsp;📊 UML diagram&nbsp;&nbsp;·&nbsp;&nbsp;💻 Runnable code</p>
+
+<blockquote class="tldr"><strong>⚡ In a nutshell —</strong> What an annotation is (metadata) and why its usage is optional  ·  The annotation family tree: predefined vs custom annotations  ·  Annotations used on Java code: @Deprecated, @Override, @SuppressWarnings, @FunctionalInterface, @SafeVarargs  ·  What heap pollution means (in simple words)</blockquote>
+
+<h3 class="vhead">🎬 Watch: 60-second teaser</h3>
+<!-- TO PUBLISH: upload Annotations_Short_Overview.mp4 to YouTube (as a Short), then replace YOUTUBE_SHORT_LINK below with the video URL. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_SHORT_LINK">YOUTUBE_SHORT_LINK</a></p>
+
+<hr>
+
+<h2>What is an Annotation?</h2>
+<ul>
+<li>An annotation is a way of <strong>adding METADATA to your Java code</strong>. Metadata means "data about data" — extra information <em>about</em> the code, which is not the code's logic itself.</li>
+<li>Its <strong>usage is optional</strong> — your program can run without annotations.</li>
+<li>We can read this metadata <strong>at runtime</strong> and add certain logic in our code based on it, if we want (this is done using reflection).</li>
+</ul>
+<p><strong>Everyday analogy:</strong> annotations are like <strong>sticky notes on a document</strong>. The document (your code) is complete without them, but the notes tell readers — human or machine — something extra: "check this page", "old version, don't use", "copy this to the summary". Tools like the compiler, the JVM, and frameworks read these sticky notes and act on them.</p>
+<figure><img alt="Annotations — Adding Metadata to Java Code — diagram" src="16-annotations.png"><figcaption>The one diagram that ties it all together.</figcaption></figure>
+<p>You have already seen annotations: <code>@Override</code>, <code>@FunctionalInterface</code>, <code>@Deprecated</code> — they all start with <code>@</code>.</p>
+<hr />
+<h2>Types of Annotations — The Family Tree</h2>
+<p>The notes draw this taxonomy as a diagram:</p>
+<pre><code>                       Types of Annotation
+                      /                    \
+      Pre-Defined Annotation         Custom / User-Defined
+      /                    \              Annotation
+ Used ON Java Code     Used ON other Annotations
+ ------------------    (<span class="s">&quot;meta-annotations&quot;</span>)
+ @Deprecated           @Target
+ @Override             @Retention
+ @SuppressWarnings     @Documented
+ @FunctionalInterface  @Inherited
+ @SafeVarargs          @Repeatable (Java 8)
+</code></pre>
+<p><strong>In plain words:</strong></p>
+<ul>
+<li><strong>Predefined annotations</strong> come built into Java. They split into two groups:</li>
+<li><strong>Used on Java code</strong> — you put them on classes, methods, fields: <code>@Deprecated</code>, <code>@Override</code>, <code>@SuppressWarnings</code>, <code>@FunctionalInterface</code>, <code>@SafeVarargs</code>.</li>
+<li><strong>Used on annotations</strong> (called <strong>meta-annotations</strong> — annotations <em>about</em> annotations): <code>@Target</code>, <code>@Retention</code>, <code>@Documented</code>, <code>@Inherited</code>, <code>@Repeatable</code> (Java 8).</li>
+<li><strong>Custom (user-defined) annotations</strong> are the ones you create yourself with <code>@interface</code> (Section 8).</li>
+</ul>
+<hr />
+<h2>Annotations Used on Java Code</h2>
+<ul>
+<li>Using a deprecated class, method, or field gives you a <strong>compile-time WARNING</strong> (not an error — old code still runs).</li>
+<li><strong>Deprecated means:</strong> no further improvement is happening on this, and you should <strong>use the newer alternative</strong> method/field instead.</li>
+</ul>
+<pre><code><span class="k">class</span> <span class="ty">PaymentService</span> {
+
+    <span class="a">@Deprecated</span>
+    <span class="k">public</span> <span class="k">void</span> payOld(<span class="k">int</span> amount) {           <span class="c">// old way — please stop using me</span>
+        <span class="ty">System</span>.out.println(<span class="s">&quot;Old payment: &quot;</span> + amount);
+    }
+
+    <span class="k">public</span> <span class="k">void</span> pay(<span class="k">int</span> amount) {              <span class="c">// the new alternative</span>
+        <span class="ty">System</span>.out.println(<span class="s">&quot;New secure payment: &quot;</span> + amount);
+    }
+}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">PaymentService</span> s = <span class="k">new</span> <span class="ty">PaymentService</span>();
+        s.payOld(<span class="n">100</span>);   <span class="c">// compiler shows a WARNING: payOld(int) is deprecated</span>
+        s.pay(<span class="n">100</span>);
+    }
+}
+</code></pre>
+<pre><code>Output:
+Old payment: 100
+New secure payment: 100
+(plus a compiler warning: <span class="s">&quot;payOld(int) in PaymentService has been deprecated&quot;</span>)
+</code></pre>
+<h3>3.2 @SafeVarargs</h3>
+<ul>
+<li>Used to <strong>suppress the "heap pollution" warning</strong> (explained next).</li>
+<li>Used over <strong>methods and constructors that have variable arguments (varargs)</strong> as a parameter, e.g. <code>void print(T... items)</code>.</li>
+<li>The method should be either <strong><code>static</code> or <code>final</code></strong> — that is, a method that <strong>cannot be overridden</strong>. (If a child could override it, the "safety promise" could be broken by the child.)</li>
+<li><strong>In Java 9, we can also use it on <code>private</code> methods</strong> (private methods can't be overridden either).</li>
+</ul>
+<pre><code><span class="k">import</span> java.util.<span class="ty">List</span>;
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+
+    <span class="a">@SafeVarargs</span>   <span class="c">// &quot;I promise I use these varargs safely — hide the warning&quot;</span>
+    <span class="k">private</span> <span class="k">static</span> <span class="k">void</span> printAll(<span class="ty">List</span>&lt;<span class="ty">String</span>&gt;... lists) {   <span class="c">// varargs of a generic type</span>
+        <span class="k">for</span> (<span class="ty">List</span>&lt;<span class="ty">String</span>&gt; list : lists) {
+            <span class="ty">System</span>.out.println(list);
+        }
+    }
+
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        printAll(<span class="ty">List</span>.of(<span class="s">&quot;a&quot;</span>, <span class="s">&quot;b&quot;</span>), <span class="ty">List</span>.of(<span class="s">&quot;c&quot;</span>));
+    }
+}
+</code></pre>
+<pre><code>Output:
+[a, b]
+[c]
+</code></pre>
+<h3>3.3 What is Heap Pollution? (simple explanation)</h3>
+<blockquote>
+<p><strong>Heap pollution:</strong> an object of one type (for example <code>String</code>) storing the reference of another type of object (for example <code>Integer</code>).</p>
+</blockquote>
+<p><strong>In plain words:</strong> the heap is where Java keeps objects. "Pollution" happens when a variable that <em>claims</em> to hold one type actually ends up pointing at a different type. The compiler believed your label, but the box contains something else — and at runtime you get a surprise <code>ClassCastException</code>.</p>
+<pre><code><span class="k">import</span> java.util.<span class="ty">ArrayList</span>;
+<span class="k">import</span> java.util.<span class="ty">List</span>;
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">List</span>&lt;<span class="ty">String</span>&gt; strings = <span class="k">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+        <span class="ty">Object</span> anyBox = strings;              <span class="c">// allowed: everything is an Object</span>
+
+        <span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; numbers = (<span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt;) anyBox;   <span class="c">// unchecked warning!</span>
+        numbers.add(<span class="n">42</span>);                      <span class="c">// an Integer sneaks into a List&lt;String&gt;</span>
+
+        <span class="c">// Heap is now &quot;polluted&quot;: strings really contains an Integer.</span>
+        <span class="ty">String</span> s = strings.get(<span class="n">0</span>);            <span class="c">// BOOM at runtime</span>
+    }
+}
+</code></pre>
+<pre><code>Output:
+Exception in thread <span class="s">&quot;main&quot;</span> java.lang.ClassCastException:
+class java.lang.Integer cannot be cast to class java.lang.String
+</code></pre>
+<p>Generic varargs create this risk behind the scenes, so the compiler warns you. <code>@SafeVarargs</code> is your signed statement: "I checked — my method never does this mixing."</p>
+<hr />
+<h2>Meta-Annotation: @Target</h2>
+<ul>
+<li>This meta-annotation <strong>restricts WHERE the annotation can be used</strong> — on a method only, or a constructor, or fields, etc.</li>
+</ul>
+<p>Examples from the JDK itself:</p>
+<pre><code><span class="a">@Target</span>(<span class="ty">ElementType</span>.<span class="ty">METHOD</span>)              <span class="c">// @Override may only be placed on methods</span>
+<span class="k">public</span> <span class="a">@interface</span> <span class="ty">Override</span> {
+}
+</code></pre>
+<pre><code><span class="a">@Target</span>({<span class="ty">ElementType</span>.<span class="ty">CONSTRUCTOR</span>, <span class="ty">ElementType</span>.<span class="ty">METHOD</span>})   <span class="c">// two places allowed</span>
+<span class="k">public</span> <span class="a">@interface</span> <span class="ty">SafeVarargs</span> {
+}
+</code></pre>
+<p>(One value = plain <code>@Target(ElementType.METHOD)</code>; several values = curly braces <code>{...}</code>.)</p>
+<h3>The ElementType List</h3>
+<ul class="cards"><li><b><code>TYPE</code></b> — a class, interface, enum, or annotation type</li><li><b><code>FIELD</code></b> — a field (member variable)</li><li><b><code>METHOD</code></b> — a method</li><li><b><code>PARAMETER</code></b> — a method parameter</li><li><b><code>CONSTRUCTOR</code></b> — a constructor</li><li><b><code>LOCAL_VARIABLE</code></b> — a local variable inside a method</li><li><b><code>ANNOTATION_TYPE</code></b> — another annotation (that's what meta-annotations use)</li><li><b><code>PACKAGE</code></b> — a package declaration</li><li><b><code>TYPE_PARAMETER</code></b> — a generic type parameter — allows you to apply it on <code>&lt;T&gt;</code></li><li><b><code>TYPE_USE</code></b> — any use of a type, e.g. <code>List&lt;@MyAnnotation String&gt;</code></li></ul>
+<hr />
+<h2>Meta-Annotation: @Retention</h2>
+<ul>
+<li>This meta-annotation tells <strong>how long the annotation will be kept (stored)</strong> in Java.</li>
+</ul>
+<ul class="cards"><li><b><code>RetentionPolicy.SOURCE</code></b> — No — No — Discarded by the <strong>compiler itself</strong>; it is not recorded in the <code>.class</code> file. (e.g. <code>@Override</code>)</li><li><b><code>RetentionPolicy.CLASS</code></b> — Yes — No — Recorded in the <code>.class</code> file but <strong>ignored by the JVM</strong> at runtime.</li><li><b><code>RetentionPolicy.RUNTIME</code></b> — Yes — Yes — Recorded in the <code>.class</code> file <strong>and</strong> available during runtime — so <strong>reflection can read it</strong> and act on it.</li></ul>
+<p><strong>Analogy:</strong> SOURCE = a pencil note erased before printing; CLASS = printed in the book but never read aloud; RUNTIME = printed <strong>and</strong> announced while the program runs.</p>
+<pre><code><span class="k">import</span> java.lang.annotation.<span class="ty">Retention</span>;
+<span class="k">import</span> java.lang.annotation.<span class="ty">RetentionPolicy</span>;
+
+<span class="a">@Retention</span>(<span class="ty">RetentionPolicy</span>.<span class="ty">RUNTIME</span>)   <span class="c">// keep it alive at runtime so reflection sees it</span>
+<span class="a">@interface</span> <span class="ty">Info</span> {
+    <span class="ty">String</span> author();
+}
+
+<span class="a">@Info</span>(author = <span class="s">&quot;Rahul&quot;</span>)
+<span class="k">class</span> <span class="ty">Book</span> {}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">Info</span> info = <span class="ty">Book</span>.<span class="k">class</span>.getAnnotation(<span class="ty">Info</span>.<span class="k">class</span>);   <span class="c">// reflection reads it</span>
+        <span class="ty">System</span>.out.println(info.author());
+    }
+}
+</code></pre>
+<pre><code>Output:
+Rahul
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> if you want to read your annotation with reflection, it MUST be <code>RetentionPolicy.RUNTIME</code>. With SOURCE or CLASS, <code>getAnnotation(...)</code> returns <code>null</code>.</p>
+</blockquote>
+<hr />
+<h2>Meta-Annotations: @Documented and @Inherited</h2>
+<h3>@Documented</h3>
+<ul>
+<li><strong>By default, annotations are ignored</strong> when Java documentation (Javadoc) is generated.</li>
+<li>With the <code>@Documented</code> meta-annotation, the annotation <strong>will appear in the generated Java Docs</strong> of the classes that use it.</li>
+</ul>
+<pre><code><span class="k">import</span> java.lang.annotation.<span class="ty">Documented</span>;
+
+<span class="a">@Documented</span>
+<span class="a">@interface</span> <span class="ty">ApiInfo</span> {
+    <span class="ty">String</span> version();
+}
+
+<span class="a">@ApiInfo</span>(version = <span class="s">&quot;2.0&quot;</span>)
+<span class="k">class</span> <span class="ty">PaymentApi</span> {}
+<span class="c">// When Javadoc is generated for PaymentApi, &quot;@ApiInfo(version=&quot;2.0&quot;)&quot; shows up in its docs.</span>
+</code></pre>
+<h3>@Inherited</h3>
+<ul>
+<li><strong>By default, an annotation applied on a parent class is NOT available to child classes.</strong></li>
+<li>But it <strong>is</strong> available after you add this <code>@Inherited</code> meta-annotation to your annotation.</li>
+<li>This meta-annotation has <strong>no effect if the annotation is used on anything other than a class</strong> (methods, fields, etc. do not pass annotations down).</li>
+</ul>
+<pre><code><span class="k">import</span> java.lang.annotation.<span class="ty">Inherited</span>;
+<span class="k">import</span> java.lang.annotation.<span class="ty">Retention</span>;
+<span class="k">import</span> java.lang.annotation.<span class="ty">RetentionPolicy</span>;
+
+<span class="a">@Inherited</span>
+<span class="a">@Retention</span>(<span class="ty">RetentionPolicy</span>.<span class="ty">RUNTIME</span>)
+<span class="a">@interface</span> <span class="ty">MyCustomAnnotation</span> {}
+
+<span class="a">@MyCustomAnnotation</span>
+<span class="k">class</span> <span class="ty">ParentClass</span> {}
+
+<span class="k">class</span> <span class="ty">ChildClass</span> <span class="k">extends</span> <span class="ty">ParentClass</span> {}   <span class="c">// no annotation written here...</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="c">// ...but thanks to @Inherited, the child &quot;inherits&quot; it:</span>
+        <span class="ty">System</span>.out.println(<span class="ty">ChildClass</span>.<span class="k">class</span>.getAnnotation(<span class="ty">MyCustomAnnotation</span>.<span class="k">class</span>) != <span class="k">null</span>);
+    }
+}
+</code></pre>
+<pre><code>Output:
+true
+(Without @Inherited on the annotation, this would print false.)
+</code></pre>
+<hr />
+<h2>Meta-Annotation: @Repeatable (Java 8)</h2>
+<ul>
+<li>Allows us to use the <strong>same annotation more than once at the same place</strong>.</li>
+<li>Available since <strong>Java 8</strong>.</li>
+</ul>
+<p><strong>The problem first</strong> — without <code>@Repeatable</code>, this is a compile error:</p>
+<pre><code><span class="a">@Category</span>(name = <span class="s">&quot;Bird&quot;</span>)          <span class="c">// COMPILE ERROR: duplicate annotation</span>
+<span class="a">@Category</span>(name = <span class="s">&quot;LivingThing&quot;</span>)   <span class="c">// not allowed without the @Repeatable setup</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Eagle</span> {
+    <span class="k">public</span> <span class="k">void</span> fly() {}
+}
+</code></pre>
+<p><strong>The setup needs TWO annotations</strong> — the repeatable one, plus a <strong>container</strong> annotation that secretly holds the repeats in an array:</p>
+<pre><code><span class="k">import</span> java.lang.annotation.<span class="ty">ElementType</span>;
+<span class="k">import</span> java.lang.annotation.<span class="ty">Repeatable</span>;
+<span class="k">import</span> java.lang.annotation.<span class="ty">Retention</span>;
+<span class="k">import</span> java.lang.annotation.<span class="ty">RetentionPolicy</span>;
+<span class="k">import</span> java.lang.annotation.<span class="ty">Target</span>;
+
+<span class="c">// 1) The annotation we want to repeat:</span>
+<span class="a">@Repeatable</span>(<span class="ty">Categories</span>.<span class="k">class</span>)        <span class="c">// &lt;-- points to its container annotation</span>
+<span class="a">@Target</span>(<span class="ty">ElementType</span>.<span class="ty">TYPE</span>)
+<span class="a">@Retention</span>(<span class="ty">RetentionPolicy</span>.<span class="ty">RUNTIME</span>)
+<span class="a">@interface</span> <span class="ty">Category</span> {
+    <span class="ty">String</span> name();
+}
+
+<span class="c">// 2) The CONTAINER annotation — important for @Repeatable!</span>
+<span class="a">@Retention</span>(<span class="ty">RetentionPolicy</span>.<span class="ty">RUNTIME</span>)
+<span class="a">@interface</span> <span class="ty">Categories</span> {
+    <span class="ty">Category</span>[] value();              <span class="c">// holds all the repeated @Category annotations</span>
+}
+</code></pre>
+<p>Now the repetition is valid:</p>
+<pre><code><span class="a">@Category</span>(name = <span class="s">&quot;Bird&quot;</span>)
+<span class="a">@Category</span>(name = <span class="s">&quot;LivingThing&quot;</span>)     <span class="c">// VALID now</span>
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Eagle</span> {
+    <span class="k">public</span> <span class="k">void</span> fly() {}
+}
+
+<span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="k">for</span> (<span class="ty">Category</span> c : <span class="ty">Eagle</span>.<span class="k">class</span>.getAnnotationsByType(<span class="ty">Category</span>.<span class="k">class</span>)) {
+            <span class="ty">System</span>.out.println(c.name());
+        }
+    }
+}
+</code></pre>
+<pre><code>Output:
+Bird
+LivingThing
+</code></pre>
+<blockquote>
+<p><strong>Remember:</strong> <code>@Repeatable(Categories.class)</code> — the value is the <strong>container</strong> annotation's class. The container must have exactly one member: an <strong>array</strong> of the repeatable annotation, named <code>value()</code>. Behind the scenes Java wraps your repeated <code>@Category</code>s into one <code>@Categories</code>.</p>
+</blockquote>
+<hr />
+<h2>Writing a Custom Annotation — <code>@interface</code></h2>
+<ul>
+<li>You create your own annotation using the keyword <strong><code>@interface</code></strong>.</li>
+</ul>
+<pre><code><span class="k">public</span> <span class="a">@interface</span> <span class="ty">CustomInterface</span> {
+    <span class="ty">String</span> name();   <span class="c">// an annotation &quot;member&quot; (element)</span>
+}
+</code></pre>
+<p>Rules for the members inside:</p>
+<ul>
+<li>Each member is written like a method, but with <strong>no parameters and no body</strong> — <code>String name();</code></li>
+<li>The <strong>return type</strong> must be one of: <strong>primitives</strong> (<code>int</code>, <code>boolean</code>, ...), <strong>Class</strong>, <strong>enums</strong>, <strong>String</strong>, <strong>another annotation</strong>, or an <strong>array of these types</strong>. (No <code>List</code>, no arbitrary objects!)</li>
+</ul>
+<p>Using it:</p>
+<pre><code><span class="a">@CustomInterface</span>(name = <span class="s">&quot;testing&quot;</span>)
+<span class="k">class</span> <span class="ty">MyService</span> {}
+</code></pre>
+<h3>Default Values</h3>
+<p>A member can have a <strong>default value</strong> with the <code>default</code> keyword. Then the user may skip it:</p>
+<pre><code><span class="k">public</span> <span class="a">@interface</span> <span class="ty">CustomInterface</span> {
+    <span class="ty">String</span> name() <span class="k">default</span> <span class="s">&quot;hello&quot;</span>;
+}
+
+<span class="a">@CustomInterface</span>                       <span class="c">// OK — name is &quot;hello&quot;</span>
+<span class="k">class</span> <span class="ty">A</span> {}
+
+<span class="a">@CustomInterface</span>(name = <span class="s">&quot;testing&quot;</span>)     <span class="c">// OK — name is &quot;testing&quot;</span>
+<span class="k">class</span> <span class="ty">B</span> {}
+</code></pre>
+<h3>Full Working Example — Define, Apply, and Read a Custom Annotation</h3>
+<pre><code><span class="k">import</span> java.lang.annotation.<span class="ty">ElementType</span>;
+<span class="k">import</span> java.lang.annotation.<span class="ty">Retention</span>;
+<span class="k">import</span> java.lang.annotation.<span class="ty">RetentionPolicy</span>;
+<span class="k">import</span> java.lang.annotation.<span class="ty">Target</span>;
+
+<span class="a">@Target</span>(<span class="ty">ElementType</span>.<span class="ty">TYPE</span>)                 <span class="c">// may be used on classes/interfaces</span>
+<span class="a">@Retention</span>(<span class="ty">RetentionPolicy</span>.<span class="ty">RUNTIME</span>)       <span class="c">// keep it, so reflection can read it</span>
+<span class="a">@interface</span> <span class="ty">CustomInterface</span> {
+    <span class="ty">String</span> name() <span class="k">default</span> <span class="s">&quot;hello&quot;</span>;
+    <span class="k">int</span> version() <span class="k">default</span> <span class="n">1</span>;
+}
+
+<span class="a">@CustomInterface</span>(name = <span class="s">&quot;testing&quot;</span>)        <span class="c">// version uses its default: 1</span>
+<span class="k">class</span> <span class="ty">MyService</span> {}
+
+<span class="k">public</span> <span class="k">class</span> <span class="ty">Main</span> {
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> main(<span class="ty">String</span>[] args) {
+        <span class="ty">CustomInterface</span> ann = <span class="ty">MyService</span>.<span class="k">class</span>.getAnnotation(<span class="ty">CustomInterface</span>.<span class="k">class</span>);
+        <span class="ty">System</span>.out.println(<span class="s">&quot;name    = &quot;</span> + ann.name());
+        <span class="ty">System</span>.out.println(<span class="s">&quot;version = &quot;</span> + ann.version());
+    }
+}
+</code></pre>
+<pre><code>Output:
+<span class="a">name</span>    = testing
+<span class="a">version</span> = 1
+</code></pre>
+<hr />
+<h2>Quick Revision</h2>
+<ul>
+<li>An annotation is <strong>metadata</strong> (data about the code); it is <strong>optional</strong> and can be read at runtime (via reflection) to drive extra logic.</li>
+<li>Family tree: <strong>predefined</strong> (used on code: <code>@Deprecated</code>, <code>@Override</code>, <code>@SuppressWarnings</code>, <code>@FunctionalInterface</code>, <code>@SafeVarargs</code>; used on annotations: <code>@Target</code>, <code>@Retention</code>, <code>@Documented</code>, <code>@Inherited</code>, <code>@Repeatable</code>) vs <strong>custom</strong> annotations you create.</li>
+<li><strong>@Deprecated</strong> = compile-time warning; means "no further improvement; use the new alternative".</li>
+<li><strong>@SafeVarargs</strong> = suppresses the heap-pollution warning on varargs methods/constructors; the method must be <code>static</code> or <code>final</code> (Java 9: also <code>private</code>).</li>
+<li><strong>Heap pollution</strong> = a variable of one type ends up referencing an object of another type (e.g. an Integer inside a <code>List&lt;String&gt;</code>) → runtime <code>ClassCastException</code>.</li>
+<li><strong>@Target</strong> restricts <em>where</em> an annotation may go, using <code>ElementType</code> (TYPE, FIELD, METHOD, PARAMETER, CONSTRUCTOR, LOCAL_VARIABLE, ANNOTATION_TYPE, PACKAGE, TYPE_PARAMETER, TYPE_USE).</li>
+<li><strong>@Retention</strong>: SOURCE (compiler throws it away), CLASS (in <code>.class</code>, ignored by JVM), RUNTIME (in <code>.class</code> + readable by reflection).</li>
+<li><strong>@Documented</strong> = the annotation shows up in Javadoc. <strong>@Inherited</strong> = a class-level annotation flows down to child classes (classes only).</li>
+<li><strong>@Repeatable</strong> (Java 8) = same annotation multiple times at one place; requires a <strong>container annotation</strong> with a <code>value()</code> array (the <code>Category</code>/<code>Categories</code> pattern).</li>
+<li>Custom annotation = <code>@interface</code>; members look like methods (no parameters, no body); allowed types: primitives, Class, enums, String, annotations, and arrays of these; use <code>default</code> to give a member a default value.</li>
+</ul>
+
+<hr>
+
+<h3 class="vhead">📺 Full video walkthrough</h3>
+<!-- TO PUBLISH: upload each part to YouTube (Part 1 = Annotations_Explained_Part1.mp4; Part 2 = Annotations_Explained_Part2.mp4); replace the YOUTUBE_FULL_LINK_PART_N placeholders below with their URLs. -->
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_1">YOUTUBE_FULL_LINK_PART_1</a></p>
+<p class="vlink">▶️ <a class="ph" href="YOUTUBE_FULL_LINK_PART_2">YOUTUBE_FULL_LINK_PART_2</a></p>
+
+<hr>
+
+<p class="cta">👏 <strong>Found this useful?</strong> Give it a few claps so more developers discover it,
+and follow for the whole series — every article ships with a UML diagram, runnable code, a narrated
+video, and a companion PDF. Happy building! 🚀</p>
+</div>
+</body></html>
